@@ -25,6 +25,10 @@ Perhaps more helpful than the algorithms, the app can simply server as a log of 
 
 
 
+
+
+
+
 <a name="backend"/>
 
 ## Backend
@@ -33,3 +37,14 @@ Perhaps more helpful than the algorithms, the app can simply server as a log of 
 <a name="timeline"/>
 
 ## Timeline
+
+#### Step 1
+
+Look at existing apps in the space to get ideas.
+Results:
+  - [Dress me app](https://www.dress-meapp.com/)
+
+
+#### Ideas for possible features
+- Use [Mannequin.js](https://boytchev.github.io/mannequin.js/) to model mockups
+- Color selection from picture such as feature on [coolors.co](https://coolors.co/)
