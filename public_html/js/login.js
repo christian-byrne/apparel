@@ -1,11 +1,8 @@
-const BASE_URL = "http://127.0.0.1:5000";
-
 /**
- * Go to home page on successful login or registration.
+ * @author Christian P. Byrne
  */
-const pushPage = () => {
-  window.location = "/home.html";
-};
+
+import { BASE_URL, pushPage } from "./index.js"
 
 /**
  * Handle register/login error responses from server.
@@ -15,11 +12,10 @@ const handleError = () => {
   alert("error registering");
 };
 
-
 /**
  * Handle form submits on login/register forms.
- * 
- * @param {string} formType - "login" | "register" 
+ *
+ * @param {string} formType - "login" | "register"
  */
 const formSubmitHandler = (formType) => {
   const ajaxOptions = {
@@ -37,7 +33,12 @@ const formSubmitHandler = (formType) => {
     },
     success: (response) => {
       sessionStorage.setItem("username", $("#registerEmail").val());
-      pushPage();
+      if ( formType === "login") {
+          pushPage("/setup.html")
+      }
+      else {
+          pushPage("/home.html");
+      }
     },
     error: (reason) => {
       handleError();
@@ -46,18 +47,20 @@ const formSubmitHandler = (formType) => {
   $.ajax(ajaxOptions);
 };
 
-
 /** Bind listeners structure. */
 window.onload = () => {
-    document.documentElement.addEventListener("click", (event) => {
-        const caller = event.target;
+  document.documentElement.addEventListener("click", (event) => {
+    const caller = event.target;
 
-        if ( caller.tagName === "BUTTON" && caller.innerHTML.includes("Sign up")) {
-            formSubmitHandler("register")
-        }
-        else if ( caller.tagName === "BUTTON" && caller.innerHTML.includes("Login")) {
-            formSubmitHandler("login")
-        }
-    
-    })
-}
+    if (caller.tagName === "BUTTON" && caller.innerHTML.includes("Sign up")) {
+      event.preventDefault();
+      formSubmitHandler("register");
+    } else if (
+      caller.tagName === "BUTTON" &&
+      caller.innerHTML.includes("Login")
+    ) {
+      event.preventDefault();
+      formSubmitHandler("login");
+    }
+  });
+};

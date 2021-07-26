@@ -6,11 +6,11 @@
 import { model, Schema, connect, Model } from "mongoose";
 import { json, urlencoded } from "body-parser";
 import { __prod__ } from "./constants";
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import multer from "multer";
-import "boostrap";
-import "./scss/app.scss"
+import "cookie-parser";
+import cookieParser from "cookie-parser";
 
 type ItemFit = "Oversized" | "Loose" | "Casual" | "Fitted" | "Tight";
 type BroadCategory = "shirt" | "tshirt" | "sweater";
@@ -162,24 +162,29 @@ class Database {
 
 interface ExpressServer {
   server: express.Express;
+  staticFolder: string;
   bindMiddleware: (middleware: any[]) => void;
+  catch: () => void;
 }
 
 class ExpressServer {
   constructor(staticFolder = "public_html") {
     this.server = express();
-    this.server.use(express.static(staticFolder));
+    this.staticFolder = staticFolder;
+  }
+  bindMiddleware = (middlewareArray: any[]) => {
+    this.server.use(express.static(this.staticFolder));
     this.server.use(express.json());
+    for (const handler of middlewareArray) {
+      this.server.use(handler);
+    }
+  };
+  catch = () => {
     this.server.get("/", (req: Request) => {
       if (!__prod__) {
         console.dir(req);
       }
     });
-  }
-  bindMiddleware = (middlewareArray: any[]) => {
-    for (const handler of middlewareArray) {
-      this.server.use(handler);
-    }
   };
 }
 
@@ -221,6 +226,9 @@ interface App {
   upload: multer.Multer;
   middleware: any[];
   http: ExpressServer;
+  sessionKeys: {
+    [key: string]: [number, number];
+  };
 }
 
 class App {
@@ -233,7 +241,7 @@ class App {
       middleware: [],
     };
     const verboseDefault = {
-      log: false,
+      log: true,
       verboseGap: "\n\n\n\n",
       alert: (title = "section break") =>
         console.log(
@@ -275,50 +283,127 @@ class App {
     this.http = new ExpressServer();
 
     // 6. Init and bind middleware to server.
+
+    // Image uploading.
     this.upload = multer({
       dest: `${this.mediaDir}`,
     });
+    // Cookie authentification.
+    this.sessionKeys = {};
+    setInterval(() => {
+      let now = Date.now();
+      for (let key in this.sessionKeys) {
+        if (this.sessionKeys[key][1] < now - 10000) {
+          delete this.sessionKeys[key];
+        }
+      }
+    }, 2000);
+    this.middleware.push(this.authenticate);
     this.http.bindMiddleware(this.middleware);
 
-    // 7. Declare controllers and routers.
+    // 7. Bind routers.
+    this.http.server.post("/login", this.login);
+    this.http.server.post("/register", this.register);
 
-    // Login
-    this.http.server.post("/login", (req: Request, res: Response) => {
-      this.db.userModel
-        .find({
-          username: req.body.username,
-          password: req.body.password,
-        })
-        .then((user: User[]) => {
-          if (user.length === 1) {
-            res.send(true);
-          } else {
-            res.send(false);
-          }
-        });
+    // 8. Construct server.
+    this.http.server.listen(this.port, () => {
+      console.log(`listening on ${this.port} at ${this.ip}`);
     });
-
-    // Register.
-    this.http.server.post("/register", (req: Request, res: Response) => {
-        this.db.userModel.find({
-            username: req.body.username,
-            password: req.body.password
-        }).then((user: User[]) => {
-            if ( user.length > 0 ) {
-                res.send(false)
-            }
-            else {
-                let newUser = new this.db.userModel({
-                    username: req.body.username,
-                    password: req.body.password
-                });
-                newUser.save().then(() => {
-                    res.end()
-                })
-            }
-        })
-    })
   }
+
+  /**
+   * Session cookie generator.
+   * @param username
+   * @param res
+   */
+  createSessionCookie = async (username: string, res: Response) => {
+    let sessionKey = Math.floor(Math.random() * 10000);
+    this.sessionKeys[username] = [sessionKey, Date.now()];
+    res.cookie(
+      "login",
+      { username: username, key: sessionKey },
+      { maxAge: 20000 }
+    );
+  };
+
+  /**
+   * Authentication middleware.
+   * @param req
+   * @param res
+   * @param next
+   */
+  authenticate = (req: Request, res: Response, next: NextFunction) => {
+    if (["/", "/register", "/login"].includes(req.url)) {
+      next();
+    } else {
+      if (!__prod__ && this.verbose.log) {
+        this.verbose.alert("Session Cookie");
+        console.log(req.cookies);
+      }
+      if (Object.keys(req.cookies).length > 0) {
+        if (
+          this.sessionKeys[req.cookies.login.username][0] ==
+          req.cookies.login.key
+        ) {
+          next();
+        } else {
+          res.send(false);
+        }
+      } else {
+        res.send(false);
+      }
+    }
+  };
+
+  /**
+   * Login router.
+   * @param req
+   * @param res
+   */
+  login = (req: Request, res: Response) => {
+    this.db.userModel
+      .find({
+        username: req.body.username,
+        password: req.body.password,
+      })
+      .then((user: User[]) => {
+        if (user.length === 1) {
+          this.createSessionCookie(req.body.username, res).then(() => {
+            res.send(true);
+          });
+        } else {
+          res.send(false);
+        }
+      });
+  };
+
+  /**
+   * Register router.
+   * @param req
+   * @param res
+   */
+  register = (req: Request, res: Response) => {
+    this.db.userModel
+      .find({
+        username: req.body.username,
+        password: req.body.password,
+      })
+      .then((user: User[]) => {
+        if (user.length > 0) {
+          res.send(false);
+        } else {
+          let newUser = new this.db.userModel({
+            username: req.body.username,
+            password: req.body.password,
+          });
+          newUser.save().then(() => {
+            this.createSessionCookie(req.body.username, res).then(() => {
+              res.end();
+            });
+          });
+        }
+      });
+  };
 }
 
 //
@@ -326,12 +411,11 @@ class App {
 //
 
 const config = {
-  middleware: [cors(), json(), urlencoded({ extended: true })],
+  middleware: [cors(), json(), urlencoded({ extended: true }), cookieParser()],
   dbConfig: {
     name: "apparel",
     port: 27017,
     modelNames: ["item"],
   },
 };
-
 const apparel = new App(config);
