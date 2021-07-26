@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Apparel | Setup</title>
+    <link rel="stylesheet" href="./css/hero.css" />
+    <link rel="stylesheet" href="./css/custom.css" />
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
+    <script src="./js/login.js"></script>
+  </head>
+  <body>
+    <div class="b-divider"></div>
+
+    <div class="container col-xxl-8 px-4 py-5">
+      <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+        <div class="col-10 col-sm-8 col-lg-6">
+          <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="#">Shirt</a>
+              <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+              >
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#"
+                      >Pant</a
+                    >
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">Outerwear</a>
+                  </li>
+                  <li class="nav-item dropdown">
+                    <a
+                      class="nav-link dropdown-toggle"
+                      href="#"
+                      id="navbarDropdown"
+                      role="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      More
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <li><a class="dropdown-item" href="#">Shoe</a></li>
+                      <li>
+                        <a class="dropdown-item" href="#">Another action</a>
+                      </li>
+                      <li><hr class="dropdown-divider" /></li>
+                      <li>
+                        <a class="dropdown-item" href="#"
+                          >Something else here</a
+                        >
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </nav>
+          <img
+            src="./img/male-upperbody.jpg"
+            class="d-block mx-lg-auto img-fluid"
+            alt="Bootstrap Themes"
+            width="700"
+            height="500"
+            loading="lazy"
+          />
+        </div>
+        <div class="col-lg-6">
+          <h1 class="display-5 fw-bold lh-1 mb-3">Add an Item</h1>
+          <p class="lead">Start uploading your wardrobe by adding an item. Most fields are optional.</p>
+          <div class="input-group mb-3">
+            <span class="input-group-text">Short Description</span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Something memorable"
+            />
+          </div>
+          <div class="input-group mb-3">
+            <span class="input-group-text">Rating</span>
+            <input
+              type="number"
+              id="ratingInput"
+              class="form-control"
+            />
+          </div>
+          <div class="input-group mb-3">
+            <label for="categoryInput" class="input-group-text">Category</label>
+            <select name="categoryInput" id="categoryInput" class="form-select">
+              <option selected>Choose...</option>
+              <option value="shirt">Shirt</option>
+              <option value="tshirt">T-shirt</option>
+              <option value="pants">Pants</option>
+              <option value="shorts">Shorts</option>
+              <option value="underwear">Underwear or Socks</option>
+              <option value="sweater">Sweater or Cardigan</option>
+              <option value="outerwear">Outerwear</option>
+              <option value="dress">Dress</option>
+              <option value="formal">Formal Wear</option>
+              <option value="shoes">Shoes</option>
+              <option value="accessory">Accessory</option>
+            </select>
+          </div>
+          <div class="input-group mb-3">
+            <label for="subCategory" class="input-group-text"
+              >Sub-Category</label
+            >
+            <select class="form-select" id="subCategory" name="subCategory">
+              <option selected>. . .</option>
+              <option value=""></option>
+            </select>
+            <label for="type" class="input-group-text">Sub-Type</label>
+            <select class="form-select" id="type" name="type">
+              <option selected>. . .</option>
+              <option value=""></option>
+            </select>
+          </div>
+          <div class="input-group mb-3">
+            <button type="button" class="btn btn-outline-secondary">
+              Add Style Tag
+            </button>
+            <button
+              type="button"
+              class="
+                btn btn-outline-secondary
+                dropdown-toggle dropdown-toggle-split
+              "
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <span class="visually-hidden">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Action</a></li>
+              <li><a class="dropdown-item" href="#">Another action</a></li>
+              <li><a class="dropdown-item" href="#">Something else here</a></li>
+              <li><hr class="dropdown-divider" /></li>
+              <li><a class="dropdown-item" href="#">Separated link</a></li>
+            </ul>
+            <input
+              type="text"
+              class="form-control"
+              aria-label="Text input with segmented dropdown button"
+            />
+          </div>
+          <div class="input-group mb-3">
+              <label for="fitInput" class="input-group-text">Fit</label>
+              <select name="fitInput" id="fitInput" class="form-select">
+                  <option selected>Choose...</option>
+                  <option value="oversized">Oversized</option>
+                  <option value="loose">Loose</option>
+                  <option value="casual">Casual</option>
+                  <option value="fitted">Fitted</option>
+                  <option value="tight">Tight</option>
+                  <option value="cropped">Cropped</option>
+              </select>
+              <label for="fitInput" class="input-group-text">Length</label>
+              <select name="lengthInput" id="lengthInput" class="form-select">
+                  <option selected>Choose...</option>
+                  <option value="oversized">Oversized</option>
+                  <option value="loose">Loose</option>
+                  <option value="casual">Casual</option>
+                  <option value="fitted">Fitted</option>
+                  <option value="tight">Tight</option>
+                  <option value="cropped">Cropped</option>
+              </select>
+          </div>
+          <div class="input-group mb-3">
+
+            <span class="input-group-text">Number Sizing</span>
+            <input
+              type="number"
+              id="ratingInput"
+              class="form-control"
+            />
+              <select name="sizeInput2" id="sizeInput2" class="form-select">
+                  <option selected>Letter Sizing</option>
+                  <option value="kid">Children's</option>
+                  <option value="xxs">XXS</option>
+                  <option value="xs">XS</option>
+                  <option value="s">S</option>
+                  <option value="m">M</option>
+                  <option value="l">L</option>
+                  <option value="xl">XL</option>
+                  <option value="xxl">XXL</option>
+                  <option value="xxxl">XXXL</option>
+              </select>
+          </div>
+          <div class="input-group mb-3">
+            <span class="input-group">Materials</span>
+            <input type="text" name="mat1" id="mat1" class="form-control">
+            <input type="text" name="mat2" id="mat2" class="form-control">
+            <input type="text" name="mat3" id="mat3" class="form-control">
+        </div>
+          <div class="input-group mb-3">
+            <span class="input-group-text">Brand</span>
+            <input
+                id="brandInput"
+              type="text"
+              class="form-control"
+              placeholder="Prada"
+            />
+          </div>
+          <div class="input-group mb-3">
+            <span class="input-group">Purchase Details</span>
+            <input type="text" name="purchaseLocation" id="purchaseLocation" placeholder="Location" class="form-control">
+            <input type="text" name="purchaseDate" id="purchaseDate" placeholder="Date" class="form-control">
+            <span class="input-group-text">$</span>
+            <input type="number" name="purchaseCost" id="purchaseCost" class="form-control">
+        </div>
+          <div class="input-group mb-3">
+            <span class="input-group-text">Condition</span>
+            <input
+              type="number"
+              id="conditionInput"
+              class="form-control"
+            />
+            <span class="input-group-text">Wash Instructions</span>
+            <input
+              type="text"
+              id="washInput"
+              class="form-control"
+            />
+          </div>
+          <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+            <button type="button" class="btn btn-primary btn-lg px-4 me-md-2">
+              Submit
+            </button>
+            <button type="button" class="btn btn-outline-secondary btn-lg px-4">
+              Clear
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="b-divider"></div>
+  </body>
+</html>
