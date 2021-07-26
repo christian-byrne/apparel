@@ -9,6 +9,8 @@ import { __prod__ } from "./constants";
 import express, { Request, Response } from "express";
 import cors from "cors";
 import multer from "multer";
+import "boostrap";
+import "./scss/app.scss"
 
 type ItemFit = "Oversized" | "Loose" | "Casual" | "Fitted" | "Tight";
 type BroadCategory = "shirt" | "tshirt" | "sweater";

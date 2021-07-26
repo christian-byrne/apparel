@@ -1,3 +1,4 @@
 public_html/img/*
 **/**/__pycache__
 **/**/*.[mp4,mp3,flv,jpeg,jpg,png]
+node_modules
