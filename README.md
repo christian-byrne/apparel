@@ -200,11 +200,11 @@ interface Item {
   - sketch images
     - photoshop fill
 - Login / Register
-  - HTML
-  - Ajax
-  - Routers
-  - User schema
-  - Authentifcation middleware
+  - ✅ HTML
+  - ✅ Ajax
+  - ✅ Routers
+  - ✅ User schema
+  - ✅ Authentifcation middleware
   - session storage
 - Add Outfit & Add Item
   - connect to user
@@ -244,6 +244,7 @@ interface Item {
   - Navbar collapse feature
   - Dark mode
 - Tooltips
+- Search feature
 - Navbar and button hrefs
 
 #### Day 12-14

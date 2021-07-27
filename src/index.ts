@@ -53,34 +53,48 @@ interface Item {
   // A description that it is helpful to the user -- something that they can
   // see to help them remember what the item refers to.
   description: string;
+  rating: number;
   // Broad category.
   category: BroadCategory;
   // Type of the given category.
   subCategory: string;
   // Hihgly specific type of given category.
   type: string;
-  // See styles list.
-  styles: string[];
-  // How the item fits the user.
   fit: ItemFit;
-  // TODO: Add details
   length: string;
-
-  color: ItemColors;
-  material: ItemMaterials;
-  brand: string;
-  rating: number;
   size: MenGeneralSize | WomenGeneralSize | ShoeSize | FormalSize;
-
-  // Optional fields.
+  brand: string;
   purchaseLocation?: string;
   purchaseDate?: Date;
   cost?: number;
-
-  washType?: string;
   condition?: ItemCondition;
+  washType?: string;
+  material: ItemMaterials;
+
+  // See styles list.
+  styles: string[];
+  color: ItemColors;
 }
 
+interface Outfit {
+  description: string;
+  rating: number;
+  category: BroadCategory;
+  subCategory: string;
+  type: string;
+  formality: string[];
+  setting: string[];
+  event: string[];
+  lastWorn: Date;
+  temperautre: number;
+  wearCount: number;
+  weather: string[];
+  notes?: string;
+  items: string[];
+
+  // See styles list.
+  styles: string[];
+}
 const styles = [
   // https://my-brandable.com/en/blog/types-of-fashion-styles-with-pictures-b65.html
   "vintage",
@@ -95,6 +109,8 @@ const styles = [
 interface User {
   username: string;
   password: string;
+  outfits: string[];
+  items: string[];
 }
 
 //
@@ -106,6 +122,8 @@ interface Database {
   itemModel: Model<Item, {}, {}>;
   userSchema: Schema<User, Model<any, any, any>, undefined, any>;
   userModel: Model<User, {}, {}>;
+  outfitSchema: Schema<Outfit, Model<any, any, any>, undefined, any>;
+  outfitModel: Model<Outfit, {}, {}>;
   verboseMsg: (devMsg: any) => any | false;
 }
 
@@ -144,13 +162,34 @@ class Database {
         color: { type: Number, required: false },
       },
     });
+
+    this.outfitSchema = new Schema<Outfit>({
+      description: String,
+      rating: Number,
+      category: String,
+      subCategory: String,
+      type: String,
+      formality: [String],
+      setting: [String],
+      event: [String],
+      lastWorn: { type: Date, required: false },
+      temperautre: { type: Number, required: false },
+      wearCount: { type: Number, required: false },
+      weather: [String],
+      notes: { type: String, required: false },
+      items: [String],
+    });
+
     this.userSchema = new Schema<User>({
       username: String,
       password: String,
+      outfits: [String],
+      items: [String],
     });
 
     this.itemModel = model<Item>("item", this.itemSchema);
-    this.userModel = model<User>("usre", this.userSchema);
+    this.outfitModel = model<Outfit>("outfit", this.outfitSchema);
+    this.userModel = model<User>("user", this.userSchema);
 
     this.verboseMsg = verboseMsg;
   }
@@ -165,6 +204,7 @@ interface ExpressServer {
   staticFolder: string;
   bindMiddleware: (middleware: any[]) => void;
   catch: () => void;
+  bindstatic: () => void;
 }
 
 class ExpressServer {
@@ -172,9 +212,11 @@ class ExpressServer {
     this.server = express();
     this.staticFolder = staticFolder;
   }
-  bindMiddleware = (middlewareArray: any[]) => {
+  bindStatic = () => {
     this.server.use(express.static(this.staticFolder));
     this.server.use(express.json());
+  };
+  bindMiddleware = (middlewareArray: any[]) => {
     for (const handler of middlewareArray) {
       this.server.use(handler);
     }
@@ -182,6 +224,7 @@ class ExpressServer {
   catch = () => {
     this.server.get("/", (req: Request) => {
       if (!__prod__) {
+        console.log(req.path);
         console.dir(req);
       }
     });
@@ -279,7 +322,7 @@ class App {
     // 4. Construct DB Resolvers/Models instance.
     this.db = new Database(this.verbose.alert);
 
-    // 5. Construct HTTP Server
+    // 5. Construct server client
     this.http = new ExpressServer();
 
     // 6. Init and bind middleware to server.
@@ -298,18 +341,63 @@ class App {
         }
       }
     }, 2000);
-    this.middleware.push(this.authenticate);
+    this.http.bindMiddleware([this.authenticate]);
+    this.http.bindStatic();
     this.http.bindMiddleware(this.middleware);
 
     // 7. Bind routers.
     this.http.server.post("/login", this.login);
     this.http.server.post("/register", this.register);
+    this.http.server.post("/post/item/:user", this.createItem);
+    this.http.server.post("/post/outfit/:user", this.createOutfit);
+    this.http.catch();
 
-    // 8. Construct server.
+    // 8. Construct HTTP server.
     this.http.server.listen(this.port, () => {
       console.log(`listening on ${this.port} at ${this.ip}`);
     });
   }
+
+  pushID = async (id, username, type) => {
+    this.db.userModel.findOne({ username: username }).then((user) => {
+      user[type].push(id);
+      user.save().then((success) => {
+        if (!__prod__ && this.verbose.log) {
+          this.verbose.alert(`User: ${username}  --  ${type} Array Updated`);
+          console.dir(success);
+        }
+        return;
+      });
+    });
+  };
+
+  createItem = (req: Request, res: Response) => {
+    let mutation = new this.db.itemModel(req.body);
+    if (!__prod__ && this.verbose.log) {
+      this.verbose.alert("Item Object posted:");
+      console.dir(mutation);
+    }
+    mutation.save().then((savedItem) => {
+      const newId = savedItem._id;
+      this.pushID(newId, req.params.user, "items").then(() => {
+        res.end();
+      });
+    });
+  };
+
+  createOutfit = (req: Request, res: Response) => {
+    let mutation = new this.db.outfitModel(req.body);
+    if (!__prod__ && this.verbose.log) {
+      this.verbose.alert("Outfit Object posted:");
+      console.dir(mutation);
+    }
+    mutation.save().then((savedOutfit) => {
+      const newId = savedOutfit._id;
+      this.pushID(newId, req.params.user, "outfits").then(() => {
+        res.end();
+      });
+    });
+  };
 
   /**
    * Session cookie generator.
@@ -333,7 +421,12 @@ class App {
    * @param next
    */
   authenticate = (req: Request, res: Response, next: NextFunction) => {
-    if (["/", "/register", "/login"].includes(req.url)) {
+    if (
+      req.url.includes("/login") ||
+      req.url.includes("/register") ||
+      req.url == "/" ||
+      true
+    ) {
       next();
     } else {
       if (!__prod__ && this.verbose.log) {

@@ -4,15 +4,15 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Apparel | Setup</title>
-    <link rel="stylesheet" href="./css/hero.css" />
-    <link rel="stylesheet" href="./css/custom.css" />
+    <title>Apparel | Add Outfit</title>
+    <link rel="stylesheet" href="/css/hero.css" />
+    <link rel="stylesheet" href="/css/custom.css" />
     <script
       src="https://code.jquery.com/jquery-3.6.0.min.js"
       integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
       crossorigin="anonymous"
     ></script>
-    <script src="./js/login.js"></script>
+    <script src="/js/index.js" type="module"></script>
   </head>
   <body>
     <div class="b-example-divider"></div>
@@ -29,28 +29,31 @@
             >
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link link-dark px-2">Add Item</a>
+            <a href="/add/item" class="nav-link link-dark px-2">Add Item</a>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link link-dark px-2">Generate Outfit</a>
+            <a href="/add/outfit" class="nav-link link-dark px-2"
+              >Generate Outfit</a
+            >
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link link-dark px-2">Wardrobe</a>
+            <a href="/wardrobe" class="nav-link link-dark px-2">Wardrobe</a>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link link-dark px-2">Outfits</a>
+            <a href="/outfits" class="nav-link link-dark px-2">Outfits</a>
           </li>
         </ul>
         <ul class="nav">
           <li class="nav-item">
-            <a href="#" class="nav-link link-dark px-2">Stats</a>
+            <a href="/stats" class="nav-link link-dark px-2">Stats</a>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link link-dark px-2">Analyze</a>
+            <a href="/analyze" class="nav-link link-dark px-2">Analyze</a>
           </li>
         </ul>
       </div>
     </nav>
+
     <header class="py-3 mb-4 border-bottom">
       <div class="container d-flex flex-wrap justify-content-center">
         <a
@@ -66,7 +69,7 @@
           <svg class="bi me-2" width="40" height="32">
             <use xlink:href="#bootstrap" />
           </svg>
-          <span class="fs-4">Apparel | Add Item</span>
+          <span class="fs-4">Apparel | Log Outfit</span>
         </a>
         <form class="col-12 col-lg-auto mb-3 mb-lg-0">
           <input
@@ -138,7 +141,7 @@
             </div>
           </nav>
           <img
-            src="./img/male-upperbody.jpg"
+            src="/img/male-upperbody.jpg"
             class="d-block mx-lg-auto img-fluid"
             alt="Bootstrap Themes"
             width="700"
@@ -146,24 +149,29 @@
             loading="lazy"
           />
         </div>
+
         <div class="col-lg-6">
-          <h1 class="display-5 fw-bold lh-1 mb-3">Add an Item</h1>
-          <p class="lead">
-            Start uploading your wardrobe by adding an item. Most fields are
-            optional.
-          </p>
+          <h1 class="display-5 fw-bold lh-1 mb-3">
+            Record at minimum the items, a rating, and a description to remember
+            the outfit by.
+          </h1>
+          <p class="lead">Log an outfit.</p>
+
           <div class="input-group mb-3">
-            <span class="input-group-text">Short Description</span>
+            <span class="input-group-text">Name</span>
             <input
+            id="descriptionInput"
               type="text"
               class="form-control"
-              placeholder="Something memorable"
+              placeholder="Something short and memorable"
             />
           </div>
+
           <div class="input-group mb-3">
             <span class="input-group-text">Rating</span>
             <input type="number" id="ratingInput" class="form-control" />
           </div>
+
           <div class="input-group mb-3">
             <label for="categoryInput" class="input-group-text">Category</label>
             <select name="categoryInput" id="categoryInput" class="form-select">
@@ -181,20 +189,23 @@
               <option value="accessory">Accessory</option>
             </select>
           </div>
+
           <div class="input-group mb-3">
-            <label for="subCategory" class="input-group-text"
+            <label for="subCategoryInput" class="input-group-text"
               >Sub-Category</label
             >
-            <select class="form-select" id="subCategory" name="subCategory">
+            <select class="form-select" id="subCategoryInput" name="subCategoryInput">
               <option selected>. . .</option>
               <option value=""></option>
             </select>
-            <label for="type" class="input-group-text">Sub-Type</label>
-            <select class="form-select" id="type" name="type">
+
+            <label for="typeInput" class="input-group-text">Sub-Type</label>
+            <select class="form-select" id="typeInput" name="typeInput">
               <option selected>. . .</option>
               <option value=""></option>
             </select>
           </div>
+
           <div class="input-group mb-3">
             <button type="button" class="btn btn-outline-secondary">
               Add Style Tag
@@ -224,93 +235,144 @@
             />
           </div>
           <div class="input-group mb-3">
-            <label for="fitInput" class="input-group-text">Fit</label>
-            <select name="fitInput" id="fitInput" class="form-select">
-              <option selected>Choose...</option>
-              <option value="oversized">Oversized</option>
-              <option value="loose">Loose</option>
-              <option value="casual">Casual</option>
-              <option value="fitted">Fitted</option>
-              <option value="tight">Tight</option>
-              <option value="cropped">Cropped</option>
-            </select>
-            <label for="fitInput" class="input-group-text">Length</label>
-            <select name="lengthInput" id="lengthInput" class="form-select">
-              <option selected>Choose...</option>
-              <option value="oversized">Oversized</option>
-              <option value="loose">Loose</option>
-              <option value="casual">Casual</option>
-              <option value="fitted">Fitted</option>
-              <option value="tight">Tight</option>
-              <option value="cropped">Cropped</option>
-            </select>
+            <span class="input-group-text">Formality</span>
+            <input type="text" name="formalityInput" id="formalityInput" class="form-control" />
+            <span class="input-group-text">Setting</span>
+            <input type="text" name="settingInput" id="settingInput" class="form-control" />
+            <span class="input-group-text">Event</span>
+            <input type="text" name="eventInput" id="eventInput" class="form-control" />
           </div>
+
           <div class="input-group mb-3">
-            <span class="input-group-text">Number Sizing</span>
-            <input type="number" id="ratingInput" class="form-control" />
-            <select name="sizeInput2" id="sizeInput2" class="form-select">
-              <option selected>Letter Sizing</option>
-              <option value="kid">Children's</option>
-              <option value="xxs">XXS</option>
-              <option value="xs">XS</option>
-              <option value="s">S</option>
-              <option value="m">M</option>
-              <option value="l">L</option>
-              <option value="xl">XL</option>
-              <option value="xxl">XXL</option>
-              <option value="xxxl">XXXL</option>
-            </select>
-          </div>
-          <div class="input-group mb-3">
-            <span class="input-group">Materials</span>
-            <input type="text" name="mat1" id="mat1" class="form-control" />
-            <input type="text" name="mat2" id="mat2" class="form-control" />
-            <input type="text" name="mat3" id="mat3" class="form-control" />
-          </div>
-          <div class="input-group mb-3">
-            <span class="input-group-text">Brand</span>
+            <span class="input-group">Last Worn</span>
             <input
-              id="brandInput"
-              type="text"
-              class="form-control"
-              placeholder="Prada"
-            />
-          </div>
-          <div class="input-group mb-3">
-            <span class="input-group">Purchase Details</span>
-            <input
-              type="text"
-              name="purchaseLocation"
-              id="purchaseLocation"
-              placeholder="Location"
+              type="date"
+              name="lastWornInput"
+              id="lastWornInput"
               class="form-control"
             />
-            <input
-              type="text"
-              name="purchaseDate"
-              id="purchaseDate"
-              placeholder="Date"
-              class="form-control"
-            />
-            <span class="input-group-text">$</span>
             <input
               type="number"
-              name="purchaseCost"
-              id="purchaseCost"
+              name="wearCountInput"
+              id="wearCountInput"
+              placeholder="Wear Count"
               class="form-control"
             />
+            <span class="input-group-text">Times</span>
           </div>
+
           <div class="input-group mb-3">
-            <span class="input-group-text">Condition</span>
-            <input type="number" id="conditionInput" class="form-control" />
-            <span class="input-group-text">Wash Instructions</span>
-            <input type="text" id="washInput" class="form-control" />
+            <span class="input-group-text">Temperature</span>
+            <input
+              id="temperatureInput"
+              type="number"
+              class="form-control"
+              placeholder="56"
+            />
+            <span class="input-group-text">°</span>
           </div>
+
+          <div class="form-check form-check-inline">
+            <input
+              type="checkbox"
+              id="weatherRainInput"
+              value="rain"
+              class="form-check-input"
+            />
+            <label for="weatherRainInput" class="form-check-label">Rain</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              type="checkbox"
+              id="weatherSnowInput"
+              value="snow"
+              class="form-check-input"
+            />
+            <label for="weatherSnowInput" class="form-check-label">Snow</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              type="checkbox"
+              id="weatherSunInput"
+              value="sun"
+              class="form-check-input"
+            />
+            <label for="weatherSunInput" class="form-check-label">Sun</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              type="checkbox"
+              id="weatherWindyInput"
+              value="windy"
+              class="form-check-input"
+            />
+            <label for="weatherWindyInput" class="form-check-label">Windy</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              type="checkbox"
+              id="weatherHumidInput"
+              value="humid"
+              class="form-check-input"
+            />
+            <label for="weatherHumidInput" class="form-check-label">Humid</label>
+          </div>
+
+          <div class="input-group mb-3">
+            <span class="input-group-text">Notes</span>
+            <input type="text" id="notesInput" class="form-control" />
+          </div>
+
+          <ol class="list-group list-group-numbered">
+            <li
+              class="
+                list-group-item
+                d-flex
+                justify-content-between
+                align-items-start
+              "
+            >
+              <div class="ms-2 me-auto">
+                <div class="fw-bold">Upperbody</div>
+                Shirt | Outerwear | Hat | Glasses
+              </div>
+              <span class="badge bg-warning rounded-pill">unset</span>
+            </li>
+            <li
+              class="
+                list-group-item
+                d-flex
+                justify-content-between
+                align-items-start
+              "
+            >
+              <div class="ms-2 me-auto">
+                <div class="fw-bold">Lowerbody</div>
+                Pant | Belt | Shorts | Skirt | Shoes
+              </div>
+              <span class="badge bg-warning rounded-pill">unset</span>
+            </li>
+            <li
+              class="
+                list-group-item
+                d-flex
+                justify-content-between
+                align-items-start
+              "
+            >
+              <div class="ms-2 me-auto">
+                <div class="fw-bold">Accessory</div>
+                Watch | Necklace | Earrings | Scarf
+              </div>
+              <span class="badge bg-warning rounded-pill">unset</span>
+            </li>
+          </ol>
+          
           <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-            <button type="button" class="btn btn-primary btn-lg px-4 me-md-2">
+            <button type="button" id="submitAddOutfit" class="btn btn-primary btn-lg px-4 me-md-2">
               Submit
             </button>
-            <button type="button" class="btn btn-outline-secondary btn-lg px-4">
+            <button type="button" id="clearForm" class="btn btn-outline-secondary btn-lg px-4">
               Clear
             </button>
           </div>
