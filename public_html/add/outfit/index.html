@@ -228,6 +228,7 @@
             <form class="d-flex flex-grow-1">
               <div class="input-group mb-2 mt-2">
                 <button
+                id="filterDropdownButton"
                   class="btn btn-outline-warning dropdown-toggle"
                   type="button"
                   data-bs-toggle="dropdown"
@@ -235,20 +236,30 @@
                 >
                   Filter Type
                 </button>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Action</a></li>
-                  <li><a class="dropdown-item" href="#">Another action</a></li>
-                  <li>
-                    <a class="dropdown-item" href="#">Something else here</a>
-                  </li>
+                <ul id="filterDropdownChoice" class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Rating</a></li>
+                  <li><a class="dropdown-item" href="#">Category</a></li>
+                  <li><a class="dropdown-item" href="#">Color</a></li>
+                  <li><a class="dropdown-item" href="#">Brand</a></li>
                   <li><hr class="dropdown-divider" /></li>
-                  <li><a class="dropdown-item" href="#">Separated link</a></li>
+                  <li><a class="dropdown-item" href="#">Size</a></li>
+                  <li><a class="dropdown-item" href="#">Fit</a></li>
+                  <li><a class="dropdown-item" href="#">Length</a></li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li><a class="dropdown-item" href="#">Material</a></li>
+                  <li><a class="dropdown-item" href="#">Condition</a></li>
+                  <li><a class="dropdown-item" href="#">Wash Type</a></li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li><a class="dropdown-item" href="#">Cost</a></li>
+                  <li><a class="dropdown-item" href="#">Purchase Date</a></li>
+                  <li><a class="dropdown-item" href="#">Purchase Location</a></li>
                 </ul>
                 <input
+                id="filterSearchInput"
                   type="text"
                   class="form-control"
                   aria-label="Text input with dropdown button"
-                  placeholder="Enter filter..."
+                  placeholder="Search by category or apply filter to results..."
                 />
               </div>
             </form>

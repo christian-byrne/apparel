@@ -216,44 +216,96 @@ const getSearchAll = () => {
   });
 };
 
+const activeItems = () => {
+  const ret = [];
+  for (const card of document.querySelectorAll("div.card")) {
+    if (card.data) {
+      ret.push(card.data);
+    }
+  }
+  return ret;
+};
+
+/**
+ * If there are already search results displayed, then only eliminate active results.
+ * If there are no results displayed (first search or recently cleared), peform a new
+ * query.
+ */
+const postSearchTargeted = () => {
+  const currentResults = activeItems();
+  const ajaxOptions = {
+    url: `${BASE_URL}/search/field`,
+    type: "POST",
+    data: {
+      username: curUser(),
+      keyword: g("#filterSearchInput"),
+      field: document.querySelector("#filterDropdownChoice").data,
+    },
+    success: (searchResults) => {
+      displaySearchRes(searchResults);
+    },
+    error: () => {},
+  };
+
+  // Narrowing down currently displayed results.
+  if (currentResults.length > 0) {
+    Object.assign(ajaxOptions, {
+      url: `${BASE_URL}/search/intersection`,
+    });
+    ajaxOptions.data["narrowTarget"] = currentResults;
+  }
+
+  $.ajax(ajaxOptions);
+};
+
+const clearSearchResults = async () => {
+  while (document.querySelectorAll("div.card")) {
+    document.querySelector("div.card").remove();
+  }
+  return;
+};
+
 const displaySearchRes = (json) => {
   const placeholder = "https://via.placeholder.com/800";
   const container = document.querySelector("#searchResultsMain");
-  for (const item of json) {
-    let card = document.createElement("div");
-    card.classList.add("col-sm-6");
-    card.innerHTML = `  <div class="card mb-3" style="max-width: 540px;">
-    <div class="row g-0">
+
+  clearSearchResults().then(() => {
+    for (const item of json) {
+      let card = document.createElement("div");
+      card.classList.add("col-sm-6");
+      card.innerHTML = `  <div class="card mb-3" data="${item._id}" style="max-width: 540px;">
+      <div class="row g-0">
       <div class="col-md-4">
-        <img src="${placeholder}" class="img-fluid rounded-start" alt="Picture of ${item.description}">
-        <div class="container-fluid p-2">
-          <div class="row d-flex justify-content-center">
-            <p class="card-text"><small class="text-muted">Purchased at ${item.purchaseLocation} ${item.purchaseDate} days ago.</small></p>
-          </div>
-        </div>
+      <img src="${placeholder}" class="img-fluid rounded-start" alt="Picture of ${item.description}">
+      <div class="container-fluid p-2">
+      <div class="row d-flex justify-content-center">
+      <p class="card-text"><small class="text-muted">Purchased at ${item.purchaseLocation} ${item.purchaseDate} days ago.</small></p>
+      </div>
+      </div>
       </div>
       <div class="col-md-8">
-        <div class="card-body">
-          <h5 class="card-title">${item.description}</h5>
-          <p class="card-text">
-            ${item.category} | ${item.subCategory} | ${item.type}
-          </p>
-        </div>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item">${item.brand}</li>
-          <li class="list-group-item">${item.fit}</li>
-          <li class="list-group-item">${item.size}</li>
-        </ul>
-        <div class="card-body">
-        <p class="card-text">${item.length}</p>
-          <a data="${item._id}" class="btn btn-primary">Add</a>
-          <a class="card-link">Dismiss</a>
-        </div>
+      <div class="card-body">
+      <h5 class="card-title">${item.description}</h5>
+      <p class="card-text">
+      ${item.category} | ${item.subCategory} | ${item.type}
+      </p>
       </div>
-    </div>
-  </div>`;
-    container.appendChild(card);
-  }
+      <ul class="list-group list-group-flush">
+      <li class="list-group-item">${item.brand}</li>
+      <li class="list-group-item">${item.fit}</li>
+      <li class="list-group-item">${item.size}</li>
+      </ul>
+      <div class="card-body">
+      <p class="card-text">${item.length}</p>
+      <a data="${item._id}" class="btn btn-primary">Add</a>
+      <a class="card-link">Dismiss</a>
+      </div>
+      </div>
+      </div>
+      </div>`;
+      container.appendChild(card);
+    }
+  });
 };
 
 window.onload = () => {
@@ -275,9 +327,23 @@ window.onload = () => {
   if (window.location.pathname.includes("/add/outfit")) {
     document.documentElement.addEventListener("click", (event) => {
       const caller = event.target;
-      if (caller.id === "submitAddOutfit") {
+      if (
+        caller.tagName === "A" &&
+        caller.parentElement.parentElement.id === "filterDropdownChoice"
+      ) {
         event.preventDefault();
-        postOutfit();
+
+        // When a new choice is selected, set data of ul.
+        let choice = caller.innerHTML;
+        let ul = caller.parentElement.parentElement;
+        console.log(ul);
+        ul.setAttribute("data", choice);
+        setTimeout(() => {
+          document.querySelector("#filterDropdownButton").innerHTML = choice;
+          document.querySelector(
+            "#filterSearchInput"
+          ).placeholder = `Enter ${choice.toLowerCase()} to add filter...`;
+        }, 10);
       }
     });
   } else if (window.location.pathname.includes("/add/item")) {
