@@ -199,19 +199,19 @@ interface Item {
 - Static Resources
   - sketch images
     - photoshop fill
-- Login / Register
+- ✅ Login / Register
   - ✅ HTML
   - ✅ Ajax
   - ✅ Routers
   - ✅ User schema
   - ✅ Authentifcation middleware
-  - session storage
-- Add Outfit & Add Item
-  - connect to user
-  - Interfaces and schemas
-  - Routers
-  - HTML forms
-  - Ajax
+  - ✅ session storage
+- ✅ Add Outfit & Add Item
+  - ✅ connect to user
+  - ✅ Interfaces and schemas
+  - ✅ Routers
+  - ✅ HTML forms
+  - ✅ Ajax
 - Info collection
   - definitions of default field parameters
   - definition for tooltips and info modals
