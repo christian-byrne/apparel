@@ -7,14 +7,9 @@ const PORT = 5000;
 const IP = "127.0.0.1";
 const BASE_URL = `http://${IP}:${PORT}`;
 
-const g = (selector) => {
-  return document.querySelector(selector).value;
-};
+// TODO differentiate sizing type
+const styles = [];
 
-/**
- *
- * @param {*} data
- */
 const appendUser = (data) => {
   if (sessionStorage.getItem("username")) {
     data["username"] = sessionStorage.getItem("username");
@@ -26,17 +21,6 @@ const curUser = () => {
   return sessionStorage.getItem("username");
 };
 
-/**
- * Handle register/login error responses from server.
- */
-const handleError = () => {
-  // Temporary:
-  alert("error registering");
-};
-
-/**
- * Go to new page.
- */
 const pushPage = (url = "/home.html") => {
   window.location = url;
 };
@@ -50,230 +34,217 @@ const clearAllInputs = () => {
   }
 };
 
-const styles = [];
-// materials
-// differentiate sizing type
+// ────────────────────────────────────────────────────────────────────────────────
 
-const readForm = (fields) => {
-  const formInputs = {};
-  for (const field of fields) {
-    formInputs[field] = g(`#${field}Input`);
+class AddOutfit {
+  constructor() {
+    let config = {
+      usernameQueryHandler: curUser,
+      URL: BASE_URL,
+    };
+    Object.assign(config, options);
+    this.curUser = config.curUser;
+    this.form = new FormParse();
+    this.fields = [
+      "description",
+      "rating",
+      "category",
+      "subCategory",
+      "type",
+      "lastWorn",
+      "wearCount",
+      "temperature",
+      "notes",
+    ];
+    this.arrayFields = {
+      weather: [
+        "weatherRain",
+        "weatherSnow",
+        "weatherSun",
+        "weatherWindy",
+        "weatherHumid",
+      ],
+    };
+    this.CSVfields = ["formality", "setting", "event"];
   }
-  return formInputs;
-};
 
-const readFormCSV = (fields) => {
-  let serialized = readForm(fields);
-  const ret = {};
-  for (const [field, value] of Object.entries(serialized)) {
-    let split = value.split(",");
-    let formatted = [];
-    split.forEach((input) => {
-      formatted.push(input.trim());
+  serialize = () => {
+    const inputs = {
+      ...this.form.read(this.fields),
+      ...this.form.readArrayFields(this.arrayFields),
+      ...this.form.readCSV(this.CSVfields),
+    };
+    return inputs;
+  };
+
+  postOutfit = () => {
+    const ajaxOptions = {
+      url: `${this.URL}/post/outfit/${this.curUser()}`,
+      type: "POST",
+      data: this.serialize(),
+      success: () => {},
+      error: () => {},
+    };
+    $.ajax(ajaxOptions);
+  };
+}
+
+class AddItem {
+  constructor() {
+    let config = {
+      usernameQueryHandler: curUser,
+      URL: BASE_URL,
+    };
+    Object.assign(config, options);
+    this.curUser = config.curUser;
+    this.fields = [
+      "description",
+      "rating",
+      "category",
+      "subCategory",
+      "type",
+      "fit",
+      "length",
+      "numberSizing",
+      "letterSizing",
+      "brand",
+      "purchaseLocation",
+      "purchaseDate",
+      "cost",
+      "condition",
+      "washType",
+      "mat1",
+      "mat2",
+      "mat3",
+    ];
+
+    this.form = new FormParse();
+    this.serialize = () => {
+      return this.form.read(this.fields);
+    };
+  }
+
+  post = () => {
+    const ajaxOptions = {
+      url: `${this.URL}/post/item/${this.curUser()}`,
+      type: "POST",
+      data: this.serialize(),
+      success: () => {},
+      error: () => {},
+    };
+    $.ajax(ajaxOptions);
+  };
+}
+
+class Search {
+  constructor(options) {
+    let config = {
+      usernameQueryHandler: curUser,
+      resultsSelector: "div.card",
+    };
+    Object.assign(config, options);
+
+    this.curUser = config.curUser;
+    this.result = config.resultsSelector;
+
+    this.keywordNodeQuery = () => {
+      return document
+        .querySelector("#searchAll")
+        .querySelector("input[type=search]").value;
+    };
+  }
+
+  /**
+   *
+   * @returns {Promise<Item[]>}
+   */
+  allItems = async () => {
+    return $.get(`${BASE_URL}/get/items/${this.curUser()}`, (items) => {
+      return items;
     });
-    ret[field] = formatted;
-  }
-  return ret;
-};
-
-const serializeItemForm = () => {
-  const fields = [
-    "description",
-    "rating",
-    "category",
-    "subCategory",
-    "type",
-    "fit",
-    "length",
-    "numberSizing",
-    "letterSizing",
-    "brand",
-    "purchaseLocation",
-    "purchaseDate",
-    "cost",
-    "condition",
-    "washType",
-    "mat1",
-    "mat2",
-    "mat3",
-  ];
-  const formObj = readForm(fields);
-
-  return formObj;
-};
-
-const mapWeatherInputs = () => {
-  const weatherFields = [
-    "weatherRain",
-    "weatherSnow",
-    "weatherSun",
-    "weatherWindy",
-    "weatherHumid",
-  ];
-  const checkedWeathers = [];
-  for (const weather of weatherFields) {
-    let check = g(`#${weather}Input`);
-    if (check) {
-      checkedWeathers.push(check);
-    }
-  }
-  return checkedWeathers;
-};
-
-const serializeOutfitForm = () => {
-  const fields = [
-    "description",
-    "rating",
-    "category",
-    "subCategory",
-    "type",
-    "lastWorn",
-    "wearCount",
-    "temperature",
-    "notes",
-  ];
-  const arrayFields = ["formality", "setting", "event"];
-  const formObj = readForm(fields);
-  formObj["weather"] = mapWeatherInputs();
-  Object.assign(formObj, readFormCSV(arrayFields));
-  return formObj;
-};
-
-const postItem = () => {
-  const ajaxOptions = {
-    url: `${BASE_URL}/post/item/${curUser()}`,
-    type: "POST",
-    data: serializeItemForm(),
-    success: () => {},
-    error: () => {},
   };
-  $.ajax(ajaxOptions);
-};
 
-const postOutfit = () => {
-  const ajaxOptions = {
-    url: `${BASE_URL}/post/outfit/${curUser()}`,
-    type: "POST",
-    data: serializeOutfitForm(),
-    success: () => {},
-    error: () => {},
+  /**
+   *
+   * @returns {Promise<Outfit[]>}
+   */
+  allOutfits = async () => {
+    return $.get(`${BASE_URL}/get/outfits/${this.curUser()}`, (outfits) => {
+      return outfits;
+    });
   };
-  $.ajax(ajaxOptions);
-};
 
-const getItems = async () => {
-  return $.get(`${BASE_URL}/get/items/${curUser()}`, (items) => {
-    return items;
-  });
-};
-
-const getOutfits = async () => {
-  return $.get(`${BASE_URL}/get/outfits/${curUser()}`, (outfits) => {
-    return outfits;
-  });
-};
-
-/**
- * Handle form submits on login/register forms.
- *
- * @param {string} formType - "login" | "register"
- */
-const postUser = (formType) => {
-  const ajaxOptions = {
-    url: `${BASE_URL}/${formType}`,
-    type: "POST",
-    data: {
-      username:
-        formType == "register"
-          ? $("#registerEmail").val()
-          : $("#loginEmail").val(),
-      password:
-        formType == "register"
-          ? $("#registerPassword").val()
-          : $("#loginPassword").val(),
-    },
-    success: (response) => {
-      sessionStorage.setItem("username", $("#registerEmail").val());
-      if (formType === "register") {
-        pushPage("/add/item");
-      } else {
-        pushPage("/home");
+  /**
+   *
+   * @returns {Promise<Item[]>}
+   */
+  keywordAllFields = async () => {
+    return $.get(
+      `${BASE_URL}/search/all/${curUser()}/${this.keywordNodeQuery()}`,
+      (searchResults) => {
+        return searchResults;
       }
-    },
-    error: (reason) => {
-      handleError();
-    },
+    );
   };
-  $.ajax(ajaxOptions);
-};
 
-const getSearchAll = () => {
-  const keyword = document
-    .querySelector("#searchAll")
-    .querySelector("input[type=search]").value;
-  $.get(`${BASE_URL}/search/all/${curUser()}/${keyword}`, (searchResults) => {
-    displaySearchRes(searchResults);
-  });
-};
-
-const activeItems = () => {
-  const ret = [];
-  for (const card of document.querySelectorAll("div.card")) {
-    if (card.data) {
-      ret.push(card.data);
+  currentResults = () => {
+    const ret = [];
+    for (const card of document.querySelectorAll(this.result)) {
+      if (card.data) {
+        ret.push(card.data);
+      }
     }
-  }
-  return ret;
-};
-
-/**
- * If there are already search results displayed, then only eliminate active results.
- * If there are no results displayed (first search or recently cleared), peform a new
- * query.
- */
-const postSearchTargeted = () => {
-  const currentResults = activeItems();
-  const ajaxOptions = {
-    url: `${BASE_URL}/search/field`,
-    type: "POST",
-    data: {
-      username: curUser(),
-      keyword: g("#filterSearchInput"),
-      field: document.querySelector("#filterDropdownChoice").data,
-    },
-    success: (searchResults) => {
-      displaySearchRes(searchResults);
-    },
-    error: () => {},
+    return ret;
   };
 
-  // Narrowing down currently displayed results.
-  if (currentResults.length > 0) {
-    Object.assign(ajaxOptions, {
-      url: `${BASE_URL}/search/intersection`,
-    });
-    ajaxOptions.data["narrowTarget"] = currentResults;
-  }
+  /**
+   * If there are already search results displayed, then only eliminate active results.
+   * If there are no results displayed (first search or recently cleared), peform a new
+   * query.
+   */
+  postSearchTargeted = () => {
+    const currentResults = activeItems();
+    const ajaxOptions = {
+      url: `${BASE_URL}/search/field`,
+      type: "POST",
+      data: {
+        username: curUser(),
+        keyword: g("#filterSearchInput"),
+        field: document.querySelector("#filterDropdownChoice").data,
+      },
+      success: (searchResults) => {
+        displaySearchRes(searchResults);
+      },
+      error: () => {},
+    };
 
-  $.ajax(ajaxOptions);
-};
+    // Narrowing down currently displayed results.
+    if (currentResults.length > 0) {
+      Object.assign(ajaxOptions, {
+        url: `${BASE_URL}/search/intersection`,
+      });
+      ajaxOptions.data["narrowTarget"] = currentResults;
+    }
 
-const clearSearchResults = async () => {
-  while (document.querySelectorAll("div.card")) {
-    document.querySelector("div.card").remove();
-  }
-  return;
-};
+    $.ajax(ajaxOptions);
+  };
 
-const displaySearchRes = (json) => {
-  const placeholder = "https://via.placeholder.com/800";
-  const container = document.querySelector("#searchResultsMain");
+  clearSearchResults = async () => {
+    while (document.querySelectorAll("div.card")) {
+      document.querySelector("div.card").remove();
+    }
+    return;
+  };
 
-  clearSearchResults().then(() => {
-    for (const item of json) {
-      let card = document.createElement("div");
-      card.classList.add("col-sm-6");
-      card.innerHTML = `  <div class="card mb-3" data="${item._id}" style="max-width: 540px;">
+  displaySearchRes = (json) => {
+    const placeholder = "https://via.placeholder.com/800";
+    const container = document.querySelector("#searchResultsMain");
+
+    clearSearchResults().then(() => {
+      for (const item of json) {
+        let card = document.createElement("div");
+        card.classList.add("col-sm-6");
+        card.innerHTML = `  <div class="card mb-3" data="${item._id}" style="max-width: 540px;">
       <div class="row g-0">
       <div class="col-md-4">
       <img src="${placeholder}" class="img-fluid rounded-start" alt="Picture of ${item.description}">
@@ -303,10 +274,156 @@ const displaySearchRes = (json) => {
       </div>
       </div>
       </div>`;
-      container.appendChild(card);
+        container.appendChild(card);
+      }
+    });
+  };
+}
+
+class User {
+  constructor(options) {
+    let config = {
+      URL: "127.0.0.1:5000",
+      registerRedirect: "/add/item",
+      loginRedirect: "/home",
+      loginNodes: {
+        username: "loginEmail",
+        password: "loginPassword",
+      },
+      registerNodes: {
+        username: "registerEmail",
+        password: "registerPassword",
+      },
+    };
+    Object.assign(config, options);
+    this.URL = config.url;
+    this.config = config;
+    this.redirect = pushPage; // TODO
+
+    this.v = (selector) => {
+      return document.querySelector(selector).value;
+    };
+    this.ajaxConfig = {
+      type: "POST",
+      error: (reason) => {
+        console.log(reason);
+      },
+    };
+    this.successHandler = (usernameNodeId, redirectURL) => {
+      sessionStorage.setItem("username", this.v(usernameNodeId));
+      this.redirect(redirectURL);
+    };
+  }
+
+  request = {
+    login: () => {
+      const ajaxOptions = {
+        url: `${this.URL}/login`,
+        data: {
+          username: this.v(this.config.loginNodes.username),
+          password: this.v(this.config.loginNodes.password),
+        },
+        success: () => {
+          this.successHandler(
+            this.config.loginNodes.username,
+            this.config.loginRedirect
+          );
+        },
+      };
+      Object.assign(ajaxOptions, this.ajaxConfig);
+      $.ajax(ajaxOptions);
+    },
+
+    register: () => {
+      const ajaxOptions = {
+        url: `${this.URL}/register`,
+        data: {
+          username: this.v(this.config.registerNodes.username),
+          password: this.v(this.config.registerNodes.password),
+        },
+        success: () => {
+          this.successHandler(
+            this.config.registerNodes.username,
+            this.config.registerRedirect
+          );
+        },
+      };
+      Object.assign(ajaxOptions, this.ajaxConfig);
+      $.ajax(ajaxOptions);
+    },
+  };
+}
+
+class FormParse {
+  constructor() {
+    this.v = (selector) => {
+      return document.querySelector(selector).value;
+    };
+
+    this.format = (inputVal) => {
+      return inputVal.trim().toLowerCase();
+    };
+  }
+
+  /**
+   * Handle register/login error responses from server.
+   */
+  handleError = () => {
+    // Temporary:
+    alert("error registering");
+  };
+
+  /**
+   *
+   * @param {{[property: string] : string[]}} arrayObject Object in which the
+   *  keys are kept the same but the associated array values are used to collect
+   *  the input data for (using the query selector func of instance) and mapped
+   *  into a new array.
+   *
+   */
+  readArrayFields = (arrayObject) => {
+    const ret = {};
+    for (const [field, inputIds] of arrayObject) {
+      ret[field] = this.inputsToArray(inputIds);
     }
-  });
-};
+  };
+
+  inputsToArray = (fields, queryHandler = this.v) => {
+    const ret = [];
+    for (const input of fields) {
+      let value = queryHandler(`#${weather}Input`);
+      if (value) {
+        ret.push(value);
+      }
+    }
+    return ret;
+  };
+
+  read = (fields, queryHandler = this.v) => {
+    const serialized = {};
+    for (const input of fields) {
+      serialized[input] = queryHandler(`#${field}Input`);
+    }
+    return serialized;
+  };
+
+  readCSV = (fields, queryHandler = this.v, formatHandler = this.format) => {
+    const ret = {};
+    const serialized = this.read(fields, queryHandler);
+
+    for (const [field, value] of Object.entries(serialized)) {
+      let split = value.split(",");
+      let formatted = [];
+      split.forEach((input) => {
+        formatted.push(formatHandler(input));
+      });
+      ret[field] = formatted;
+    }
+    return ret;
+  };
+}
+
+// ────────────────────────────────────────────────────────────────────────────────
 
 window.onload = () => {
   // Apply these handlers to every page of app:
