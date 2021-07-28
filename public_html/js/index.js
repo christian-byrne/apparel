@@ -21,6 +21,11 @@ const appendUser = (data) => {
   }
 };
 
+const curUser = () => {
+  // return encodeURIComponent(sessionStorage.getItem("username"));
+  return sessionStorage.getItem("username");
+};
+
 /**
  * Handle register/login error responses from server.
  */
@@ -136,7 +141,7 @@ const serializeOutfitForm = () => {
 
 const postItem = () => {
   const ajaxOptions = {
-    url: `${BASE_URL}/post/item/${sessionStorage.getItem("username")}`,
+    url: `${BASE_URL}/post/item/${curUser()}`,
     type: "POST",
     data: serializeItemForm(),
     success: () => {},
@@ -147,13 +152,25 @@ const postItem = () => {
 
 const postOutfit = () => {
   const ajaxOptions = {
-    url: `${BASE_URL}/post/outfit/${sessionStorage.getItem("username")}`,
+    url: `${BASE_URL}/post/outfit/${curUser()}`,
     type: "POST",
     data: serializeOutfitForm(),
     success: () => {},
     error: () => {},
   };
   $.ajax(ajaxOptions);
+};
+
+const getItems = async () => {
+  return $.get(`${BASE_URL}/get/items/${curUser()}`, (items) => {
+    return items;
+  });
+};
+
+const getOutfits = async () => {
+  return $.get(`${BASE_URL}/get/outfits/${curUser()}`, (outfits) => {
+    return outfits;
+  });
 };
 
 /**
@@ -190,8 +207,64 @@ const postUser = (formType) => {
   $.ajax(ajaxOptions);
 };
 
+const getSearchAll = () => {
+  const keyword = document
+    .querySelector("#searchAll")
+    .querySelector("input[type=search]").value;
+  $.get(`${BASE_URL}/search/all/${curUser()}/${keyword}`, (searchResults) => {
+    displaySearchRes(searchResults);
+  });
+};
+
+const displaySearchRes = (json) => {
+  const placeholder = "https://via.placeholder.com/800";
+  const container = document.querySelector("#searchResultsMain");
+  for (const item of json) {
+    let card = document.createElement("div");
+    card.classList.add("col-sm-6");
+    card.innerHTML = `  <div class="card mb-3" style="max-width: 540px;">
+    <div class="row g-0">
+      <div class="col-md-4">
+        <img src="${placeholder}" class="img-fluid rounded-start" alt="Picture of ${item.description}">
+        <div class="container-fluid p-2">
+          <div class="row d-flex justify-content-center">
+            <p class="card-text"><small class="text-muted">Purchased at ${item.purchaseLocation} ${item.purchaseDate} days ago.</small></p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <h5 class="card-title">${item.description}</h5>
+          <p class="card-text">
+            ${item.category} | ${item.subCategory} | ${item.type}
+          </p>
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">${item.brand}</li>
+          <li class="list-group-item">${item.fit}</li>
+          <li class="list-group-item">${item.size}</li>
+        </ul>
+        <div class="card-body">
+        <p class="card-text">${item.length}</p>
+          <a data="${item._id}" class="btn btn-primary">Add</a>
+          <a class="card-link">Dismiss</a>
+        </div>
+      </div>
+    </div>
+  </div>`;
+    container.appendChild(card);
+  }
+};
+
 window.onload = () => {
   // Apply these handlers to every page of app:
+  document.documentElement.addEventListener("submit", (event) => {
+    const caller = event.target;
+    if (caller.id === "searchAll") {
+      event.preventDefault();
+      getSearchAll();
+    }
+  });
   document.documentElement.addEventListener("click", (event) => {
     const caller = event.target;
     if (caller.id === "clearForm") {
@@ -213,6 +286,16 @@ window.onload = () => {
       if (caller.id === "submitAddItem") {
         event.preventDefault();
         postItem();
+      }
+    });
+  } else if (window.location.pathname.includes("/wardrobe")) {
+    document.documentElement.addEventListener("click", (event) => {
+      const caller = event.target;
+
+      if (caller.tagName === "BUTTON") {
+        getItems().then((res) => {
+          console.log(res);
+        });
       }
     });
   } else {

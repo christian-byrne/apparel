@@ -248,6 +248,8 @@ interface Item {
 - Navbar and button hrefs
 
 #### Day 12-14
+- breadcrumb feature?
+- carousel on view collection pages.
 - Refactoring
 - Debugging
 - Bundling

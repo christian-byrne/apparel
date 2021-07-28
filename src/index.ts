@@ -350,15 +350,78 @@ class App {
     this.http.server.post("/register", this.register);
     this.http.server.post("/post/item/:user", this.createItem);
     this.http.server.post("/post/outfit/:user", this.createOutfit);
+    this.http.server.get("/get/items/:user", this.getItems);
+    this.http.server.get("/get/outfits/:user", this.getOutfits);
+    this.http.server.get("/search/all/:user/:keyword", this.searchItems);
+
     this.http.catch();
 
     // 8. Construct HTTP server.
     this.http.server.listen(this.port, () => {
-      console.log(`listening on ${this.port} at ${this.ip}`);
+      if (!__prod__ || this.verbose.log) {
+        console.log(`listening on ${this.port} at ${this.ip}`);
+      }
     });
   }
 
-  pushID = async (id, username, type) => {
+  /**
+   * Generalized Search.
+   */
+  filterItemsBroad = async (
+    username: string,
+    keyword: string
+  ): Promise<Item[]> => {
+    return this.usersItems(username).then((items: Item[]) => {
+      return items.filter((item: Item) => {
+        const stringProperties = [
+          item.description,
+          item.brand,
+          item.category,
+          item.type,
+          item.subCategory,
+          item.fit,
+          item.length,
+          item.purchaseLocation,
+        ];
+        const arrayProperties = [
+          item.material.materials,
+          item.styles,
+          stringProperties,
+        ];
+        for (const prop of arrayProperties) {
+          if (prop) {
+            for (const val of prop) {
+              if (val && typeof val !== "number" && val.includes(keyword)) {
+                return item;
+              }
+            }
+          }
+        }
+      });
+    });
+  };
+
+  searchItems = (req: Request, res: Response) => {
+    this.filterItemsBroad(req.params.user, req.params.keyword).then(
+      (item: Item[]) => {
+        res.json(item);
+      }
+    );
+  };
+
+  findAllFromId = async (idArray: string[], collection: Model<any, {}, {}>) => {
+    const ret = [];
+    for (const id of idArray) {
+      await collection.findById(id).then((record) => {
+        if (record) {
+          ret.push(record);
+        }
+      });
+    }
+    return ret;
+  };
+
+  pushID = async (id: string, username: string, type: "items" | "outfits") => {
     this.db.userModel.findOne({ username: username }).then((user) => {
       user[type].push(id);
       user.save().then((success) => {
@@ -368,6 +431,44 @@ class App {
         }
         return;
       });
+    });
+  };
+
+  usersOutfits = async (username: string): Promise<Outfit[]> => {
+    return this.db.userModel
+      .findOne({ username: username })
+      .then((user: User) => {
+        const itemIds = user.items;
+        return this.findAllFromId(itemIds, this.db.outfitModel).then(
+          (outfits: Outfit[]) => {
+            return outfits;
+          }
+        );
+      });
+  };
+
+  usersItems = async (username: string): Promise<Item[]> => {
+    return this.db.userModel
+      .findOne({ username: username })
+      .then((user: User) => {
+        const itemIds = user.items;
+        return this.findAllFromId(itemIds, this.db.itemModel).then(
+          (items: Item[]) => {
+            return items;
+          }
+        );
+      });
+  };
+
+  getOutfits = (req: Request, res: Response): void => {
+    this.usersOutfits(req.params.username).then((outfits: Outfit[]) => {
+      res.json(outfits);
+    });
+  };
+
+  getItems = (req: Request, res: Response): void => {
+    this.usersItems(req.params.username).then((items: Item[]) => {
+      res.json(items);
     });
   };
 

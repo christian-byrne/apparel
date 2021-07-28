@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Apparel | Add Outfit</title>
+    <title>Apparel - Add Outfit</title>
     <link rel="stylesheet" href="/css/hero.css" />
     <link rel="stylesheet" href="/css/custom.css" />
     <script
@@ -85,8 +85,212 @@
     <div class="b-example-divider"></div>
     <div class="b-divider"></div>
 
-    <div class="container col-xxl-8 px-4 py-5">
+    <div class="container col-xxl-8 px-2 py-4">
+      <!-- ──────────────────────────────────────────────────────────────────────────────── -->
+
+      <div class="row g-5 py-5">
+        <!-- ──────────────────────────────────────────────────────────────────────────────── -->
+
+        <!--
+          -- SEARCH ROW
+          -->
+
+        <div class="col-sm">
+          <h2 class="display-6 fw-bold lh-1 mb-3">
+            Add Items from your Wardrobe.
+          </h2>
+          <p class="lead">Search by keyword or with filters.</p>
+
+          <form
+            method="POST"
+            id="searchAll"
+            class="col-12 col-lg-auto mb-5 mb-lg-2"
+          >
+            <input
+              type="search"
+              class="form-control"
+              placeholder="Search..."
+              aria-label="Search"
+            />
+          </form>
+        </div>
+
+        <!--
+          -- CURRENT ITEMS ADDED
+          -->
+
+        <div class="col">
+          <nav class="navbar navbar-expand-lg navbar-light bg-light px-0">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="#">Items</a>
+              <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+              >
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item dropdown">
+                    <a
+                      class="nav-link dropdown-toggle"
+                      href="#"
+                      id="navbarDropdown"
+                      role="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      Options
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <li><a class="dropdown-item" href="#">Action</a></li>
+                      <li>
+                        <a class="dropdown-item" href="#">Another action</a>
+                      </li>
+                      <li><hr class="dropdown-divider" /></li>
+                      <li>
+                        <a class="dropdown-item" href="#"
+                          >Something else here</a
+                        >
+                      </li>
+                    </ul>
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      class="nav-link disabled"
+                      href="#"
+                      tabindex="-1"
+                      aria-disabled="true"
+                      >Clear</a
+                    >
+                  </li>
+                </ul>
+                <form class="d-flex">
+                  <input
+                    class="form-control me-2"
+                    type="search"
+                    placeholder="Search"
+                    aria-label="Search"
+                  />
+                  <button class="btn btn-outline-dark" type="submit">
+                    Search
+                  </button>
+                </form>
+              </div>
+            </div>
+          </nav>
+          <div class="list-group">
+            <a
+              href="#"
+              class="list-group-item list-group-item-action active"
+              aria-current="true"
+            >
+              <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">List group item heading</h5>
+                <small>Remove</small>
+              </div>
+              <p class="mb-1">Some placeholder content in a paragraph.</p>
+              <small>And some small print.</small>
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+              <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">List group item heading</h5>
+                <small class="text-muted">Remove</small>
+              </div>
+              <p class="mb-1">Some placeholder content in a paragraph.</p>
+              <small class="text-muted">And some muted small print.</small>
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+              <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">List group item heading</h5>
+                <small class="text-muted">Remove</small>
+              </div>
+              <p class="mb-1">Some placeholder content in a paragraph.</p>
+              <small class="text-muted">And some muted small print.</small>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ──────────────────────────────────────────────────────────────────────────────── -->
+      <div class="row g-3 py-4" id="searchResultsMain">
+        <!--
+          -- FILTER RESULTS
+          -->
+
+        <nav class="navbar navbar-light bg-light px-0">
+          <div class="container-fluid d-flex">
+            <form class="d-flex flex-grow-1">
+              <div class="input-group mb-2 mt-2">
+                <button
+                  class="btn btn-outline-warning dropdown-toggle"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  Filter Type
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Action</a></li>
+                  <li><a class="dropdown-item" href="#">Another action</a></li>
+                  <li>
+                    <a class="dropdown-item" href="#">Something else here</a>
+                  </li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li><a class="dropdown-item" href="#">Separated link</a></li>
+                </ul>
+                <input
+                  type="text"
+                  class="form-control"
+                  aria-label="Text input with dropdown button"
+                  placeholder="Enter filter..."
+                />
+              </div>
+            </form>
+            <!--
+            -- ACTIVE FILTERS
+            -->
+
+            <button
+              class="btn btn-outline-secondary dropdown-toggle"
+              type="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              Active Filters
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Action</a></li>
+              <li><a class="dropdown-item" href="#">Another action</a></li>
+              <li>
+                <a class="dropdown-item" href="#">Something else here</a>
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <li><a class="dropdown-item" href="#">Separated link</a></li>
+            </ul>
+            <button class="btn btn-outline-info" type="button">
+              Clear Results
+            </button>
+          </div>
+        </nav>
+
+        <!--
+          -- SEARCH RESULTS
+          -->
+
+        <!-- { • • • • • } -->
+      </div>
+
+      <!-- ──────────────────────────────────────────────────────────────────────────────── -->
+
       <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+        <!-- ──────────────────────────────────────────────────────────────────────────────── -->
+
         <div class="col-10 col-sm-8 col-lg-6">
           <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid">
@@ -150,17 +354,19 @@
           />
         </div>
 
+        <!-- ──────────────────────────────────────────────────────────────────────────────── -->
         <div class="col-lg-6">
-          <h1 class="display-5 fw-bold lh-1 mb-3">
-            Record at minimum the items, a rating, and a description to remember
-            the outfit by.
-          </h1>
-          <p class="lead">Log an outfit.</p>
+          <h1 class="display-5 fw-bold lh-1 mb-3">Submit Outfit.</h1>
+          <p class="lead">
+            Add at least a rating and name before saving. You can edit later.
+          </p>
+
+          <!-- ──────────────────────────────────────────────────────────────────────────────── -->
 
           <div class="input-group mb-3">
             <span class="input-group-text">Name</span>
             <input
-            id="descriptionInput"
+              id="descriptionInput"
               type="text"
               class="form-control"
               placeholder="Something short and memorable"
@@ -194,7 +400,11 @@
             <label for="subCategoryInput" class="input-group-text"
               >Sub-Category</label
             >
-            <select class="form-select" id="subCategoryInput" name="subCategoryInput">
+            <select
+              class="form-select"
+              id="subCategoryInput"
+              name="subCategoryInput"
+            >
               <option selected>. . .</option>
               <option value=""></option>
             </select>
@@ -236,11 +446,26 @@
           </div>
           <div class="input-group mb-3">
             <span class="input-group-text">Formality</span>
-            <input type="text" name="formalityInput" id="formalityInput" class="form-control" />
+            <input
+              type="text"
+              name="formalityInput"
+              id="formalityInput"
+              class="form-control"
+            />
             <span class="input-group-text">Setting</span>
-            <input type="text" name="settingInput" id="settingInput" class="form-control" />
+            <input
+              type="text"
+              name="settingInput"
+              id="settingInput"
+              class="form-control"
+            />
             <span class="input-group-text">Event</span>
-            <input type="text" name="eventInput" id="eventInput" class="form-control" />
+            <input
+              type="text"
+              name="eventInput"
+              id="eventInput"
+              class="form-control"
+            />
           </div>
 
           <div class="input-group mb-3">
@@ -306,7 +531,9 @@
               value="windy"
               class="form-check-input"
             />
-            <label for="weatherWindyInput" class="form-check-label">Windy</label>
+            <label for="weatherWindyInput" class="form-check-label"
+              >Windy</label
+            >
           </div>
           <div class="form-check form-check-inline">
             <input
@@ -315,7 +542,9 @@
               value="humid"
               class="form-check-input"
             />
-            <label for="weatherHumidInput" class="form-check-label">Humid</label>
+            <label for="weatherHumidInput" class="form-check-label"
+              >Humid</label
+            >
           </div>
 
           <div class="input-group mb-3">
@@ -323,56 +552,19 @@
             <input type="text" id="notesInput" class="form-control" />
           </div>
 
-          <ol class="list-group list-group-numbered">
-            <li
-              class="
-                list-group-item
-                d-flex
-                justify-content-between
-                align-items-start
-              "
-            >
-              <div class="ms-2 me-auto">
-                <div class="fw-bold">Upperbody</div>
-                Shirt | Outerwear | Hat | Glasses
-              </div>
-              <span class="badge bg-warning rounded-pill">unset</span>
-            </li>
-            <li
-              class="
-                list-group-item
-                d-flex
-                justify-content-between
-                align-items-start
-              "
-            >
-              <div class="ms-2 me-auto">
-                <div class="fw-bold">Lowerbody</div>
-                Pant | Belt | Shorts | Skirt | Shoes
-              </div>
-              <span class="badge bg-warning rounded-pill">unset</span>
-            </li>
-            <li
-              class="
-                list-group-item
-                d-flex
-                justify-content-between
-                align-items-start
-              "
-            >
-              <div class="ms-2 me-auto">
-                <div class="fw-bold">Accessory</div>
-                Watch | Necklace | Earrings | Scarf
-              </div>
-              <span class="badge bg-warning rounded-pill">unset</span>
-            </li>
-          </ol>
-          
           <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-            <button type="button" id="submitAddOutfit" class="btn btn-primary btn-lg px-4 me-md-2">
+            <button
+              type="button"
+              id="submitAddOutfit"
+              class="btn btn-primary btn-lg px-4 me-md-2"
+            >
               Submit
             </button>
-            <button type="button" id="clearForm" class="btn btn-outline-secondary btn-lg px-4">
+            <button
+              type="button"
+              id="clearForm"
+              class="btn btn-outline-secondary btn-lg px-4"
+            >
               Clear
             </button>
           </div>
@@ -381,5 +573,10 @@
     </div>
 
     <div class="b-divider"></div>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>
