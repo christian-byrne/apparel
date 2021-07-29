@@ -1,4 +1,3 @@
-
 # Final Project | CSC337
 
 - [Overview](#overview)
@@ -6,7 +5,7 @@
 - [Backend](#backend)
 - [Timeline](#timeline)
 
-***Author***: Christian P. Byrne
+**_Author_**: Christian P. Byrne
 
 <a name="overview"/>
 
@@ -14,34 +13,31 @@
 
 This webapp will server as a wardrobe manager app. It will work similarly to how a kitchen manager app would work -- by saving recipes (outfits) and suggesting recipes based on avaialble foods (clothes) and defined rulesets/dictionaries (publicly available cookbooks).
 
-Theoretically, the user will, over time, enter information about the items in their closet and about outfits that they wear. The extent of detail entered will depend on the user, but they will have the option to fill out a significant number of fields per item/outfit. The most important fields will be those inputs that are crucial to the app's suggestion algorithms. 
+Theoretically, the user will, over time, enter information about the items in their closet and about outfits that they wear. The extent of detail entered will depend on the user, but they will have the option to fill out a significant number of fields per item/outfit. The most important fields will be those inputs that are crucial to the app's suggestion algorithms.
 
-The suggestion algorithms will be used to generate new outfits for the sake of convenience -- in a way acting as a stylist. The algorithm will most likely work by (1) using a color matching algorithm, (2) using some ruleset derived from fashion rules I find online, or (3) use patterns found in outfits that the user already has entered and given high ratings to. Or, some combination of these. 
+The suggestion algorithms will be used to generate new outfits for the sake of convenience -- in a way acting as a stylist. The algorithm will most likely work by (1) using a color matching algorithm, (2) using some ruleset derived from fashion rules I find online, or (3) use patterns found in outfits that the user already has entered and given high ratings to. Or, some combination of these.
 
-But perhaps most helpful, the app will simply serve as a log of outfits. In theory it will be beneifical to have a list of outfits (characterized by each constituent item) and a rating system attached to those oufits -- as well as other sorting parameters like temperature, formality, and so on. If someone spends a portion of their day trying to find the correct clothing items -- constantly forgetting the full extent of their wardrobe and the previous combinations -- this app can help them. 
+But perhaps most helpful, the app will simply serve as a log of outfits. In theory it will be beneifical to have a list of outfits (characterized by each constituent item) and a rating system attached to those oufits -- as well as other sorting parameters like temperature, formality, and so on. If someone spends a portion of their day trying to find the correct clothing items -- constantly forgetting the full extent of their wardrobe and the previous combinations -- this app can help them.
 
 <a name="frontend"/>
 
 ## Frontend
 
-
 #### Login / Register Page
 
- 
 ![login page](./concept/login.png)
 
 #### Add Items Page
 
-The required fields will be indicated somehow. 
+The required fields will be indicated somehow.
 
 For the item's colors field (the colors of the item the user is adding), I will try to use a library that can parse colors from a picture; but if that turns out to be unrealistic, I will just put a color selector input.
-
 
 ![add-item page](./concept/add-item.png)
 
 #### Log Outfit Page
 
-It would be ideal to add a lot of functionality to these forms. 
+It would be ideal to add a lot of functionality to these forms.
 
 I will try to make sections that are collapsible so there is not so much information displayed at once.
 
@@ -50,7 +46,6 @@ The mannequin image should change colors based on the current selection. I have 
 The list on the bottom left will update as new items are added, and there shuold be as much freedom as possible in terms of how many items a user can add per outfit.
 
 ![log outfit page](./concept/log-outfit.png)
-
 
 #### Generate Outfit Page
 
@@ -67,53 +62,54 @@ Browse user's outfits.
 
 #### Wardrobe Analytics Page ?
 
-If time permits and it's realistic to implement, some analytics based on the data the user passes. For example, where the user spends most money in terms of clothing type. 
-
+If time permits and it's realistic to implement, some analytics based on the data the user passes. For example, where the user spends most money in terms of clothing type.
 
 <a name="backend"/>
 
 ## Backend
 
 #### Authentification
-Authentifcation middleware handler that was taught in the lecture will be passed to `Express.all()` probably, authenticating all routes except `/login`, `/register`, (and `/`?). 
 
-Then store username with `sessionStorage` and create a global function to add a username/password attribute to Ajax POSTs -- also allowing the user document to be updated when a new item is posted. 
+Authentifcation middleware handler that was taught in the lecture will be passed to `Express.all()` probably, authenticating all routes except `/login`, `/register`, (and `/`?).
+
+Then store username with `sessionStorage` and create a global function to add a username/password attribute to Ajax POSTs -- also allowing the user document to be updated when a new item is posted.
 
 Use the `setInterval` sessionkeys method outlined in the lecture for security.
 
 #### Image Upload
 
-I will use `Multer` from PA10 for image uploads. Maybe I should learn how to set permissions on images, because I have just been storing them in the public directory so far. 
+I will use `Multer` from PA10 for image uploads. Maybe I should learn how to set permissions on images, because I have just been storing them in the public directory so far.
 
 #### Schemas
- - User
- - Item
- - Outfit
 
-Create relationships between **Outfit**, **Item**, and **User** documents using auto-generated `_id` value as key field. 
+- User
+- Item
+- Outfit
+
+Create relationships between **Outfit**, **Item**, and **User** documents using auto-generated `_id` value as key field.
 
 **Outfit** document will have an items field that is an object that has the shape `[itemCategory: string]: _id`.
 
 **User** document will have `items` attribute of the shape`_id[]`.
 
-
-
 #### Routers
- - POST Login
- - POST Register
- - POST Item
- - POST Outfit
- - GET Wardrobe
- - GET Outfits
- - GET suggestion
- - GET Analytics (*maybe*)
+
+- POST Login
+- POST Register
+- POST Item
+- POST Outfit
+- GET Wardrobe
+- GET Outfits
+- GET suggestion
+- GET Analytics (_maybe_)
 
 #### Dependencies
- - Cookie-parser
- - Multer
- - Node sass
- - Sass loader
- - Cors
+
+- Cookie-parser
+- Multer
+- Node sass
+- Sass loader
+- Cors
 
 #### Document Shapes
 
@@ -193,6 +189,7 @@ interface Item {
 ## Timeline
 
 #### Day 1-3
+
 - App theme
   - Global CSS variables
   - Global page layout
@@ -227,6 +224,7 @@ interface Item {
   - sub-category and sub-type dynamic `<select>` options loading
 
 #### Day 4-7
+
 - Refactor routers
 - Browse style dict on styles tab
 - Handle errors from server on client side by displaying to user
@@ -242,8 +240,10 @@ interface Item {
   - form fields update based on previous selection
 - Specify form required inputs
 - Interactive features on generate page
+- side bar with user content on view outfits page: https://getbootstrap.com/docs/5.0/examples/sidebars/
 
 #### Day 8-11
+
 - Browse pages
   - DOM constructor functions
   - Browse wardrobe
@@ -255,11 +255,15 @@ interface Item {
   - Navbar collapse feature
   - Dark mode
 - Tooltips
+  - Using popover system
+- push notifications with toasts
+- badges
 - Search feature
 - Navbar and button hrefs
-- ? make mannequin clickable 
+- ? make mannequin clickable
 
 #### Day 12-14
+
 - breadcrumb feature?
 - add "required" attribute to correct fields of forms (do last because so annoying in development)
 - carousel on view collection pages.
@@ -273,9 +277,10 @@ interface Item {
 - Testing mobile
 - Final Demo Video -> Upload
 
-------------------
+---
 
 #### Brainstorm Features
-  - Similar: [Dress me app](https://www.dress-meapp.com/)
+
+- Similar: [Dress me app](https://www.dress-meapp.com/)
 - Use [Mannequin.js](https://boytchev.github.io/mannequin.js/) to model mockups
 - Color selection from picture such as feature on [coolors.co](https://coolors.co/)

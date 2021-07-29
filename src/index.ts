@@ -542,13 +542,13 @@ class App {
   };
 
   getOutfits = (req: Request, res: Response): void => {
-    this.usersOutfits(req.params.username).then((outfits: Outfit[]) => {
+    this.usersOutfits(req.params.user).then((outfits: Outfit[]) => {
       res.json(outfits);
     });
   };
 
   getItems = (req: Request, res: Response): void => {
-    this.usersItems(req.params.username).then((items: Item[]) => {
+    this.usersItems(req.params.user).then((items: Item[]) => {
       res.json(items);
     });
   };

@@ -470,6 +470,161 @@ class FormParse {
   };
 }
 
+class Templates {
+  constructor() {
+    this.tabCategories = [
+      "tshirt",
+      "pants",
+      "shorts",
+      "innerwear",
+      "sweater",
+      "outerwear",
+      "formal",
+      "shoes",
+      "accessories",
+      "shirt",
+    ];
+    this.placeholder = "https://via.placeholder.com/800";
+    this.fallbackNode = document.querySelector("#otherSearchResults");
+  }
+
+  tabContainers = () => {
+    const ret = {};
+    for (const tabName of this.tabCategories) {
+      ret[tabName] = document.querySelector(`#${tabName}SearchResults`);
+    }
+    return ret;
+  };
+
+  permutate = (word) => {
+    const alpha = Array.from("abcdefghijklmnopqrstuvwxyz");
+    const ret = [];
+    for (let i = word.length; i > 0; i--) {
+      let before = word.slice(0, i - 1);
+      let after = word.slice(i);
+      for (const letter of alpha) {
+        ret.push(before + letter + after);
+      }
+    }
+    return ret;
+  };
+
+  permutateMatch = (word, ref) => {
+    const wordP = permutate(word);
+    const refP = permutate(ref);
+    for (const candidate of refP) {
+      if (wordP.includes(candidate)) {
+        return candidate;
+      }
+    }
+    return false;
+  };
+
+  getClosestMatch = (tArray, keyword) => {
+    let target = keyword.toLowerCase();
+    if (tArray.includes(target)) {
+      return keyword;
+    }
+    try {
+      while (target.length > 0) {
+        for (const candidate of tArray) {
+          let result =
+            permutateMatch(target, candidate) ||
+            permutateMatch(target.slice(1), candidate);
+          if (result) {
+            return result;
+          }
+        }
+        target = target.slice(0, target.length - 1);
+      }
+    } catch (error) {
+      return "other";
+    }
+    return "other";
+  };
+
+  categoryTabs = (items) => {
+    let containers = this.tabContainers();
+    for (const item of items) {
+      console.log("Item category", item.category);
+      let belongsToId = this.getClosestMatch(this.tabCategories, item.category);
+      let belongsToNode = containers[belongsToId] || this.fallbackNode;
+      console.log("belongstoId -----", belongsToId);
+      console.log("belongsToNode ----", belongsToNode);
+      this.itemCards([item], belongsToNode).then(() => {});
+    }
+    this.activateMostPopulated(Object.values(containers));
+    // active.parentElement.parentElement.classList.add("show", "active");
+  };
+
+  activateMostPopulated = (containers) => {
+    const lengths = containers.map((node) => node.children.length);
+    const retI = lengths.indexOf(Math.max(...lengths));
+    const pageNode = containers[retI].parentElement.parentElement;
+    const navTab = document.querySelector(
+      `#${pageNode.id.replace("Page", "Tab")}`
+    );
+    setTimeout(() => {
+      navTab.click();
+    }, 10);
+  };
+
+  itemCards = async (items, container) => {
+    for (const item of items) {
+      let card = document.createElement("div");
+      card.classList.add("col-sm-6");
+      card.classList.add("searchResultCard");
+      card.innerHTML = `  <div class="card mb-3" data="${
+        item._id
+      }" style="max-width: 540px;">
+          <div class="row g-0">
+          <div class="col-md-4">
+          <img src="${
+            this.placeholder
+          }" class="img-fluid rounded-start" alt="Picture of ${
+        item.description
+      }">
+          <div class="container-fluid p-2">
+          <div class="row d-flex justify-content-center">
+          <p class="card-text"><small class="text-muted">Purchased at ${
+            item.purchaseLocation
+          } ${
+        item.purchaseDate ? item.purchaseDate.toString() + " days ago" : ""
+      }</small></p>
+          </div>
+          </div>
+          </div>
+          <div class="col-md-8">
+          <div class="card-body">
+          <h5 class="card-title">${item.description}</h5>
+          <p class="card-text">
+          ${item.category} | ${item.subCategory} | ${item.type}
+          </p>
+          </div>
+          <ul class="list-group list-group-flush">
+          <li class="list-group-item">${item.brand}</li>
+          <li class="list-group-item">${item.fit}</li>
+          <li class="list-group-item">${
+            item.size.letter ? "Size " + item.size.letter + " | " : ""
+          }  ${
+        item.size.number.length > 1
+          ? item.size.number[0].toString() + "x" + item.size.number[1]
+          : ""
+      }</li>
+          </ul>
+          <div class="card-body">
+          <p class="card-text">${item.length}</p>
+          <a data="${item._id}" class="btn btn-primary">Add</a>
+          <a class="card-link">Dismiss</a>
+          </div>
+          </div>
+          </div>
+          </div>`;
+      container.appendChild(card);
+    }
+  };
+}
+
 //
 // ─── PAGES ──────────────────────────────────────────────────────────────────────
 //
@@ -601,14 +756,21 @@ class PageAddItem {
 class PageWardrobe {
   constructor() {
     this.search = new Search();
-    document.documentElement.addEventListener("click", (event) => {
-      const caller = event.target;
-      if (caller.tagName === "BUTTON") {
-        this.search.allItems().then((res) => {
-          console.log(res);
-        });
-      }
-    });
+    this.templates = new Templates();
+
+    this.displaySearchRes = (json) => {
+      const container = document.querySelector("#searchResultsMain");
+
+      this.search.clearResults().then(() => {
+        this.templates.categoryTabs(json, container);
+      });
+    };
+
+    setTimeout(() => {
+      this.search.allItems().then((items) => {
+        this.displaySearchRes(items);
+      });
+    }, 20);
   }
 }
 
