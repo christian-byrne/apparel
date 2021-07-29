@@ -173,12 +173,12 @@ class Search {
   constructor(responseHandler, options) {
     let config = {
       usernameQueryHandler: curUser,
-      resultsSelector: "div.card",
-      URL: BASE_URL
+      resultsSelector: "div.searchResultCard",
+      URL: BASE_URL,
     };
     Object.assign(config, options);
 
-    this.URL = config.URL
+    this.URL = config.URL;
     this.curUser = config.usernameQueryHandler;
     this.result = config.resultsSelector;
 
@@ -188,7 +188,7 @@ class Search {
         .querySelector("input[type=search]").value;
     };
 
-    this.responseHadler = responseHandler;
+    this.responseHandler = responseHandler;
   }
 
   /**
@@ -209,6 +209,34 @@ class Search {
     return $.get(`${this.URL}/get/outfits/${this.curUser()}`, (outfits) => {
       return outfits;
     });
+  };
+
+  validateFieldSelected = async () => {
+    if (!document.querySelector("#filterDropdownChoice").getAttribute("data")) {
+      this.popoverAlert();
+      return false;
+    } else {
+      return true;
+    }
+  };
+
+  popoverAlert = () => {
+    const location = document.querySelector("#filterDropdownButton");
+    let popover = new bootstrap.Popover(location, {
+      title: "Select a Filter Type First",
+      content:
+        "Or search all fields using the other search bar at the top of the page.",
+      placement: "top",
+      trigger: "focus",
+    });
+    const killPopover = () => {
+      popover.dispose();
+      location.removeEventListener("mouseover", killPopover);
+    };
+    location.addEventListener("mouseover", killPopover);
+    setTimeout(() => {
+      popover.show();
+    }, 10);
   };
 
   /**
@@ -235,36 +263,46 @@ class Search {
   };
 
   /**
-   * If there are already search results displayed, then only 
-   * eliminate active results.If there are no results 
-   * displayed (first search or recently cleared), 
+   * If there are already search results displayed, then only
+   * eliminate active results.If there are no results
+   * displayed (first search or recently cleared),
    * peform a new query.
    */
-  keywordOneField = () => {
-    const active = this.currentResults();
-    const ajaxOptions = {
-      url: `${this.URL}/search/field`,
-      type: "POST",
-      data: {
-        username: this.curUser(),
-        keyword: document.querySelector("#filterSearchInput").value,
-        field: document.querySelector("#filterDropdownChoice").data,
-      },
-      success: (searchResults) => {
-        this.responseHadler(searchResults);
-      },
-      error: () => {},
-    };
+  keywordOneField = async () => {
+    return this.validateFieldSelected().then((validated) => {
+      if (!validated) {
+        return;
+      } else {
+        const active = this.currentResults();
+        const ajaxOptions = {
+          url: `${this.URL}/search/field`,
+          type: "POST",
+          data: {
+            username: this.curUser(),
+            keyword: document.querySelector("#filterSearchInput").value,
+            field: document
+              .querySelector("#filterDropdownChoice")
+              .getAttribute("data"),
+          },
+          success: (searchResults) => {
+            return searchResults;
+          },
+          error: (reason) => {
+            console.log(reason);
+          },
+        };
 
-    // Narrowing down currently displayed results.
-    if (active.length > 0) {
-      Object.assign(ajaxOptions, {
-        url: `${this.URL}/search/intersection`,
-      });
-      ajaxOptions.data["narrowTarget"] = currentResults;
-    }
+        // Narrowing down currently displayed results.
+        if (active.length > 0) {
+          Object.assign(ajaxOptions, {
+            url: `${this.URL}/search/intersection`,
+          });
+          ajaxOptions.data["narrowTarget"] = currentResults;
+        }
 
-    $.ajax(ajaxOptions);
+        return $.ajax(ajaxOptions);
+      }
+    });
   };
 
   clearResults = async () => {
@@ -449,6 +487,8 @@ class PageAddOutfit {
       ) {
         event.preventDefault();
         this.handleFilterTypeChange(caller);
+      } else if (caller.id === "clearResultsInput") {
+        this.search.clearResults();
       }
     });
 
@@ -457,12 +497,17 @@ class PageAddOutfit {
       if (caller.id === "searchAll") {
         event.preventDefault();
         this.search.keywordAllFields().then((items) => {
-          this.displaySearchRes(items);
+          if (items) {
+            this.displaySearchRes(items);
+          }
         });
-      }
-      else if ( caller.id === "filterSearchForm") {
+      } else if (caller.id === "filterSearchForm") {
         event.preventDefault();
-        this.search.keywordOneField();
+        this.search.keywordOneField().then((items) => {
+          if (items) {
+            this.displaySearchRes(items);
+          }
+        });
       }
     });
   }
@@ -474,6 +519,7 @@ class PageAddOutfit {
       for (const item of json) {
         let card = document.createElement("div");
         card.classList.add("col-sm-6");
+        card.classList.add("searchResultCard");
         card.innerHTML = `  <div class="card mb-3" data="${
           item._id
         }" style="max-width: 540px;">
@@ -527,6 +573,7 @@ class PageAddOutfit {
     // When a new choice is selected, set data of ul.
     let choice = caller.innerHTML;
     let ul = caller.parentElement.parentElement;
+
     ul.setAttribute("data", choice);
     setTimeout(() => {
       document.querySelector("#filterDropdownButton").innerHTML = choice;

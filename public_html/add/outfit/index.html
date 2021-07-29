@@ -227,8 +227,8 @@
             <form id="filterSearchForm" class="d-flex flex-grow-1">
               <div class="input-group mb-2 mt-2">
                 <button
-                id="filterDropdownButton"
-                  class="btn btn-outline-warning dropdown-toggle"
+                  id="filterDropdownButton"
+                  class="btn btn-outline-warning dropdown-toggle mx-1"
                   type="button"
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
@@ -251,23 +251,32 @@
                   <li><hr class="dropdown-divider" /></li>
                   <li><a class="dropdown-item" href="#">Cost</a></li>
                   <li><a class="dropdown-item" href="#">Purchase Date</a></li>
-                  <li><a class="dropdown-item" href="#">Purchase Location</a></li>
+                  <li>
+                    <a class="dropdown-item" href="#">Purchase Location</a>
+                  </li>
                 </ul>
                 <input
-                id="filterSearchInput"
+                  id="filterSearchInput"
                   type="text"
-                  class="form-control"
+                  class="form-control mx-1"
                   aria-label="Text input with dropdown button"
                   placeholder="Search by category or apply filter to results..."
                 />
               </div>
             </form>
+            <input
+              type="color"
+              name="color1Input"
+              id="color1Input"
+              class="form-control form-control-color"
+              value="#880D1E"
+            />
             <!--
             -- ACTIVE FILTERS
             -->
 
             <button
-              class="btn btn-outline-secondary dropdown-toggle"
+              class="btn btn-outline-secondary dropdown-toggle mx-1"
               type="button"
               data-bs-toggle="dropdown"
               aria-expanded="false"
@@ -283,7 +292,11 @@
               <li><hr class="dropdown-divider" /></li>
               <li><a class="dropdown-item" href="#">Separated link</a></li>
             </ul>
-            <button class="btn btn-outline-info" type="button">
+            <button
+              id="clearResultsInput"
+              class="btn btn-outline-info mx-1"
+              type="button"
+            >
               Clear Results
             </button>
           </div>

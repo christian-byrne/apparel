@@ -54,8 +54,8 @@ interface Item {
   fit: ItemFit;
   length: string;
   size: {
-    letter: MenGeneralSize | WomenGeneralSize | ShoeSize,
-    number:  FormalSize
+    letter: MenGeneralSize | WomenGeneralSize | ShoeSize;
+    number: FormalSize;
   };
   brand?: string;
   purchaseLocation?: string;
@@ -143,14 +143,14 @@ class Database {
       brand: String,
       rating: Number,
       size: {
-        letter : String,
-        number: [Number, Number]
+        letter: String,
+        number: [Number, Number],
       },
       purchaseLocation: { type: String, required: false },
       purchaseDate: { type: Date, required: false },
       cost: { type: Number, required: false },
       washType: { type: String, required: false },
-      condition: { type: Number, required: false}
+      condition: { type: Number, required: false },
     });
 
     this.outfitSchema = new Schema<Outfit>({
@@ -264,6 +264,12 @@ interface App {
   };
 }
 
+interface FilterQuery1D {
+  username: string;
+  keyword: string;
+  field: string;
+}
+
 class App {
   constructor(options: AppOptions) {
     // 1. Update config (default values unless specified).
@@ -343,6 +349,7 @@ class App {
     this.http.server.get("/get/items/:user", this.getItems);
     this.http.server.get("/get/outfits/:user", this.getOutfits);
     this.http.server.get("/search/all/:user/:keyword", this.searchItems);
+    this.http.server.post("/search/field", this.filterItems);
 
     this.http.catch();
 
@@ -353,6 +360,90 @@ class App {
       }
     });
   }
+
+  toCamelCase = (fieldName) => {
+    if (fieldName.trim().split(" ").length > 1) {
+      return (
+        fieldName.trim().charAt(0).toLowerCase() +
+        fieldName.slice(1).replace(/ /g, "")
+      );
+    }
+    return fieldName.trim().toLowerCase();
+  };
+
+  filterNumberField = async (items, field, keyword) => {
+    return items.filter((item: Item) => {
+      if (item[field]) {
+        if (item[field] == parseInt(keyword)) {
+          return item;
+        }
+      }
+    });
+  };
+
+  filterStringField = async (items, field, keyword) => {
+    return items.filter((item: Item) => {
+      if (item[field].toLowerCase().includes(keyword.toLowerCase())) {
+        return item;
+      }
+    });
+  };
+
+  filterObjField = async (items, field, keyword) => {
+    return items.filter((item: Item) => {
+      for (const arrayVal of Object.values(item[field])) {
+        if (typeof arrayVal === "string") {
+          if (arrayVal.toLowerCase().includes(keyword.toLowerCase())) {
+            return item;
+          }
+        } else if (Array.isArray(arrayVal)) {
+          let match = arrayVal.filter((element) => {
+            if (
+              (typeof element === "string" &&
+                element.toLowerCase().includes(keyword.toLowerCase())) ||
+              (typeof element === "number" && element === parseInt(keyword))
+            ) {
+              return element;
+            }
+          });
+          if (match.length > 0) {
+            return item;
+          }
+        }
+      }
+    });
+  };
+
+  filter1DField = async (query: FilterQuery1D): Promise<Item[]> => {
+    return this.usersItems(query.username).then((items: Item[]) => {
+      const fieldFormatted = this.toCamelCase(query.field);
+      if (items[0]) {
+        const fieldProto = typeof items[0][fieldFormatted];
+        // Curry?
+        let resolverF;
+        if (fieldProto === "number") {
+          resolverF = this.filterNumberField;
+        } else if (fieldProto === "string") {
+          resolverF = this.filterStringField;
+        } else if (fieldProto === "object") {
+          resolverF = this.filterObjField;
+        }
+        return resolverF(items, fieldFormatted, query.keyword).then(
+          (filtered) => {
+            return filtered;
+          }
+        );
+      }
+    });
+  };
+
+  filterItems = (req: Request, res: Response) => {
+    this.filter1DField(req.body)
+      .then((items: Item[]) => {
+        res.json(items);
+      })
+      .catch((reason) => console.log(reason));
+  };
 
   /**
    * Generalized Search.
