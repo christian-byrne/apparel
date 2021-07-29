@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Apparel | Setup</title>
+    <title>Apparel - Add Item</title>
     <link rel="stylesheet" href="/css/hero.css" />
     <link rel="stylesheet" href="/css/custom.css" />
     <script
@@ -81,10 +81,11 @@
       </div>
     </header>
 
-    <div class="b-example-divider"></div>
     <div class="b-divider"></div>
 
-    <div class="container col-xxl-8 px-4 py-5">
+    <!-- ──────────────────────────────────────────────────────────────────────────────── -->
+
+    <div class="container col-xxl-8 px-1 py-2">
       <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
         <div class="col-10 col-sm-8 col-lg-6">
           <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -140,7 +141,7 @@
             </div>
           </nav>
           <img
-            src="./img/male-upperbody.jpg"
+            src="/img/male-upperbody.jpg"
             class="d-block mx-lg-auto img-fluid"
             alt="Bootstrap Themes"
             width="700"
@@ -148,6 +149,10 @@
             loading="lazy"
           />
         </div>
+
+        <!--
+        -- ─── FORM ───────────────────────────────────────────────────────────────────────
+        -->
 
         <div class="col-lg-6">
           <h1 class="display-5 fw-bold lh-1 mb-3">Add an Item</h1>
@@ -171,182 +176,546 @@
             <input type="number" id="ratingInput" class="form-control" />
           </div>
 
-          <div class="input-group mb-3">
-            <label for="categoryInput" class="input-group-text">Category</label>
-            <select name="categoryInput" id="categoryInput" class="form-select">
-              <option selected>Choose...</option>
-              <option value="shirt">Shirt</option>
-              <option value="tshirt">T-shirt</option>
-              <option value="pants">Pants</option>
-              <option value="shorts">Shorts</option>
-              <option value="underwear">Underwear or Socks</option>
-              <option value="sweater">Sweater or Cardigan</option>
-              <option value="outerwear">Outerwear</option>
-              <option value="dress">Dress</option>
-              <option value="formal">Formal Wear</option>
-              <option value="shoes">Shoes</option>
-              <option value="accessory">Accessory</option>
-            </select>
-          </div>
+          <!--
+            -- NAV TABS
+            -->
 
-          <div class="input-group mb-3">
-            <label for="subCategoryInput" class="input-group-text"
-              >Sub-Category</label
+          <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link active"
+                id="categoriesTab"
+                data-bs-toggle="tab"
+                data-bs-target="#categoriesPage"
+                type="button"
+                role="tab"
+                aria-controls="home"
+                aria-selected="true"
+              >
+                Type
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                id="colorsTab"
+                data-bs-toggle="tab"
+                data-bs-target="#colorsPage"
+                type="button"
+                role="tab"
+                aria-controls="profile"
+                aria-selected="false"
+              >
+                Colors
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                id="styleTab"
+                data-bs-toggle="tab"
+                data-bs-target="#stylePage"
+                type="button"
+                role="tab"
+                aria-controls="contact"
+                aria-selected="false"
+              >
+                Style
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                id="sizingTab"
+                data-bs-toggle="tab"
+                data-bs-target="#sizingPage"
+                type="button"
+                role="tab"
+                aria-controls="contact"
+                aria-selected="false"
+              >
+                Size/Fit
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                id="materialsTab"
+                data-bs-toggle="tab"
+                data-bs-target="#materialsPage"
+                type="button"
+                role="tab"
+                aria-controls="contact"
+                aria-selected="false"
+              >
+                Materials
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                id="purchaseHistoryTab"
+                data-bs-toggle="tab"
+                data-bs-target="#purchaseHistoryPage"
+                type="button"
+                role="tab"
+                aria-controls="contact"
+                aria-selected="false"
+              >
+                Other
+              </button>
+            </li>
+          </ul>
+
+          <!--
+          -- ─── TAB 1 - Categories ───────────────────────────────────────────────────────────
+          -->
+
+          <div class="tab-content" id="myTabContent">
+            <!-- ──────────────────────────────────────────────────────────────────────────────── -->
+
+            <div
+              class="tab-pane fade show active"
+              id="categoriesPage"
+              role="tabpanel"
+              aria-labelledby="home-tab"
             >
-            <select
-              class="form-select"
-              id="subCategoryInput"
-              name="subCategoryInput"
+              <div class="input-group mb-3 mt-3">
+                <label for="categoryInput" class="input-group-text"
+                  >Category</label
+                >
+                <select
+                  name="categoryInput"
+                  id="categoryInput"
+                  class="form-select"
+                >
+                  <option value="" disabled selected>Choose...</option>
+                  <option value="shirt">Shirt</option>
+                  <option value="tshirt">T-shirt</option>
+                  <option value="pants">Pants</option>
+                  <option value="shorts">Shorts</option>
+                  <option value="underwear">Underwear or Socks</option>
+                  <option value="sweater">Sweater or Cardigan</option>
+                  <option value="outerwear">Outerwear</option>
+                  <option value="dress">Dress</option>
+                  <option value="formal">Formal Wear</option>
+                  <option value="shoes">Shoes</option>
+                  <option value="accessory">Accessory</option>
+                </select>
+              </div>
+
+              <div class="input-group mb-3">
+                <label for="subCategoryInput" class="input-group-text"
+                  >Sub-Category</label
+                >
+                <input
+                  class="form-control"
+                  name="subCategoryInput"
+                  id="subCategoryInput"
+                  list="subCategoryDatalist"
+                />
+                <datalist id="subCategoryDatalist">
+                  <option value="San Francisco"></option>
+                  <option value="New York"></option>
+                  <option value="Seattle"></option>
+                  <option value="Los Angeles"></option>
+                  <option value="Chicago"></option>
+                </datalist>
+
+                <label for="typeInput" class="input-group-text">Sub-Type</label>
+                <input
+                  class="form-control"
+                  name="typeInput"
+                  id="typeInput"
+                  list="subTypeDatalist"
+                />
+                <datalist id="subTypeDatalist">
+                  <option value="San Francisco"></option>
+                  <option value="New York"></option>
+                  <option value="Seattle"></option>
+                  <option value="Los Angeles"></option>
+                  <option value="Chicago"></option>
+                </datalist>
+              </div>
+
+              <div class="input-group mb-3">
+                <span class="input-group-text">Brand</span>
+                <input
+                  id="brandInput"
+                  type="text"
+                  class="form-control"
+                  placeholder="Prada"
+                />
+              </div>
+            </div>
+            <!--
+              -- TAB 2 - Colors
+              -->
+
+            <div
+              class="tab-pane fade"
+              id="colorsPage"
+              role="tabpanel"
+              aria-labelledby="profile-tab"
             >
-              <option selected>. . .</option>
-              <option value=""></option>
-            </select>
+              <div class="mb-3 mt-3">
+                <label for="imageInput" class="form-label"
+                  >Upload Photo and Parse Colors Automatically</label
+                >
+                <input type="file" id="imageInput" class="form-control" />
+              </div>
 
-            <label for="typeInput" class="input-group-text">Sub-Type</label>
-            <select class="form-select" id="typeInput" name="typeInput">
-              <option selected>. . .</option>
-              <option value=""></option>
-            </select>
-          </div>
+              <label for="imageInput" class="form-label"
+                >Select Colors Manually</label
+              >
+              <div class="container gx-0">
+                <div class="row d-flex align-items-center px-1 gx-2 mb-3">
+                  <div class="col px-1">
+                    <div class="input-group">
+                      <input
+                        type="color"
+                        name="color1Input"
+                        id="color1Input"
+                        class="form-control form-control-color"
+                        value="#121212"
+                      />
+                      <input
+                        type="number"
+                        id="colorWeight1Input"
+                        class="form-control"
+                      />
+                      <span class="input-group-text">%</span>
+                    </div>
+                  </div>
 
-          <div class="input-group mb-3">
-            <button type="button" class="btn btn-outline-secondary">
-              Add Style Tag
-            </button>
-            <button
-              type="button"
-              class="
-                btn btn-outline-secondary
-                dropdown-toggle dropdown-toggle-split
-              "
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
+                  <div class="col px-1">
+                    <div class="input-group">
+                      <input
+                        type="color"
+                        name="color2Input"
+                        id="color2Input"
+                        class="form-control form-control-color"
+                        value="#121212"
+                      />
+                      <input
+                        type="number"
+                        id="colorWeight2Input"
+                        class="form-control"
+                      />
+                      <span class="input-group-text">%</span>
+                    </div>
+                  </div>
+
+                  <div class="col px-1">
+                    <div class="input-group">
+                      <input
+                        type="color"
+                        name="color3Input"
+                        id="color3Input"
+                        class="form-control form-control-color"
+                        value="#121212"
+                      />
+                      <input
+                        type="number"
+                        id="colorWeight3Input"
+                        class="form-control"
+                      />
+                      <span class="input-group-text">%</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="row align-items-center px-1 gx-2 mb-3">
+                  <div class="col px-1">
+                    <div class="input-group">
+                      <input
+                        type="color"
+                        name="color4Input"
+                        id="color4Input"
+                        class="form-control form-control-color"
+                        value="#121212"
+                      />
+                      <input
+                        type="number"
+                        id="colorWeight4Input"
+                        class="form-control"
+                      />
+                      <span class="input-group-text">%</span>
+                    </div>
+                  </div>
+
+                  <div class="col px-1">
+                    <div class="input-group">
+                      <input
+                        type="color"
+                        name="color5Input"
+                        id="color5Input"
+                        class="form-control form-control-color"
+                        value="#121212"
+                      />
+                      <input
+                        type="number"
+                        id="colorWeight5Input"
+                        class="form-control"
+                      />
+                      <span class="input-group-text">%</span>
+                    </div>
+                  </div>
+
+                  <div class="col px-1">
+                    <div class="input-group">
+                      <input
+                        type="color"
+                        name="color6Input"
+                        id="color6Input"
+                        class="form-control form-control-color"
+                        value="#121212"
+                      />
+                      <input
+                        type="number"
+                        id="colorWeight6Input"
+                        class="form-control"
+                      />
+                      <span class="input-group-text">%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!--
+              -- TAB 3 - Style
+              -->
+
+            <div
+              class="tab-pane fade"
+              id="stylePage"
+              role="tabpanel"
+              aria-labelledby="contact-tab"
             >
-              <span class="visually-hidden">Toggle Dropdown</span>
-            </button>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li>
-              <li><hr class="dropdown-divider" /></li>
-              <li><a class="dropdown-item" href="#">Separated link</a></li>
-            </ul>
-            <input
-              type="text"
-              class="form-control"
-              aria-label="Text input with segmented dropdown button"
-            />
-          </div>
+              <div class="input-group mb-3 mt-3">
+                <button type="button" class="btn btn-outline-secondary">
+                  Add Style Tag
+                </button>
+                <button
+                  type="button"
+                  class="
+                    btn btn-outline-secondary
+                    dropdown-toggle dropdown-toggle-split
+                  "
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Action</a></li>
+                  <li><a class="dropdown-item" href="#">Another action</a></li>
+                  <li>
+                    <a class="dropdown-item" href="#">Something else here</a>
+                  </li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="/styles/dictionary"
+                      target="_blank"
+                      >Open Styles Dictionary in New Tab</a
+                    >
+                  </li>
+                </ul>
+                <input
+                  id="styleInput"
+                  type="text"
+                  class="form-control"
+                  aria-label="Text input with segmented dropdown button"
+                  placeholder="Separate style tags with a comma"
+                />
+              </div>
+            </div>
 
-          <div class="input-group mb-3">
-            <label for="fitInput" class="input-group-text">Fit</label>
-            <select name="fitInput" id="fitInput" class="form-select">
-              <option selected>Choose...</option>
-              <option value="oversized">Oversized</option>
-              <option value="loose">Loose</option>
-              <option value="casual">Casual</option>
-              <option value="fitted">Fitted</option>
-              <option value="tight">Tight</option>
-              <option value="cropped">Cropped</option>
-            </select>
+            <!--
+              -- TAB 4 - Sizing
+              -->
 
-            <label for="lengthInput" class="input-group-text">Length</label>
-            <select name="lengthInput" id="lengthInput" class="form-select">
-              <option selected>Choose...</option>
-              <option value="oversized">Oversized</option>
-              <option value="loose">Loose</option>
-              <option value="casual">Casual</option>
-              <option value="fitted">Fitted</option>
-              <option value="tight">Tight</option>
-              <option value="cropped">Cropped</option>
-            </select>
-          </div>
-
-          <div class="input-group mb-3">
-            <span class="input-group-text">Number Sizing</span>
-            <input type="number" id="numberSizingInput" class="form-control" />
-            <select
-              name="letterSizingInput"
-              id="letterSizingInput"
-              class="form-select"
+            <div
+              class="tab-pane fade"
+              id="sizingPage"
+              role="tabpanel"
+              aria-labelledby="contact-tab"
             >
-              <option selected>Letter Sizing</option>
-              <option value="kid">Children's</option>
-              <option value="xxs">XXS</option>
-              <option value="xs">XS</option>
-              <option value="s">S</option>
-              <option value="m">M</option>
-              <option value="l">L</option>
-              <option value="xl">XL</option>
-              <option value="xxl">XXL</option>
-              <option value="xxxl">XXXL</option>
-            </select>
-          </div>
+              <div class="input-group mt-3 mb-3">
+                <span class="input-group-text">Size</span>
+                <input
+                  type="number"
+                  id="numberSizing1Input"
+                  class="form-control"
+                />
+                <label class="input-group-text">&Cross;</label>
+                <input
+                  type="number"
+                  id="numberSizing2Input"
+                  class="form-control"
+                />
+                <select
+                  name="letterSizingInput"
+                  id="letterSizingInput"
+                  class="form-select"
+                >
+                  <option value="" disabled selected>Letter Sizing</option>
+                  <option value="kid">Children's</option>
+                  <option value="xxs">XXS</option>
+                  <option value="xs">XS</option>
+                  <option value="s">S</option>
+                  <option value="m">M</option>
+                  <option value="l">L</option>
+                  <option value="xl">XL</option>
+                  <option value="xxl">XXL</option>
+                  <option value="xxxl">XXXL</option>
+                </select>
+              </div>
 
-          <div class="input-group mb-3">
-            <span class="input-group">Materials</span>
-            <input
-              type="text"
-              name="mat1Input"
-              id="mat1Input"
-              class="form-control"
-            />
-            <input
-              type="text"
-              name="mat2Input"
-              id="mat2Input"
-              class="form-control"
-            />
-            <input
-              type="text"
-              name="mat3Input"
-              id="mat3Input"
-              class="form-control"
-            />
-          </div>
+              <div class="input-group mb-3">
+                <label for="fitInput" class="input-group-text">Fit</label>
+                <select name="fitInput" id="fitInput" class="form-select">
+                  <option value="" disabled selected>Choose...</option>
+                  <option value="oversized">Oversized</option>
+                  <option value="loose">Loose</option>
+                  <option value="casual">Casual</option>
+                  <option value="fitted">Fitted</option>
+                  <option value="tight">Tight</option>
+                  <option value="cropped">Cropped</option>
+                </select>
 
-          <div class="input-group mb-3">
-            <span class="input-group-text">Brand</span>
-            <input
-              id="brandInput"
-              type="text"
-              class="form-control"
-              placeholder="Prada"
-            />
-          </div>
+                <label for="lengthInput" class="input-group-text">Length</label>
+                <select name="lengthInput" id="lengthInput" class="form-select">
+                  <option value="" disabled selected>Choose...</option>
+                  <option value="oversized">Oversized</option>
+                  <option value="loose">Loose</option>
+                  <option value="casual">Casual</option>
+                  <option value="fitted">Fitted</option>
+                  <option value="tight">Tight</option>
+                  <option value="cropped">Cropped</option>
+                </select>
+              </div>
+            </div>
 
-          <div class="input-group mb-3">
-            <span class="input-group">Purchase Details</span>
-            <input
-              type="text"
-              name="purchaseLocationInput"
-              id="purchaseLocationInput"
-              placeholder="Location"
-              class="form-control"
-            />
-            <input
-              type="text"
-              name="purchaseDateInput"
-              id="purchaseDateInput"
-              placeholder="Date"
-              class="form-control"
-            />
-            <span class="input-group-text">$</span>
-            <input
-              type="number"
-              name="costInput"
-              id="costInput"
-              class="form-control"
-            />
-          </div>
+            <!--
+              -- TAB 5 - Materials
+              -->
 
-          <div class="input-group mb-3">
-            <span class="input-group-text">Condition</span>
-            <input type="number" id="conditionInput" class="form-control" />
+            <div
+              class="tab-pane fade"
+              id="materialsPage"
+              role="tabpanel"
+              aria-labelledby="contact-tab"
+            >
+              <div class="input-group mb-3 mt-3">
+                <span class="input-group-text">Condition</span>
+                <input type="number" id="conditionInput" class="form-control" />
 
-            <span class="input-group-text">Wash Instructions</span>
-            <input type="text" id="washTypeInput" class="form-control" />
+                <span class="input-group-text">Wash Instructions</span>
+                <input type="text" id="washTypeInput" class="form-control" />
+              </div>
+
+              <div class="input-group mb-3">
+                <span class="input-group mb-1">Fabric Contents and Percentages</span>
+                <input
+                  type="text"
+                  name="mat1Input"
+                  id="mat1Input"
+                  class="form-control"
+                  placeholder="Cotton"
+                />
+                <input
+                  type="number"
+                  name="matWeight1Input"
+                  id="matWeight1Input"
+                  class="form-control"
+                  value="100"
+                />
+                <label class="input-group-text">%</label>
+                <input
+                  type="text"
+                  name="mat2Input"
+                  id="mat2Input"
+                  class="form-control"
+                />
+                <input
+                  type="number"
+                  name="matWeight2Input"
+                  id="matWeight2Input"
+                  class="form-control"
+                />
+                <label class="input-group-text">%</label>
+              </div>
+              <div class="input-group mb-3">
+                <input
+                  type="text"
+                  name="mat3Input"
+                  id="mat3Input"
+                  class="form-control"
+                />
+                <input
+                  type="number"
+                  name="matWeight3Input"
+                  id="matWeight3Input"
+                  class="form-control"
+                />
+                <label class="input-group-text">%</label>
+                <input
+                  type="text"
+                  name="mat4Input"
+                  id="mat4Input"
+                  class="form-control"
+                />
+                <input
+                  type="number"
+                  name="matWeight4Input"
+                  id="matWeight4Input"
+                  class="form-control"
+                />
+                <label class="input-group-text">%</label>
+              </div>
+
+            </div>
+            <!--
+              -- TAB 6 - Purchase History
+              -->
+
+            <div
+              class="tab-pane fade"
+              id="purchaseHistoryPage"
+              role="tabpanel"
+              aria-labelledby="contact-tab"
+            >
+              <div class="input-group mt-3 mb-3">
+                <span class="input-group">Purchase Details</span>
+                <input
+                  type="text"
+                  name="purchaseLocationInput"
+                  id="purchaseLocationInput"
+                  placeholder="Location"
+                  class="form-control"
+                />
+                <input
+                  type="date"
+                  name="purchaseDateInput"
+                  id="purchaseDateInput"
+                  class="form-control"
+                />
+                <span class="input-group-text">$</span>
+                <input
+                  type="number"
+                  name="costInput"
+                  id="costInput"
+                  class="form-control"
+                  placeholder="Cost"
+                />
+              </div>
+            </div>
+            <!-- ──────────────────────────────────────────────────────────────────────────────── -->
           </div>
+          <!-- ──────────────────────────────────────────────────────────────────────────────── -->
 
           <div class="d-grid gap-2 d-md-flex justify-content-md-start">
             <button
@@ -369,5 +738,10 @@
     </div>
 
     <div class="b-divider"></div>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>

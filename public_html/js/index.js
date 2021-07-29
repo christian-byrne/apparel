@@ -1,20 +1,27 @@
 /**
+ * ─── APPARELL ──────────────────────────────────────────────────
  *
  * @author Christian P. Byrne
+ *
+ * @todo handling of variable data type on size field of add item.
+ * @todo add defined styles select array and tooltip from website.
+ *
+ *
  */
 
 const PORT = 5000;
 const IP = "127.0.0.1";
 const BASE_URL = `http://${IP}:${PORT}`;
 
-// TODO differentiate sizing type
-const styles = [];
+//
+// ─── TEMPORARY GLOBALS ──────────────────────────────────────────────────────────
+//
 
-const appendUser = (data) => {
+function appendUser(data) {
   if (sessionStorage.getItem("username")) {
     data["username"] = sessionStorage.getItem("username");
   }
-};
+}
 
 const curUser = () => {
   // return encodeURIComponent(sessionStorage.getItem("username"));
@@ -25,25 +32,27 @@ const pushPage = (url = "/home.html") => {
   window.location = url;
 };
 
-const clearAllInputs = () => {
+function clearAllInputs() {
   let inputs = document.querySelectorAll("input");
   for (let input of inputs) {
     if (!input.type === "search") {
       input.value = input.placeholder ? input.placeholder : "";
     }
   }
-};
+}
 
-// ────────────────────────────────────────────────────────────────────────────────
+//
+// ─── FEATURES ───────────────────────────────────────────────────────────────────
+//
 
 class AddOutfit {
-  constructor() {
+  constructor(options) {
     let config = {
       usernameQueryHandler: curUser,
       URL: BASE_URL,
     };
     Object.assign(config, options);
-    this.curUser = config.curUser;
+    this.curUser = config.usernameQueryHandler;
     this.form = new FormParse();
     this.fields = [
       "description",
@@ -90,13 +99,15 @@ class AddOutfit {
 }
 
 class AddItem {
-  constructor() {
+  constructor(options) {
     let config = {
       usernameQueryHandler: curUser,
       URL: BASE_URL,
     };
     Object.assign(config, options);
-    this.curUser = config.curUser;
+
+    this.config = config;
+    this.curUser = config.usernameQueryHandler;
     this.fields = [
       "description",
       "rating",
@@ -105,28 +116,50 @@ class AddItem {
       "type",
       "fit",
       "length",
-      "numberSizing",
-      "letterSizing",
       "brand",
       "purchaseLocation",
       "purchaseDate",
       "cost",
       "condition",
       "washType",
-      "mat1",
-      "mat2",
-      "mat3",
     ];
-
+    this.CSVfields = ["style"];
     this.form = new FormParse();
+    this.genIterableIds = (range, suffix) => {
+      const ret = [];
+      for (let i = range; i > 0; i--) {
+        ret.push(`${suffix}${i}`);
+      }
+      return ret;
+    };
+    this.mats = {
+      materials: this.genIterableIds(4, "mat"),
+      weights: this.genIterableIds(4, "matWeight"),
+    };
+    this.col = {
+      colors: this.genIterableIds(6, "color"),
+      weights: this.genIterableIds(6, "colorWeight"),
+    };
+
+    /** Read and construct into Item shape. */
     this.serialize = () => {
-      return this.form.read(this.fields);
+      const ret = {
+        ...this.form.read(this.fields),
+        ...this.form.readCSV(this.CSVfields),
+        size: {
+          number: this.form.inputsToArray(["numberSizing1", "numberSizing2"]),
+          letter: document.querySelector("#letterSizingInput").value,
+        },
+        material: this.form.readArrayFields(this.mats),
+        color: this.form.readArrayFields(this.col),
+      };
+      return ret;
     };
   }
 
   post = () => {
     const ajaxOptions = {
-      url: `${this.URL}/post/item/${this.curUser()}`,
+      url: `${this.config.URL}/post/item/${this.curUser()}`,
       type: "POST",
       data: this.serialize(),
       success: () => {},
@@ -137,14 +170,16 @@ class AddItem {
 }
 
 class Search {
-  constructor(options) {
+  constructor(responseHandler, options) {
     let config = {
       usernameQueryHandler: curUser,
       resultsSelector: "div.card",
+      URL: BASE_URL
     };
     Object.assign(config, options);
 
-    this.curUser = config.curUser;
+    this.URL = config.URL
+    this.curUser = config.usernameQueryHandler;
     this.result = config.resultsSelector;
 
     this.keywordNodeQuery = () => {
@@ -152,6 +187,8 @@ class Search {
         .querySelector("#searchAll")
         .querySelector("input[type=search]").value;
     };
+
+    this.responseHadler = responseHandler;
   }
 
   /**
@@ -159,7 +196,7 @@ class Search {
    * @returns {Promise<Item[]>}
    */
   allItems = async () => {
-    return $.get(`${BASE_URL}/get/items/${this.curUser()}`, (items) => {
+    return $.get(`${this.URL}/get/items/${this.curUser()}`, (items) => {
       return items;
     });
   };
@@ -169,7 +206,7 @@ class Search {
    * @returns {Promise<Outfit[]>}
    */
   allOutfits = async () => {
-    return $.get(`${BASE_URL}/get/outfits/${this.curUser()}`, (outfits) => {
+    return $.get(`${this.URL}/get/outfits/${this.curUser()}`, (outfits) => {
       return outfits;
     });
   };
@@ -180,7 +217,7 @@ class Search {
    */
   keywordAllFields = async () => {
     return $.get(
-      `${BASE_URL}/search/all/${curUser()}/${this.keywordNodeQuery()}`,
+      `${this.URL}/search/all/${this.curUser()}/${this.keywordNodeQuery()}`,
       (searchResults) => {
         return searchResults;
       }
@@ -198,30 +235,31 @@ class Search {
   };
 
   /**
-   * If there are already search results displayed, then only eliminate active results.
-   * If there are no results displayed (first search or recently cleared), peform a new
-   * query.
+   * If there are already search results displayed, then only 
+   * eliminate active results.If there are no results 
+   * displayed (first search or recently cleared), 
+   * peform a new query.
    */
-  postSearchTargeted = () => {
-    const currentResults = activeItems();
+  keywordOneField = () => {
+    const active = this.currentResults();
     const ajaxOptions = {
-      url: `${BASE_URL}/search/field`,
+      url: `${this.URL}/search/field`,
       type: "POST",
       data: {
-        username: curUser(),
-        keyword: g("#filterSearchInput"),
+        username: this.curUser(),
+        keyword: document.querySelector("#filterSearchInput").value,
         field: document.querySelector("#filterDropdownChoice").data,
       },
       success: (searchResults) => {
-        displaySearchRes(searchResults);
+        this.responseHadler(searchResults);
       },
       error: () => {},
     };
 
     // Narrowing down currently displayed results.
-    if (currentResults.length > 0) {
+    if (active.length > 0) {
       Object.assign(ajaxOptions, {
-        url: `${BASE_URL}/search/intersection`,
+        url: `${this.URL}/search/intersection`,
       });
       ajaxOptions.data["narrowTarget"] = currentResults;
     }
@@ -229,61 +267,18 @@ class Search {
     $.ajax(ajaxOptions);
   };
 
-  clearSearchResults = async () => {
-    while (document.querySelectorAll("div.card")) {
-      document.querySelector("div.card").remove();
+  clearResults = async () => {
+    while (document.querySelectorAll(this.result).length > 0) {
+      document.querySelector(this.result).remove();
     }
     return;
-  };
-
-  displaySearchRes = (json) => {
-    const placeholder = "https://via.placeholder.com/800";
-    const container = document.querySelector("#searchResultsMain");
-
-    clearSearchResults().then(() => {
-      for (const item of json) {
-        let card = document.createElement("div");
-        card.classList.add("col-sm-6");
-        card.innerHTML = `  <div class="card mb-3" data="${item._id}" style="max-width: 540px;">
-      <div class="row g-0">
-      <div class="col-md-4">
-      <img src="${placeholder}" class="img-fluid rounded-start" alt="Picture of ${item.description}">
-      <div class="container-fluid p-2">
-      <div class="row d-flex justify-content-center">
-      <p class="card-text"><small class="text-muted">Purchased at ${item.purchaseLocation} ${item.purchaseDate} days ago.</small></p>
-      </div>
-      </div>
-      </div>
-      <div class="col-md-8">
-      <div class="card-body">
-      <h5 class="card-title">${item.description}</h5>
-      <p class="card-text">
-      ${item.category} | ${item.subCategory} | ${item.type}
-      </p>
-      </div>
-      <ul class="list-group list-group-flush">
-      <li class="list-group-item">${item.brand}</li>
-      <li class="list-group-item">${item.fit}</li>
-      <li class="list-group-item">${item.size}</li>
-      </ul>
-      <div class="card-body">
-      <p class="card-text">${item.length}</p>
-      <a data="${item._id}" class="btn btn-primary">Add</a>
-      <a class="card-link">Dismiss</a>
-      </div>
-      </div>
-      </div>
-      </div>`;
-        container.appendChild(card);
-      }
-    });
   };
 }
 
 class User {
   constructor(options) {
     let config = {
-      URL: "127.0.0.1:5000",
+      URL: "http://127.0.0.1:5000",
       registerRedirect: "/add/item",
       loginRedirect: "/home",
       loginNodes: {
@@ -296,12 +291,12 @@ class User {
       },
     };
     Object.assign(config, options);
-    this.URL = config.url;
+    this.URL = config.URL;
     this.config = config;
     this.redirect = pushPage; // TODO
 
     this.v = (selector) => {
-      return document.querySelector(selector).value;
+      return document.querySelector(`#${selector}`).value;
     };
     this.ajaxConfig = {
       type: "POST",
@@ -357,7 +352,8 @@ class User {
 class FormParse {
   constructor() {
     this.v = (selector) => {
-      return document.querySelector(selector).value;
+      const node = document.querySelector(selector);
+      return node ? node.value : false;
     };
 
     this.format = (inputVal) => {
@@ -383,15 +379,16 @@ class FormParse {
    */
   readArrayFields = (arrayObject) => {
     const ret = {};
-    for (const [field, inputIds] of arrayObject) {
+    for (const [field, inputIds] of Object.entries(arrayObject)) {
       ret[field] = this.inputsToArray(inputIds);
     }
+    return ret;
   };
 
   inputsToArray = (fields, queryHandler = this.v) => {
     const ret = [];
     for (const input of fields) {
-      let value = queryHandler(`#${weather}Input`);
+      let value = queryHandler(`#${input}Input`);
       if (value) {
         ret.push(value);
       }
@@ -399,10 +396,22 @@ class FormParse {
     return ret;
   };
 
+  readKeyValue = (keyArray, valueArray, queryHandler = this.v) => {
+    const ret = {};
+    const keys = this.inputsToArray(keyArray, queryHandler);
+    const values = this.inputsToArray(valueArray, queryHandler);
+    keys.forEach((field, index) => {
+      if (field && index < values.length) {
+        ret[field] = values[index];
+      }
+    });
+    return ret;
+  };
+
   read = (fields, queryHandler = this.v) => {
     const serialized = {};
-    for (const input of fields) {
-      serialized[input] = queryHandler(`#${field}Input`);
+    for (const field of fields) {
+      serialized[field] = queryHandler(`#${field}Input`);
     }
     return serialized;
   };
@@ -423,25 +432,15 @@ class FormParse {
   };
 }
 
-// ────────────────────────────────────────────────────────────────────────────────
+//
+// ─── PAGES ──────────────────────────────────────────────────────────────────────
+//
 
-window.onload = () => {
-  // Apply these handlers to every page of app:
-  document.documentElement.addEventListener("submit", (event) => {
-    const caller = event.target;
-    if (caller.id === "searchAll") {
-      event.preventDefault();
-      getSearchAll();
-    }
-  });
-  document.documentElement.addEventListener("click", (event) => {
-    const caller = event.target;
-    if (caller.id === "clearForm") {
-      clearAllInputs();
-    }
-  });
+class PageAddOutfit {
+  constructor() {
+    this.outfit = new AddOutfit();
+    this.search = new Search();
 
-  if (window.location.pathname.includes("/add/outfit")) {
     document.documentElement.addEventListener("click", (event) => {
       const caller = event.target;
       if (
@@ -449,53 +448,168 @@ window.onload = () => {
         caller.parentElement.parentElement.id === "filterDropdownChoice"
       ) {
         event.preventDefault();
-
-        // When a new choice is selected, set data of ul.
-        let choice = caller.innerHTML;
-        let ul = caller.parentElement.parentElement;
-        console.log(ul);
-        ul.setAttribute("data", choice);
-        setTimeout(() => {
-          document.querySelector("#filterDropdownButton").innerHTML = choice;
-          document.querySelector(
-            "#filterSearchInput"
-          ).placeholder = `Enter ${choice.toLowerCase()} to add filter...`;
-        }, 10);
+        this.handleFilterTypeChange(caller);
       }
     });
-  } else if (window.location.pathname.includes("/add/item")) {
+
+    document.documentElement.addEventListener("submit", (event) => {
+      const caller = event.target;
+      if (caller.id === "searchAll") {
+        event.preventDefault();
+        this.search.keywordAllFields().then((items) => {
+          this.displaySearchRes(items);
+        });
+      }
+      else if ( caller.id === "filterSearchForm") {
+        event.preventDefault();
+        this.search.keywordOneField();
+      }
+    });
+  }
+  displaySearchRes = (json) => {
+    const placeholder = "https://via.placeholder.com/800";
+    const container = document.querySelector("#searchResultsMain");
+
+    this.search.clearResults().then(() => {
+      for (const item of json) {
+        let card = document.createElement("div");
+        card.classList.add("col-sm-6");
+        card.innerHTML = `  <div class="card mb-3" data="${
+          item._id
+        }" style="max-width: 540px;">
+          <div class="row g-0">
+          <div class="col-md-4">
+          <img src="${placeholder}" class="img-fluid rounded-start" alt="Picture of ${
+          item.description
+        }">
+          <div class="container-fluid p-2">
+          <div class="row d-flex justify-content-center">
+          <p class="card-text"><small class="text-muted">Purchased at ${
+            item.purchaseLocation
+          } ${
+          item.purchaseDate ? item.purchaseDate.toString() + " days ago" : ""
+        }</small></p>
+          </div>
+          </div>
+          </div>
+          <div class="col-md-8">
+          <div class="card-body">
+          <h5 class="card-title">${item.description}</h5>
+          <p class="card-text">
+          ${item.category} | ${item.subCategory} | ${item.type}
+          </p>
+          </div>
+          <ul class="list-group list-group-flush">
+          <li class="list-group-item">${item.brand}</li>
+          <li class="list-group-item">${item.fit}</li>
+          <li class="list-group-item">${
+            item.size.letter ? "Size " + item.size.letter + " | " : ""
+          }  ${
+          item.size.number.length > 1
+            ? item.size.number[0].toString() + "x" + item.size.number[1]
+            : ""
+        }</li>
+          </ul>
+          <div class="card-body">
+          <p class="card-text">${item.length}</p>
+          <a data="${item._id}" class="btn btn-primary">Add</a>
+          <a class="card-link">Dismiss</a>
+          </div>
+          </div>
+          </div>
+          </div>`;
+        container.appendChild(card);
+      }
+    });
+  };
+
+  handleFilterTypeChange = (caller) => {
+    // When a new choice is selected, set data of ul.
+    let choice = caller.innerHTML;
+    let ul = caller.parentElement.parentElement;
+    ul.setAttribute("data", choice);
+    setTimeout(() => {
+      document.querySelector("#filterDropdownButton").innerHTML = choice;
+      document.querySelector(
+        "#filterSearchInput"
+      ).placeholder = `Enter ${choice.toLowerCase()} to add filter...`;
+    }, 10);
+  };
+}
+
+class PageAddItem {
+  constructor() {
+    this.item = new AddItem();
+
     document.documentElement.addEventListener("click", (event) => {
       const caller = event.target;
       if (caller.id === "submitAddItem") {
         event.preventDefault();
-        postItem();
+        this.item.post();
       }
     });
-  } else if (window.location.pathname.includes("/wardrobe")) {
+  }
+}
+
+class PageWardrobe {
+  constructor() {
+    this.search = new Search();
     document.documentElement.addEventListener("click", (event) => {
       const caller = event.target;
-
       if (caller.tagName === "BUTTON") {
-        getItems().then((res) => {
+        this.search.allItems().then((res) => {
           console.log(res);
         });
       }
     });
-  } else {
+  }
+}
+
+class PageEntry {
+  constructor() {
+    this.user = new User();
+
     document.documentElement.addEventListener("click", (event) => {
       const caller = event.target;
-
       if (caller.tagName === "BUTTON" && caller.innerHTML.includes("Sign up")) {
         event.preventDefault();
-        postUser("register");
+        this.user.request.register();
       } else if (
         caller.tagName === "BUTTON" &&
         caller.innerHTML.includes("Login")
       ) {
         event.preventDefault();
-        postUser("login");
+        this.user.request.login();
       }
     });
+  }
+}
+
+//
+// ─── INJECT ─────────────────────────────────────────────────────────────────────
+//
+
+const globalAppListeners = () => {
+  // Apply these handlers to every page of app:
+  document.documentElement.addEventListener("click", (event) => {
+    const caller = event.target;
+    if (caller.id === "clearForm") {
+      clearAllInputs();
+    }
+  });
+};
+
+window.onload = () => {
+  globalAppListeners();
+  if (window.location.pathname.includes("/add/outfit")) {
+    new PageAddOutfit();
+  } else if (window.location.pathname.includes("/add/item")) {
+    new PageAddItem();
+  } else if (window.location.pathname.includes("/wardrobe")) {
+    new PageWardrobe();
+  } else {
+    // ROOT PATH.
+    new PageEntry();
   }
 };
 

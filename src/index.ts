@@ -31,17 +31,13 @@ type FormalSize = [number, number];
 
 interface ItemColors {
   colors: string[];
-  weights: {
-    [color: string]: number;
-  };
+  weights: number[];
   ordered?: string[];
 }
 
 interface ItemMaterials {
   materials: string[];
-  weights: {
-    [material: string]: number;
-  };
+  weights: number[];
 }
 
 interface ItemCondition {
@@ -50,26 +46,24 @@ interface ItemCondition {
 }
 
 interface Item {
-  // A description that it is helpful to the user -- something that they can
-  // see to help them remember what the item refers to.
   description: string;
   rating: number;
-  // Broad category.
   category: BroadCategory;
-  // Type of the given category.
   subCategory: string;
-  // Hihgly specific type of given category.
   type: string;
   fit: ItemFit;
   length: string;
-  size: MenGeneralSize | WomenGeneralSize | ShoeSize | FormalSize;
-  brand: string;
+  size: {
+    letter: MenGeneralSize | WomenGeneralSize | ShoeSize,
+    number:  FormalSize
+  };
+  brand?: string;
   purchaseLocation?: string;
   purchaseDate?: Date;
   cost?: number;
-  condition?: ItemCondition;
+  condition?: ItemCondition | number;
   washType?: string;
-  material: ItemMaterials;
+  material?: ItemMaterials;
 
   // See styles list.
   styles: string[];
@@ -139,28 +133,24 @@ class Database {
       length: String,
       color: {
         colors: [String],
-        weight: {
-          color: Number,
-        },
-        ordered: { type: [String], required: false },
+        weights: [Number],
+        ordered: [String],
       },
       material: {
         materials: [String],
-        weights: {
-          material: Number,
-        },
+        weights: [Number],
       },
       brand: String,
       rating: Number,
-      size: String || [Number, Number],
+      size: {
+        letter : String,
+        number: [Number, Number]
+      },
       purchaseLocation: { type: String, required: false },
       purchaseDate: { type: Date, required: false },
       cost: { type: Number, required: false },
       washType: { type: String, required: false },
-      condition: {
-        material: { type: Number, required: false },
-        color: { type: Number, required: false },
-      },
+      condition: { type: Number, required: false}
     });
 
     this.outfitSchema = new Schema<Outfit>({

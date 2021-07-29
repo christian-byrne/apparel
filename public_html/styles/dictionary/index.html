@@ -82,6 +82,7 @@
       </div>
     </header>
 
+    <div class="b-example-divider"></div>
     <div class="b-divider"></div>
 
     <div class="container col-xxl-8 px-2 py-4">
@@ -224,10 +225,10 @@
 
         <nav class="navbar navbar-light bg-light px-0">
           <div class="container-fluid d-flex">
-            <form id="filterSearchForm" class="d-flex flex-grow-1">
+            <form class="d-flex flex-grow-1">
               <div class="input-group mb-2 mt-2">
                 <button
-                id="filterDropdownButton"
+                  id="filterDropdownButton"
                   class="btn btn-outline-warning dropdown-toggle"
                   type="button"
                   data-bs-toggle="dropdown"
@@ -251,10 +252,12 @@
                   <li><hr class="dropdown-divider" /></li>
                   <li><a class="dropdown-item" href="#">Cost</a></li>
                   <li><a class="dropdown-item" href="#">Purchase Date</a></li>
-                  <li><a class="dropdown-item" href="#">Purchase Location</a></li>
+                  <li>
+                    <a class="dropdown-item" href="#">Purchase Location</a>
+                  </li>
                 </ul>
                 <input
-                id="filterSearchInput"
+                  id="filterSearchInput"
                   type="text"
                   class="form-control"
                   aria-label="Text input with dropdown button"

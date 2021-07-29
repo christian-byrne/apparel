@@ -215,9 +215,20 @@ interface Item {
 - Info collection
   - definitions of default field parameters
   - definition for tooltips and info modals
+- User Account Customization
+  - profile pic
+  - gender: "which picture better represents you?"
+    - determines mannequin type.
+  - account initialization phase
+  - ? some info can be translated into default form fields?
+  - ? nickname
+  - ? preferred algorithms
+  - style tag adding options in forms
+  - sub-category and sub-type dynamic `<select>` options loading
 
 #### Day 4-7
 - Refactor routers
+- Browse style dict on styles tab
 - Handle errors from server on client side by displaying to user
 - Client color selection inputs
 - Color parsing module?
@@ -246,9 +257,11 @@ interface Item {
 - Tooltips
 - Search feature
 - Navbar and button hrefs
+- ? make mannequin clickable 
 
 #### Day 12-14
 - breadcrumb feature?
+- add "required" attribute to correct fields of forms (do last because so annoying in development)
 - carousel on view collection pages.
 - Refactoring
 - Debugging
