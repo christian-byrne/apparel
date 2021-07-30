@@ -252,6 +252,7 @@ interface Item {
 
 #### Day 8-11
 
+- color nearest neighbor
 - Browse wardrobe
   - ✅ DOM constructor functions
   - ✅ Browse wardrobe

@@ -42,6 +42,132 @@ function clearAllInputs() {
 }
 
 //
+// ─── UTIL HELPERS ───────────────────────────────────────────────────────────────
+//
+
+class ClosestMatch {
+  constructor(apropos, fallback) {
+    // Related words to potential matches.
+    this.apropros = apropos;
+    this.fallback = fallback || false;
+
+    this.closestApropos = (word) => {
+      let ret;
+      for (const [candidate, related] of Object.entries(apropos)) {
+        let relatedCopy = [...related];
+        relatedCopy.push(candidate.toString());
+        if (this.closestInArray(word, relatedCopy)) {
+          return candidate;
+        }
+      }
+      if (!ret) {
+        return this.fallback;
+      }
+    };
+
+    this.getMatch = (word) => {
+      let ret;
+      for (const [candidate, related] of Object.entries(apropos)) {
+        let relatedCopy = [...related];
+        relatedCopy.push(candidate.toString());
+        let result = this.closestInArray(word, relatedCopy);
+        if (result) {
+          return result;
+        }
+      }
+      if (!ret) {
+        return this.fallback;
+      }
+    };
+  }
+
+  closestInArray = (word, againstArray, errorMargin) => {
+    errorMargin = errorMargin || Math.floor(word.length / 3);
+    for (const candidate of againstArray) {
+      let diff = this.calcDiff(word, candidate);
+      if (diff <= errorMargin) {
+        return candidate;
+      }
+    }
+    return false;
+  };
+
+  letterCount = (word, letter) => {
+    return Array.from(word).filter((x) => x == letter).length;
+  };
+
+  getDuplicates = (word) => {
+    let duplicates = Array.from(word).reduce(function (acc, el, i, arr) {
+      if (arr.indexOf(el) !== i && acc.indexOf(el) < 0) acc.push(el);
+      return acc;
+    }, []);
+    return duplicates;
+  };
+
+  mapLetterCts = (word) => {
+    const ret = {};
+    for (const letter of Array.from(word)) {
+      ret[letter] = this.letterCount(word, letter);
+    }
+    return ret;
+  };
+
+  letterIntersection = (word, against) => {
+    let agArr = Array.from(against);
+    return Array.from(word).filter((letter) => agArr.includes(letter));
+  };
+
+  calcDiff = (refWord, againstWord) => {
+    let ret = 0;
+    const sharedLetters = this.letterIntersection(refWord, againstWord);
+    const refLetterCts = this.mapLetterCts(refWord);
+    const againstLetterCts = this.mapLetterCts(againstWord);
+
+    // Count unique differences.
+    const uniqueDiff = (letterCounts) => {
+      for (const [unique, ct] of Object.entries(letterCounts)) {
+        if (!sharedLetters.includes(unique)) {
+          ret += ct;
+        }
+      }
+    };
+    uniqueDiff(refLetterCts);
+    uniqueDiff(againstLetterCts);
+    // Shallow intersection copies.
+    const intersectCopy = (ogWord, intersect) => {
+      let sCopy = [...ogWord].join("");
+      let lettersCopy = Array.from(ogWord);
+      for (const ltr of lettersCopy) {
+        if (!sharedLetters.includes(ltr)) {
+          sCopy = sCopy.replace(ltr, "");
+        }
+      }
+      return Array.from(sCopy);
+    };
+    let adjustedWord = intersectCopy(refWord);
+    let adjustedAgainst = intersectCopy(againstWord);
+
+    for (const [shared, ct] of Object.entries(refLetterCts)) {
+      // Difference in count of shared letters.
+      if (sharedLetters.includes(shared)) {
+        ret += Math.abs(ct - againstLetterCts[shared]);
+        // Difference in position of shared letters
+        if (adjustedWord.indexOf(shared) != adjustedAgainst.indexOf(shared)) {
+          ret += 1;
+          // Rearrange to not count all letters after as out of place as well.
+          let posWord = adjustedWord.indexOf(shared);
+          let posAgainst = adjustedAgainst.indexOf(shared);
+          adjustedWord[posAgainst] = shared;
+          adjustedWord[posWord] = adjustedAgainst[posWord];
+        }
+      }
+    }
+
+    return ret;
+  };
+}
+
+//
 // ─── FEATURES ───────────────────────────────────────────────────────────────────
 //
 
@@ -471,126 +597,103 @@ class FormParse {
 }
 
 class Templates {
-  constructor() {
-    this.tabCategories = [
-      "tshirt",
-      "pants",
-      "shorts",
-      "innerwear",
-      "sweater",
-      "outerwear",
-      "formal",
-      "shoes",
-      "accessories",
-      "shirt",
-    ];
-    this.placeholder = "https://via.placeholder.com/800";
-    this.fallbackNode = document.querySelector("#otherSearchResults");
+  constructor(options) {
+    let config = {
+      tabCategories: [
+        "tshirt",
+        "pants",
+        "shorts",
+        "innerwear",
+        "sweater",
+        "outerwear",
+        "formal",
+        "shoes",
+        "accessories",
+        "shirt",
+      ],
+      cardClass: "searchResultCard",
+      tabCategoriesApropos: {},
+      placeholder: "https://via.placeholder.com/800",
+      fallbackNode: document.querySelector("#otherSearchResults"),
+      tabContainerSelectorFn: (tabName) => {
+        return document.querySelector(`#${tabName}SearchResults`);
+      },
+      containerSuffix: "Page",
+      tabSuffix: "Tab",
+    };
+    Object.assign(config, options);
+    this.config = config;
+    this.tabApropos = config.tabCategoriesApropos;
+
+    for (const category of this.config.tabCategories) {
+      if (!Object.keys(this.tabApropos).includes(category)) {
+        this.tabApropos[category] = category.toString();
+      }
+    }
+    this.matcher = new ClosestMatch(this.tabApropos, false);
   }
 
   tabContainers = () => {
     const ret = {};
-    for (const tabName of this.tabCategories) {
-      ret[tabName] = document.querySelector(`#${tabName}SearchResults`);
+    for (const tabName of this.config.tabCategories) {
+      ret[tabName] = this.config.tabContainerSelectorFn(tabName);
     }
     return ret;
-  };
-
-  permutate = (word) => {
-    const alpha = Array.from("abcdefghijklmnopqrstuvwxyz");
-    const ret = [];
-    for (let i = word.length; i > 0; i--) {
-      let before = word.slice(0, i - 1);
-      let after = word.slice(i);
-      for (const letter of alpha) {
-        ret.push(before + letter + after);
-      }
-    }
-    return ret;
-  };
-
-  permutateMatch = (word, ref) => {
-    const wordP = permutate(word);
-    const refP = permutate(ref);
-    for (const candidate of refP) {
-      if (wordP.includes(candidate)) {
-        return candidate;
-      }
-    }
-    return false;
-  };
-
-  getClosestMatch = (tArray, keyword) => {
-    let target = keyword.toLowerCase();
-    if (tArray.includes(target)) {
-      return keyword;
-    }
-    try {
-      while (target.length > 0) {
-        for (const candidate of tArray) {
-          let result =
-            permutateMatch(target, candidate) ||
-            permutateMatch(target.slice(1), candidate);
-          if (result) {
-            return result;
-          }
-        }
-        target = target.slice(0, target.length - 1);
-      }
-    } catch (error) {
-      return "other";
-    }
-    return "other";
   };
 
   categoryTabs = (items) => {
     let containers = this.tabContainers();
     for (const item of items) {
-      console.log("Item category", item.category);
-      let belongsToId = this.getClosestMatch(this.tabCategories, item.category);
-      let belongsToNode = containers[belongsToId] || this.fallbackNode;
-      console.log("belongstoId -----", belongsToId);
-      console.log("belongsToNode ----", belongsToNode);
+      let belongsToId = this.matcher.closestApropos(
+        item.category.toLowerCase()
+      );
+      let belongsToNode = containers[belongsToId] || this.config.fallbackNode;
       this.itemCards([item], belongsToNode).then(() => {});
     }
     this.activateMostPopulated(Object.values(containers));
-    // active.parentElement.parentElement.classList.add("show", "active");
   };
 
   activateMostPopulated = (containers) => {
     const lengths = containers.map((node) => node.children.length);
     const retI = lengths.indexOf(Math.max(...lengths));
+    // TODO - inconsistent.
     const pageNode = containers[retI].parentElement.parentElement;
-    const navTab = document.querySelector(
-      `#${pageNode.id.replace("Page", "Tab")}`
+    const tabNode = document.querySelector(
+      `#${pageNode.id.replace(
+        this.config.containerSuffix,
+        this.config.tabSuffix
+      )}`
     );
+    // Activate by clicking.
     setTimeout(() => {
-      navTab.click();
+      tabNode.click();
     }, 10);
   };
 
-  itemCards = async (items, container) => {
+  itemCards = async (items, container, classlist = ["col-sm-6"]) => {
     for (const item of items) {
       let card = document.createElement("div");
-      card.classList.add("col-sm-6");
-      card.classList.add("searchResultCard");
+      card.classList.add(...classlist);
+      card.classList.add(this.config.cardClass);
       card.innerHTML = `  <div class="card mb-3" data="${
         item._id
       }" style="max-width: 540px;">
           <div class="row g-0">
           <div class="col-md-4">
           <img src="${
-            this.placeholder
+            this.config.placeholder
           }" class="img-fluid rounded-start" alt="Picture of ${
         item.description
       }">
           <div class="container-fluid p-2">
           <div class="row d-flex justify-content-center">
-          <p class="card-text"><small class="text-muted">Purchased at ${
-            item.purchaseLocation
-          } ${
-        item.purchaseDate ? item.purchaseDate.toString() + " days ago" : ""
-      }</small></p>
+          <p class="card-text"><small class="text-muted">${
+            item.purchaseLocation ? "Purchased at " + item.purchaseLocation : ""
+          }
+          ${item.purchaseDate && !item.purchaseLocation || item.cost && !item.purchaseLocation ? "Purchased " : ""}
+           ${
+             item.purchaseDate ? item.purchaseDate.toString() + " days ago" : ""
+           } ${item.cost ? " for $" + item.cost : ""}</small></p>
           </div>
           </div>
           </div>
