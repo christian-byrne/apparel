@@ -190,9 +190,9 @@ interface Item {
 
 #### Day 1-3
 
-- App theme
-  - Global CSS variables
-  - Global page layout
+- ✅ App theme
+  - ✅ Global CSS variables
+  - ✅ Global page layout
 - Static Resources
   - sketch images
     - photoshop fill
@@ -222,13 +222,21 @@ interface Item {
   - ? preferred algorithms
   - style tag adding options in forms
   - sub-category and sub-type dynamic `<select>` options loading
+- subcategory and type
+  - defined heirarchy of suggested
+  - in a datalist
+  - any new fields that user creates sohuld be added to datalist
+  - ? user created fields should be placed above defaults in datalist or it should be alphabetical?
+- Input correction/closest match util object
 
 #### Day 4-7
 
 - Refactor routers
+- Determine best layout of item card
+  - variability -- most items are optional, determine loading algorithm that makes sense and looks good regardless of fileds that are filled out
 - Browse style dict on styles tab
 - Handle errors from server on client side by displaying to user
-- Client color selection inputs
+- ✅ Client color selection inputs
 - Color parsing module?
 - Image upload?
   - add field to schemas
@@ -236,35 +244,37 @@ interface Item {
 - Define ruleset
   - Info tooltips/modals
 - Define algorithmic suggestion
-- Client script
-  - form fields update based on previous selection
-- Specify form required inputs
+- form fields update based on previous selection
 - Interactive features on generate page
-- side bar with user content on view outfits page: https://getbootstrap.com/docs/5.0/examples/sidebars/
+- ✅ side bar with user content on view outfits page: https://getbootstrap.com/docs/5.0/examples/sidebars/
+- ? Edit global stylesheets
+  - ? global divider styling
 
 #### Day 8-11
 
-- Browse pages
-  - DOM constructor functions
-  - Browse wardrobe
-    - HTML & Ajax
-  - Browse Items
-    - HTML & Ajax
+- Browse wardrobe
+  - ✅ DOM constructor functions
+  - ✅ Browse wardrobe
+    - ✅ HTML & Ajax
+- Browse Items
+  - HTML & Ajax
+- Browse items sidebar features
+- browse wardrobe sidebar features
 - Generate page features
   - Collapsible sections
   - Navbar collapse feature
-  - Dark mode
+- Dark mode
 - Tooltips
   - Using popover system
 - push notifications with toasts
 - badges
 - Search feature
-- Navbar and button hrefs
+- ✅ Navbar and button hrefs
 - ? make mannequin clickable
 
 #### Day 12-14
 
-- breadcrumb feature?
+- ? global search feature
 - add "required" attribute to correct fields of forms (do last because so annoying in development)
 - carousel on view collection pages.
 - Refactoring
