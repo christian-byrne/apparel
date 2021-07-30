@@ -3,7 +3,6 @@
  *
  * @author Christian P. Byrne
  *
- * @todo handling of variable data type on size field of add item.
  * @todo add defined styles select array and tooltip from website.
  *
  *
@@ -31,15 +30,6 @@ const curUser = () => {
 const pushPage = (url = "/home.html") => {
   window.location = url;
 };
-
-function clearAllInputs() {
-  let inputs = document.querySelectorAll("input");
-  for (let input of inputs) {
-    if (!input.type === "search") {
-      input.value = input.placeholder ? input.placeholder : "";
-    }
-  }
-}
 
 //
 // ─── UTIL HELPERS ───────────────────────────────────────────────────────────────
@@ -167,352 +157,6 @@ class ClosestMatch {
   };
 }
 
-//
-// ─── FEATURES ───────────────────────────────────────────────────────────────────
-//
-
-class AddOutfit {
-  constructor(options) {
-    let config = {
-      usernameQueryHandler: curUser,
-      URL: BASE_URL,
-    };
-    Object.assign(config, options);
-    this.curUser = config.usernameQueryHandler;
-    this.form = new FormParse();
-    this.fields = [
-      "description",
-      "rating",
-      "category",
-      "subCategory",
-      "type",
-      "lastWorn",
-      "wearCount",
-      "temperature",
-      "notes",
-    ];
-    this.arrayFields = {
-      weather: [
-        "weatherRain",
-        "weatherSnow",
-        "weatherSun",
-        "weatherWindy",
-        "weatherHumid",
-      ],
-    };
-    this.CSVfields = ["formality", "setting", "event"];
-  }
-
-  serialize = () => {
-    const inputs = {
-      ...this.form.read(this.fields),
-      ...this.form.readArrayFields(this.arrayFields),
-      ...this.form.readCSV(this.CSVfields),
-    };
-    return inputs;
-  };
-
-  postOutfit = () => {
-    const ajaxOptions = {
-      url: `${this.URL}/post/outfit/${this.curUser()}`,
-      type: "POST",
-      data: this.serialize(),
-      success: () => {},
-      error: () => {},
-    };
-    $.ajax(ajaxOptions);
-  };
-}
-
-class AddItem {
-  constructor(options) {
-    let config = {
-      usernameQueryHandler: curUser,
-      URL: BASE_URL,
-    };
-    Object.assign(config, options);
-
-    this.config = config;
-    this.curUser = config.usernameQueryHandler;
-    this.fields = [
-      "description",
-      "rating",
-      "category",
-      "subCategory",
-      "type",
-      "fit",
-      "length",
-      "brand",
-      "purchaseLocation",
-      "purchaseDate",
-      "cost",
-      "condition",
-      "washType",
-    ];
-    this.CSVfields = ["style"];
-    this.form = new FormParse();
-    this.genIterableIds = (range, suffix) => {
-      const ret = [];
-      for (let i = range; i > 0; i--) {
-        ret.push(`${suffix}${i}`);
-      }
-      return ret;
-    };
-    this.mats = {
-      materials: this.genIterableIds(4, "mat"),
-      weights: this.genIterableIds(4, "matWeight"),
-    };
-    this.col = {
-      colors: this.genIterableIds(6, "color"),
-      weights: this.genIterableIds(6, "colorWeight"),
-    };
-
-    /** Read and construct into Item shape. */
-    this.serialize = () => {
-      const ret = {
-        ...this.form.read(this.fields),
-        ...this.form.readCSV(this.CSVfields),
-        size: {
-          number: this.form.inputsToArray(["numberSizing1", "numberSizing2"]),
-          letter: document.querySelector("#letterSizingInput").value,
-        },
-        material: this.form.readArrayFields(this.mats),
-        color: this.form.readArrayFields(this.col),
-      };
-      return ret;
-    };
-  }
-
-  post = () => {
-    const ajaxOptions = {
-      url: `${this.config.URL}/post/item/${this.curUser()}`,
-      type: "POST",
-      data: this.serialize(),
-      success: () => {},
-      error: () => {},
-    };
-    $.ajax(ajaxOptions);
-  };
-}
-
-class Search {
-  constructor(responseHandler, options) {
-    let config = {
-      usernameQueryHandler: curUser,
-      resultsSelector: "div.searchResultCard",
-      URL: BASE_URL,
-    };
-    Object.assign(config, options);
-
-    this.URL = config.URL;
-    this.curUser = config.usernameQueryHandler;
-    this.result = config.resultsSelector;
-
-    this.keywordNodeQuery = () => {
-      return document
-        .querySelector("#searchAll")
-        .querySelector("input[type=search]").value;
-    };
-
-    this.responseHandler = responseHandler;
-  }
-
-  /**
-   *
-   * @returns {Promise<Item[]>}
-   */
-  allItems = async () => {
-    return $.get(`${this.URL}/get/items/${this.curUser()}`, (items) => {
-      return items;
-    });
-  };
-
-  /**
-   *
-   * @returns {Promise<Outfit[]>}
-   */
-  allOutfits = async () => {
-    return $.get(`${this.URL}/get/outfits/${this.curUser()}`, (outfits) => {
-      return outfits;
-    });
-  };
-
-  validateFieldSelected = async () => {
-    if (!document.querySelector("#filterDropdownChoice").getAttribute("data")) {
-      this.popoverAlert();
-      return false;
-    } else {
-      return true;
-    }
-  };
-
-  popoverAlert = () => {
-    const location = document.querySelector("#filterDropdownButton");
-    let popover = new bootstrap.Popover(location, {
-      title: "Select a Filter Type First",
-      content:
-        "Or search all fields using the other search bar at the top of the page.",
-      placement: "top",
-      trigger: "focus",
-    });
-    const killPopover = () => {
-      popover.dispose();
-      location.removeEventListener("mouseover", killPopover);
-    };
-    location.addEventListener("mouseover", killPopover);
-    setTimeout(() => {
-      popover.show();
-    }, 10);
-  };
-
-  /**
-   *
-   * @returns {Promise<Item[]>}
-   */
-  keywordAllFields = async () => {
-    return $.get(
-      `${this.URL}/search/all/${this.curUser()}/${this.keywordNodeQuery()}`,
-      (searchResults) => {
-        return searchResults;
-      }
-    );
-  };
-
-  currentResults = () => {
-    const ret = [];
-    for (const card of document.querySelectorAll(this.result)) {
-      if (card.data) {
-        ret.push(card.data);
-      }
-    }
-    return ret;
-  };
-
-  /**
-   * If there are already search results displayed, then only
-   * eliminate active results.If there are no results
-   * displayed (first search or recently cleared),
-   * peform a new query.
-   */
-  keywordOneField = async () => {
-    return this.validateFieldSelected().then((validated) => {
-      if (!validated) {
-        return;
-      } else {
-        const active = this.currentResults();
-        const ajaxOptions = {
-          url: `${this.URL}/search/field`,
-          type: "POST",
-          data: {
-            username: this.curUser(),
-            keyword: document.querySelector("#filterSearchInput").value,
-            field: document
-              .querySelector("#filterDropdownChoice")
-              .getAttribute("data"),
-          },
-          success: (searchResults) => {
-            return searchResults;
-          },
-          error: (reason) => {
-            console.log(reason);
-          },
-        };
-
-        // Narrowing down currently displayed results.
-        if (active.length > 0) {
-          Object.assign(ajaxOptions, {
-            url: `${this.URL}/search/intersection`,
-          });
-          ajaxOptions.data["narrowTarget"] = currentResults;
-        }
-
-        return $.ajax(ajaxOptions);
-      }
-    });
-  };
-
-  clearResults = async () => {
-    while (document.querySelectorAll(this.result).length > 0) {
-      document.querySelector(this.result).remove();
-    }
-    return;
-  };
-}
-
-class User {
-  constructor(options) {
-    let config = {
-      URL: "http://127.0.0.1:5000",
-      registerRedirect: "/add/item",
-      loginRedirect: "/home",
-      loginNodes: {
-        username: "loginEmail",
-        password: "loginPassword",
-      },
-      registerNodes: {
-        username: "registerEmail",
-        password: "registerPassword",
-      },
-    };
-    Object.assign(config, options);
-    this.URL = config.URL;
-    this.config = config;
-    this.redirect = pushPage; // TODO
-
-    this.v = (selector) => {
-      return document.querySelector(`#${selector}`).value;
-    };
-    this.ajaxConfig = {
-      type: "POST",
-      error: (reason) => {
-        console.log(reason);
-      },
-    };
-    this.successHandler = (usernameNodeId, redirectURL) => {
-      sessionStorage.setItem("username", this.v(usernameNodeId));
-      this.redirect(redirectURL);
-    };
-  }
-
-  request = {
-    login: () => {
-      const ajaxOptions = {
-        url: `${this.URL}/login`,
-        data: {
-          username: this.v(this.config.loginNodes.username),
-          password: this.v(this.config.loginNodes.password),
-        },
-        success: () => {
-          this.successHandler(
-            this.config.loginNodes.username,
-            this.config.loginRedirect
-          );
-        },
-      };
-      Object.assign(ajaxOptions, this.ajaxConfig);
-      $.ajax(ajaxOptions);
-    },
-
-    register: () => {
-      const ajaxOptions = {
-        url: `${this.URL}/register`,
-        data: {
-          username: this.v(this.config.registerNodes.username),
-          password: this.v(this.config.registerNodes.password),
-        },
-        success: () => {
-          this.successHandler(
-            this.config.registerNodes.username,
-            this.config.registerRedirect
-          );
-        },
-      };
-      Object.assign(ajaxOptions, this.ajaxConfig);
-      $.ajax(ajaxOptions);
-    },
-  };
-}
-
 class FormParse {
   constructor() {
     this.v = (selector) => {
@@ -596,6 +240,463 @@ class FormParse {
   };
 }
 
+class Refresh {
+  constructor(containers, exclude) {
+    if (!Array.isArray(containers)) {
+      this.containers = [containers];
+    } else {
+      this.containers = containers;
+    }
+    this.exclude = exclude;
+    console.log(this.containers);
+  }
+
+  scrollToTop = () => {
+    setTimeout(function () {
+      window.scrollTo(0, 0);
+    }, 50);
+  };
+
+  reset = () => {
+    for (const container of this.containers) {
+      console.log(container.children);
+      while (container.children.length > 0) {
+        container.children[0].remove();
+      }
+    }
+  };
+
+  clearInputs() {
+    let inputs = document.querySelectorAll("input");
+    for (let input of inputs) {
+      if (!input.type === "search") {
+        let placeholder = input.getAttribute("placeholder");
+        input.setAttribute("value", `${placeholder ? placeholder : ""}`);
+      }
+    }
+  }
+
+  fullReset = async () => {
+    this.clearInputs();
+    this.reset();
+    this.scrollToTop();
+    return;
+  };
+}
+
+//
+// ─── FEATURES ───────────────────────────────────────────────────────────────────
+//
+
+class Notifications {
+  constructor(options) {
+    let config = {};
+    Object.assign(config, options);
+    Object.assign(this, config);
+  }
+
+  minimialToast = (container, message) => {
+    container = container || document.querySelector("#main")
+    let toastEl = document.createElement("div");
+    toastEl.classList.add("toast");
+    toastEl.setAttribute("role", "alert");
+    toastEl.setAttribute("aria-live", "assertive");
+    toastEl.setAttribute("aria-atomic", "true");
+    toastEl.innerHTML = `
+      <div class="d-flex">
+        <div class="toast-body">
+          ${message}
+        </div>
+        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>`;
+    container.prepend(toastEl);
+    setTimeout(() => {
+      const toast = new bootstrap.Toast(toastEl, {
+        delay: 2000,
+        autohide: false,
+      });
+      console.log(toast);
+      setTimeout(() => {
+        toast.show();
+      }, 10);
+    }, 20);
+  };
+
+  popoverTooltip = async (location, config) => {
+    const popover = new bootstrap.Popover(location, config);
+    const killPopover = () => {
+      popover.dispose();
+      location.removeEventListener("mouseover", killPopover);
+      document.documentElement.removeEventListener("click", killPopover);
+    };
+    document.documentElement.addEventListener("click", killPopover);
+    location.addEventListener("mouseover", killPopover);
+    setTimeout(() => {
+      popover.show();
+    }, 10);
+  };
+}
+
+class AddOutfit {
+  constructor(options) {
+    let config = {
+      curUser: curUser,
+      URL: BASE_URL,
+      itemsQueueNode: document.querySelector("#items-queue"),
+      fields: [
+        "description",
+        "rating",
+        "category",
+        "subCategory",
+        "type",
+        "lastWorn",
+        "wearCount",
+        "temperature",
+        "notes",
+      ],
+      arrayFields: {
+        weather: [
+          "weatherRain",
+          "weatherSnow",
+          "weatherSun",
+          "weatherWindy",
+          "weatherHumid",
+        ],
+      },
+      CSVfields: ["formality", "setting", "event"],
+    };
+    Object.assign(config, options);
+    Object.assign(this, config);
+    this.form = new FormParse();
+
+    this.itemQueueIds = () => {
+      const ret = [];
+      for (const item of this.itemsQueueNode.children) {
+        if (item && item.getAttribute("data")) {
+          ret.push(item.getAttribute("data"));
+        }
+      }
+      return ret;
+    };
+
+    this.serialize = () => {
+      return {
+        ...this.form.read(this.fields),
+        ...this.form.readArrayFields(this.arrayFields),
+        ...this.form.readCSV(this.CSVfields),
+        items: this.itemQueueIds(),
+      };
+    };
+  }
+
+  postOutfit = async () => {
+    console.log(this.serialize());
+    const ajaxOptions = {
+      url: `${this.URL}/post/outfit/${this.curUser()}`,
+      type: "POST",
+      data: this.serialize(),
+      success: () => {
+        return;
+      },
+      error: () => {},
+    };
+    return $.ajax(ajaxOptions);
+  };
+}
+
+class AddItem {
+  constructor(options) {
+    let config = {
+      usernameQueryHandler: curUser,
+      URL: BASE_URL,
+    };
+    Object.assign(config, options);
+
+    this.config = config;
+    this.curUser = config.usernameQueryHandler;
+    this.fields = [
+      "description",
+      "rating",
+      "category",
+      "subCategory",
+      "type",
+      "fit",
+      "length",
+      "brand",
+      "purchaseLocation",
+      "purchaseDate",
+      "cost",
+      "condition",
+      "washType",
+    ];
+    this.CSVfields = ["style"];
+    this.form = new FormParse();
+    this.genIterableIds = (range, suffix) => {
+      const ret = [];
+      for (let i = range; i > 0; i--) {
+        ret.push(`${suffix}${i}`);
+      }
+      return ret;
+    };
+    this.mats = {
+      materials: this.genIterableIds(4, "mat"),
+      weights: this.genIterableIds(4, "matWeight"),
+    };
+    this.col = {
+      colors: this.genIterableIds(6, "color"),
+      weights: this.genIterableIds(6, "colorWeight"),
+    };
+
+    /** Read and construct into Item shape. */
+    this.serialize = () => {
+      const ret = {
+        ...this.form.read(this.fields),
+        ...this.form.readCSV(this.CSVfields),
+        size: {
+          number: this.form.inputsToArray(["numberSizing1", "numberSizing2"]),
+          letter: document.querySelector("#letterSizingInput").value,
+        },
+        material: this.form.readArrayFields(this.mats),
+        color: this.form.readArrayFields(this.col),
+      };
+      return ret;
+    };
+  }
+
+  post = () => {
+    const ajaxOptions = {
+      url: `${this.config.URL}/post/item/${this.curUser()}`,
+      type: "POST",
+      data: this.serialize(),
+      success: () => {},
+      error: () => {},
+    };
+    $.ajax(ajaxOptions);
+  };
+}
+
+class Search {
+  constructor(options, responseHandler) {
+    let config = {
+      URL: BASE_URL,
+      curUser: curUser,
+      filterTxtSelector: () => {
+        return document.querySelector("#filterSearchInput");
+      },
+      searchTxtSelector: () => {
+        return document
+          .querySelector("#searchAll")
+          .querySelector("input[type=search]").value;
+      },
+      filterTypeSelector: () => {
+        return document
+          .querySelector("#filterDropdownChoice")
+          .getAttribute("data");
+      },
+      tooltipNodeLoc: document.querySelector("#filterDropdownButton"),
+      filterTitle: "Filter Type",
+      requiredErrorMsg:
+        "Or Search all fields using the other search bar at the top of the page",
+      ajaxErrorHanlder: (reason) => console.log(reason),
+      resultsSelector: () => {
+        return document.querySelectorAll("div.searchResultCard");
+      },
+    };
+    Object.assign(config, options);
+    Object.assign(this, config);
+    this.responseHandler = responseHandler;
+    this.notify = new Notifications();
+
+    // Can capture.
+    this.validateFilter = async () => {
+      if (!this.filterTypeSelector()) {
+        this.notify.popoverTooltip(this.tooltipNodeLoc, {
+          title: `Select a ${this.filterTitle} First`,
+          content: this.requiredErrorMsg,
+          placement: "top",
+          trigger: "focus",
+        });
+        return false;
+      } else {
+        return true;
+      }
+    };
+  }
+
+  currentResults = () => {
+    const ret = [];
+    for (const card of this.resultsSelector()) {
+      if (card.data) {
+        ret.push(card.data);
+      }
+    }
+    return ret;
+  };
+
+  clearResults = async () => {
+    while (this.resultsSelector().length > 0) {
+      this.resultsSelector()[0].remove();
+    }
+    return;
+  };
+
+  /**
+   *
+   * @returns {Promise<Item[]>}
+   */
+  itemById = async (id) => {
+    return $.get(`${this.URL}/get/oneitem/${id}`, (items) => {
+      return items;
+    });
+  };
+
+  /**
+   *
+   * @returns {Promise<Item[]>}
+   */
+  allItems = async () => {
+    return $.get(`${this.URL}/get/items/${this.curUser()}`, (items) => {
+      return items;
+    });
+  };
+
+  /**
+   *
+   * @returns {Promise<Outfit[]>}
+   */
+  allOutfits = async () => {
+    return $.get(`${this.URL}/get/outfits/${this.curUser()}`, (outfits) => {
+      return outfits;
+    });
+  };
+
+  /**
+   *
+   * @returns {Promise<Item[]>}
+   */
+  keywordAllFields = async () => {
+    return $.get(
+      `${this.URL}/search/all/${this.curUser()}/${this.searchTxtSelector()}`,
+      (searchResults) => {
+        return searchResults;
+      }
+    );
+  };
+
+  /**
+   * If there are already search results displayed, then only
+   * eliminate active results.If there are no results
+   * displayed (first search or recently cleared),
+   * peform a new query.
+   */
+  keywordOneField = async () => {
+    return this.validateFilter().then((validated) => {
+      if (!validated) {
+        return;
+      } else {
+        const active = this.currentResults();
+        const ajaxOptions = {
+          url: `${this.URL}/search/field`,
+          type: "POST",
+          data: {
+            username: this.curUser(),
+            keyword: this.filterTxtSelector().value,
+            field: this.filterTypeSelector(),
+          },
+          success: (searchResults) => {
+            return searchResults;
+          },
+          error: this.ajaxErrorHanlder,
+        };
+
+        // Narrowing down currently displayed results.
+        if (active.length > 0) {
+          Object.assign(ajaxOptions, {
+            url: `${this.URL}/search/intersection`,
+          });
+          ajaxOptions.data["narrowTarget"] = currentResults;
+        }
+
+        return $.ajax(ajaxOptions);
+      }
+    });
+  };
+}
+
+class User {
+  constructor(options) {
+    let config = {
+      URL: "http://127.0.0.1:5000",
+      registerRedirect: "/add/item",
+      loginRedirect: "/home",
+      loginNodes: {
+        username: "loginEmail",
+        password: "loginPassword",
+      },
+      registerNodes: {
+        username: "registerEmail",
+        password: "registerPassword",
+      },
+    };
+    Object.assign(config, options);
+    this.URL = config.URL;
+    this.config = config;
+    this.redirect = pushPage; // TODO
+
+    this.v = (selector) => {
+      return document.querySelector(`#${selector}`).value;
+    };
+    this.ajaxConfig = {
+      type: "POST",
+      error: (reason) => {
+        console.log(reason);
+      },
+    };
+    this.successHandler = (usernameNodeId, redirectURL) => {
+      sessionStorage.setItem("username", this.v(usernameNodeId));
+      this.redirect(redirectURL);
+    };
+  }
+
+  request = {
+    login: () => {
+      const ajaxOptions = {
+        url: `${this.URL}/login`,
+        data: {
+          username: this.v(this.config.loginNodes.username),
+          password: this.v(this.config.loginNodes.password),
+        },
+        success: () => {
+          this.successHandler(
+            this.config.loginNodes.username,
+            this.config.loginRedirect
+          );
+        },
+      };
+      Object.assign(ajaxOptions, this.ajaxConfig);
+      $.ajax(ajaxOptions);
+    },
+
+    register: () => {
+      const ajaxOptions = {
+        url: `${this.URL}/register`,
+        data: {
+          username: this.v(this.config.registerNodes.username),
+          password: this.v(this.config.registerNodes.password),
+        },
+        success: () => {
+          this.successHandler(
+            this.config.registerNodes.username,
+            this.config.registerRedirect
+          );
+        },
+      };
+      Object.assign(ajaxOptions, this.ajaxConfig);
+      $.ajax(ajaxOptions);
+    },
+  };
+}
+
 class Templates {
   constructor(options) {
     let config = {
@@ -670,7 +771,85 @@ class Templates {
     }, 10);
   };
 
+  listItem = (
+    item,
+    container,
+    classlist = ["list-group-item", "list-group-item-action"]
+  ) => {
+    let itemNode = document.createElement("div");
+    itemNode.classList.add(...classlist);
+    itemNode.setAttribute("data", item._id);
+    container = container || document.querySelector("#items-queue");
+    const index = container.children.length + 1;
+    itemNode.innerHTML = `
+        <a
+        aria-current="${index == 1 ? "true" : "false"}"
+        class="list-group-item-action text-decoration-none"
+        data-bs-toggle="collapse" 
+        href="#item${index}" 
+        role="button" 
+        aria-expanded="${index == 1 ? "true" : "false"}" 
+        aria-controls="item${index}"
+        >
+        <div class="d-flex">
+        <div class="flex-fill">
+        <h5 class="mb-1">${item.description}
+        <span class="badge bg-secondary">Style 1</span>
+        <span class="badge bg-secondary">Style 2</span>
+        <span class="badge bg-primary text-dark">Fit</span>
+        <span class="badge bg-info text-dark" >Fit</span>
+        </h5>
+        <p class="text-dark">${item.category}</p>
+        </div>
+        <div class="d-flex flex-row-reverse align-items-stretch">
+        <div style="background-color: ${
+          item.color.colors[0]
+        }; border-radius: 3px; color: ${
+      item.color.colors[0]
+    }" class="ml-2 py-2 my-2">${item.color.colors[0]}</div>
+        </div>
+        </div>
+        <div class="collapse" id="item${index}">
+        <div class="d-flex w-100 justify-content-between">
+        <h6 class="mb-1">${item.brand ? item.brand + " | " : ""} ${
+      item.subCategory ? item.subCategory + " | " : ""
+    } 
+        ${item.type ? item.type + " | " : ""}  
+        <span class="badge bg-secondary">${item.rating}</span>
+        </h6>
+        <small> <a role="button" class="mx-1 text-decoration-none text-dark dismiss-queue-item" data="${
+          item._id
+        }">Remove</a></small>
+        </div>
+        <p class="mb-1">${item.length ? item.length + " | " : ""} ${
+      item.size.letter ? item.size.letter + " | " : ""
+    } ${
+      item.size.number[0]
+        ? item.size.number[0].toString() + "x" + item.size.number[1] + " | "
+        : ""
+    } ${item.condition ? "Condition: " + item.condition : ""}</p>
+        <p><small class="text-muted">
+        ${item.purchaseLocation ? "Purchased at " + item.purchaseLocation : ""}
+        ${
+          (item.purchaseDate && !item.purchaseLocation) ||
+          (item.cost && !item.purchaseLocation)
+            ? "Purchased "
+            : ""
+        }
+        ${
+          item.purchaseDate ? item.purchaseDate.toString() + " days ago" : ""
+        } ${item.cost ? " for $" + item.cost : ""}
+        </small></p>
+        </div>
+        </a>`;
+    container.appendChild(itemNode);
+  };
+
   itemCards = async (items, container, classlist = ["col-sm-6"]) => {
+    if (!Array.isArray(items)) {
+      items = [items];
+    }
+
     for (const item of items) {
       let card = document.createElement("div");
       card.classList.add(...classlist);
@@ -690,7 +869,12 @@ class Templates {
           <p class="card-text"><small class="text-muted">${
             item.purchaseLocation ? "Purchased at " + item.purchaseLocation : ""
           }
-          ${item.purchaseDate && !item.purchaseLocation || item.cost && !item.purchaseLocation ? "Purchased " : ""}
+          ${
+            (item.purchaseDate && !item.purchaseLocation) ||
+            (item.cost && !item.purchaseLocation)
+              ? "Purchased "
+              : ""
+          }
            ${
              item.purchaseDate ? item.purchaseDate.toString() + " days ago" : ""
            } ${item.cost ? " for $" + item.cost : ""}</small></p>
@@ -717,8 +901,10 @@ class Templates {
           </ul>
           <div class="card-body">
           <p class="card-text">${item.length}</p>
-          <a data="${item._id}" class="btn btn-primary">Add</a>
-          <a class="card-link">Dismiss</a>
+          <a data="${item._id}" class="btn btn-primary add-to-queue">Add</a>
+          <a data="${
+            item._id
+          }" class="card-link dismiss-search-item">Dismiss</a>
           </div>
           </div>
           </div>
@@ -733,13 +919,26 @@ class Templates {
 //
 
 class PageAddOutfit {
-  constructor() {
+  constructor(itemQueueNode, searchOutputNode) {
+    this.queue = itemQueueNode || document.querySelector("#items-queue");
+    this.searchResults =
+      searchOutputNode || document.querySelector("#searchResultsMain");
     this.outfit = new AddOutfit();
     this.search = new Search();
+    this.templates = new Templates();
+    this.refresh = new Refresh(this.queue);
+    this.notification = new Notifications()
 
     document.documentElement.addEventListener("click", (event) => {
       const caller = event.target;
-      if (
+      const callerClasses = Array.from(caller.classList);
+      if (caller.id === "submitAddOutfit") {
+        this.outfit.postOutfit().then(() => {
+          this.search.clearResults();
+          this.refresh.fullReset();
+          this.notification.minimialToast(document.querySelector("#main"), "Outfit added to your collection.")
+        });
+      } else if (
         caller.tagName === "A" &&
         caller.parentElement.parentElement.id === "filterDropdownChoice"
       ) {
@@ -747,6 +946,33 @@ class PageAddOutfit {
         this.handleFilterTypeChange(caller);
       } else if (caller.id === "clearResultsInput") {
         this.search.clearResults();
+      } else if (callerClasses.includes("add-to-queue")) {
+        let id = caller.getAttribute("data");
+        this.search.itemById(id).then((item) => {
+          this.templates.listItem(item);
+        });
+      } else if (caller.id === "clear-items-queue") {
+        while (this.queue.children.length > 0) {
+          this.queue.firstElementChild.remove();
+        }
+      } else if (
+        callerClasses.includes("dismiss-search-item") ||
+        callerClasses.includes("dismiss-queue-item")
+      ) {
+        let id = caller.getAttribute("data");
+        let parent = callerClasses.includes("dismiss-search-item")
+          ? this.searchResults
+          : this.queue;
+        for (const item of parent.children) {
+          if (
+            item.getAttribute("data") === id ||
+            (item.firstElementChild &&
+              item.firstElementChild.getAttribute("data") === id)
+          ) {
+            item.remove();
+            break;
+          }
+        }
       }
     });
 
@@ -761,6 +987,7 @@ class PageAddOutfit {
         });
       } else if (caller.id === "filterSearchForm") {
         event.preventDefault();
+        // this.search.activeFiltersToast();
         this.search.keywordOneField().then((items) => {
           if (items) {
             this.displaySearchRes(items);
@@ -769,61 +996,10 @@ class PageAddOutfit {
       }
     });
   }
-  displaySearchRes = (json) => {
-    const placeholder = "https://via.placeholder.com/800";
-    const container = document.querySelector("#searchResultsMain");
 
+  displaySearchRes = (json) => {
     this.search.clearResults().then(() => {
-      for (const item of json) {
-        let card = document.createElement("div");
-        card.classList.add("col-sm-6");
-        card.classList.add("searchResultCard");
-        card.innerHTML = `  <div class="card mb-3" data="${
-          item._id
-        }" style="max-width: 540px;">
-          <div class="row g-0">
-          <div class="col-md-4">
-          <img src="${placeholder}" class="img-fluid rounded-start" alt="Picture of ${
-          item.description
-        }">
-          <div class="container-fluid p-2">
-          <div class="row d-flex justify-content-center">
-          <p class="card-text"><small class="text-muted">Purchased at ${
-            item.purchaseLocation
-          } ${
-          item.purchaseDate ? item.purchaseDate.toString() + " days ago" : ""
-        }</small></p>
-          </div>
-          </div>
-          </div>
-          <div class="col-md-8">
-          <div class="card-body">
-          <h5 class="card-title">${item.description}</h5>
-          <p class="card-text">
-          ${item.category} | ${item.subCategory} | ${item.type}
-          </p>
-          </div>
-          <ul class="list-group list-group-flush">
-          <li class="list-group-item">${item.brand}</li>
-          <li class="list-group-item">${item.fit}</li>
-          <li class="list-group-item">${
-            item.size.letter ? "Size " + item.size.letter + " | " : ""
-          }  ${
-          item.size.number.length > 1
-            ? item.size.number[0].toString() + "x" + item.size.number[1]
-            : ""
-        }</li>
-          </ul>
-          <div class="card-body">
-          <p class="card-text">${item.length}</p>
-          <a data="${item._id}" class="btn btn-primary">Add</a>
-          <a class="card-link">Dismiss</a>
-          </div>
-          </div>
-          </div>
-          </div>`;
-        container.appendChild(card);
-      }
+      this.templates.itemCards(json, this.searchResults).then(() => {});
     });
   };
 
@@ -831,7 +1007,6 @@ class PageAddOutfit {
     // When a new choice is selected, set data of ul.
     let choice = caller.innerHTML;
     let ul = caller.parentElement.parentElement;
-
     ul.setAttribute("data", choice);
     setTimeout(() => {
       document.querySelector("#filterDropdownButton").innerHTML = choice;

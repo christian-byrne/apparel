@@ -93,7 +93,7 @@
 
     <div class="b-divider"></div>
 
-    <div class="container col-xxl-8 px-2 py-4">
+    <div id="main" class="container col-xxl-8 px-2 py-4">
       <!-- ──────────────────────────────────────────────────────────────────────────────── -->
 
       <div class="row g-5 py-5">
@@ -121,6 +121,7 @@
               aria-label="Search"
             />
           </form>
+          <button class="btn btn-outline-warning" type="button">Suggest Next Item</button>
         </div>
 
         <!--
@@ -128,6 +129,11 @@
           -->
 
         <div class="col">
+          <!-- • • • • • -->
+          <!--
+              -- ITEM QUEUE NAVBAR
+              -->
+
           <nav class="navbar navbar-expand-lg navbar-light bg-light px-0">
             <div class="container-fluid">
               <a class="navbar-brand" href="#">Items</a>
@@ -156,21 +162,21 @@
                       Options
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                      <li><a class="dropdown-item" href="#">Action</a></li>
                       <li>
-                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#">Make Template</a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="#">Export</a>
                       </li>
                       <li><hr class="dropdown-divider" /></li>
                       <li>
-                        <a class="dropdown-item" href="#"
-                          >Something else here</a
-                        >
+                        <a class="dropdown-item" href="#">Suggest Items</a>
                       </li>
                     </ul>
                   </li>
-                  <li class="nav-item">
+                  <li class="nav-item" id="clear-items-queue">
                     <a
-                      class="nav-link disabled"
+                      class="nav-link"
                       href="#"
                       tabindex="-1"
                       aria-disabled="true"
@@ -192,36 +198,18 @@
               </div>
             </div>
           </nav>
-          <div class="list-group">
-            <a
-              href="#"
-              class="list-group-item list-group-item-action active"
-              aria-current="true"
-            >
-              <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">List group item heading</h5>
-                <small>Remove</small>
-              </div>
-              <p class="mb-1">Some placeholder content in a paragraph.</p>
-              <small>And some small print.</small>
-            </a>
-            <a href="#" class="list-group-item list-group-item-action">
-              <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">List group item heading</h5>
-                <small class="text-muted">Remove</small>
-              </div>
-              <p class="mb-1">Some placeholder content in a paragraph.</p>
-              <small class="text-muted">And some muted small print.</small>
-            </a>
-            <a href="#" class="list-group-item list-group-item-action">
-              <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">List group item heading</h5>
-                <small class="text-muted">Remove</small>
-              </div>
-              <p class="mb-1">Some placeholder content in a paragraph.</p>
-              <small class="text-muted">And some muted small print.</small>
-            </a>
+
+          <!--
+            -- ITEM QUEUE CONTAINER
+            -->
+
+          <div class="list-group" id="items-queue">
+            <!-- • • • • • -->
+
+            <!-- • • • • • -->
           </div>
+
+          <!-- • • • • • -->
         </div>
       </div>
 
@@ -280,30 +268,9 @@
               class="form-control form-control-color"
               value="#880D1E"
             />
-            <!--
-            -- ACTIVE FILTERS
-            -->
-
-            <button
-              class="btn btn-outline-secondary dropdown-toggle mx-1"
-              type="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              Active Filters
-            </button>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
-              <li>
-                <a class="dropdown-item" href="#">Something else here</a>
-              </li>
-              <li><hr class="dropdown-divider" /></li>
-              <li><a class="dropdown-item" href="#">Separated link</a></li>
-            </ul>
             <button
               id="clearResultsInput"
-              class="btn btn-outline-info mx-1"
+              class="btn btn-outline-secondary mx-1"
               type="button"
             >
               Clear Results
@@ -311,6 +278,10 @@
           </div>
         </nav>
 
+        <!--
+      -- ACTIVE FILTERS
+      -->
+        <div id="active-filters-list"></div>
         <!--
           -- SEARCH RESULTS
           -->
@@ -413,7 +384,7 @@
           <div class="input-group mb-3">
             <label for="categoryInput" class="input-group-text">Category</label>
             <select name="categoryInput" id="categoryInput" class="form-select">
-              <option selected>Choose...</option>
+              <option disabled value="" selected>Choose...</option>
               <option value="shirt">Shirt</option>
               <option value="tshirt">T-shirt</option>
               <option value="pants">Pants</option>
@@ -437,13 +408,13 @@
               id="subCategoryInput"
               name="subCategoryInput"
             >
-              <option selected>. . .</option>
+              <option disabled value="" selected>. . .</option>
               <option value=""></option>
             </select>
 
             <label for="typeInput" class="input-group-text">Sub-Type</label>
             <select class="form-select" id="typeInput" name="typeInput">
-              <option selected>. . .</option>
+              <option disabled value="" selected>. . .</option>
               <option value=""></option>
             </select>
           </div>

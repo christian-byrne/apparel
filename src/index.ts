@@ -348,9 +348,9 @@ class App {
     this.http.server.post("/post/outfit/:user", this.createOutfit);
     this.http.server.get("/get/items/:user", this.getItems);
     this.http.server.get("/get/outfits/:user", this.getOutfits);
+    this.http.server.get("/get/oneitem/:id", this.getOneFromId);
     this.http.server.get("/search/all/:user/:keyword", this.searchItems);
     this.http.server.post("/search/field", this.filterItems);
-
     this.http.catch();
 
     // 8. Construct HTTP server.
@@ -488,6 +488,12 @@ class App {
         res.json(item);
       }
     );
+  };
+
+  getOneFromId = (req: Request, res: Response) => {
+    this.db.itemModel.findById(req.params.id).then((item: Item) => {
+      res.json(item);
+    });
   };
 
   findAllFromId = async (idArray: string[], collection: Model<any, {}, {}>) => {

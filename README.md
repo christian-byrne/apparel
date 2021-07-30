@@ -249,6 +249,8 @@ interface Item {
 - ✅ side bar with user content on view outfits page: https://getbootstrap.com/docs/5.0/examples/sidebars/
 - ? Edit global stylesheets
   - ? global divider styling
+- ? outfit details also a nav tab system like add-item fields
+- change text color of tab titles
 
 #### Day 8-11
 
@@ -272,6 +274,8 @@ interface Item {
 - Search feature
 - ✅ Navbar and button hrefs
 - ? make mannequin clickable
+- badges
+  - [docs](https://getbootstrap.com/docs/5.0/components/badge/)
 
 #### Day 12-14
 
