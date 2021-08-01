@@ -11,6 +11,7 @@ import cors from "cors";
 import multer from "multer";
 import "cookie-parser";
 import cookieParser from "cookie-parser";
+import { readdir } from "fs/promises";
 
 type ItemFit = "Oversized" | "Loose" | "Casual" | "Fitted" | "Tight";
 type BroadCategory = "shirt" | "tshirt" | "sweater";
@@ -311,7 +312,7 @@ class App {
     }).then((value: typeof import("mongoose")) => {
       if (!__prod__ && this.verbose.log) {
         this.verbose.alert("Mongoose Client Constructed");
-        console.dir(value);
+        // console.dir(value);
       }
     });
 
@@ -350,6 +351,7 @@ class App {
     this.http.server.get("/get/outfits/:user", this.getOutfits);
     this.http.server.get("/get/oneitem/:id", this.getOneFromId);
     this.http.server.get("/search/all/:user/:keyword", this.searchItems);
+    this.http.server.get("/filenames/:dir", this.getFileNames);
     this.http.server.post("/search/field", this.filterItems);
     this.http.catch();
 
@@ -360,6 +362,20 @@ class App {
       }
     });
   }
+
+  fileNames = async (dir: string): Promise<object> => {
+    return await readdir(dir);
+  };
+
+  getFileNames = (req: Request, res: Response) => {
+    this.fileNames(`public_html/${decodeURIComponent(req.params.dir)}`)
+      .then((files) => {
+        res.json(files);
+      })
+      .catch((reason) => {
+        console.error(reason);
+      });
+  };
 
   toCamelCase = (fieldName) => {
     if (fieldName.trim().split(" ").length > 1) {

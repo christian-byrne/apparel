@@ -101,88 +101,6 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 - GET Wardrobe
 - GET Outfits
 - GET suggestion
-- GET Analytics (_maybe_)
-
-#### Dependencies
-
-- Cookie-parser
-- Multer
-- Node sass
-- Sass loader
-- Cors
-
-#### Document Shapes
-
-```typescript
-type ItemFit = "Oversized" | "Loose" | "Casual" | "Fitted" | "Tight";
-type BroadCategory = "shirt" | "tshirt" | "sweater";
-type MenGeneralSize =
-  | "KID"
-  | "XXS"
-  | "XS"
-  | "S"
-  | "M"
-  | "L"
-  | "XL"
-  | "XXL"
-  | "XXXL"
-  | "PLUS";
-type WomenGeneralSize = number;
-type ShoeSize = number;
-type FormalSize = [number, number];
-
-interface ItemColors {
-  colors: string[];
-  weights: {
-    [color: string]: number;
-  };
-  ordered?: string[];
-}
-
-interface ItemMaterials {
-  materials: string[];
-  weights: {
-    [material: string]: number;
-  };
-}
-
-interface ItemCondition {
-  material: number;
-  color: number;
-}
-
-interface Item {
-  // A description that it is helpful to the user -- something that they can
-  // see to help them remember what the item refers to.
-  description: string;
-  // Broad category.
-  category: BroadCategory;
-  // Type of the given category.
-  subCategory: string;
-  // Hihgly specific type of given category.
-  type: string;
-  // See styles list.
-  styles: string[];
-  // How the item fits the user.
-  fit: ItemFit;
-  // TODO: Add details
-  length: string;
-
-  color: ItemColors;
-  material: ItemMaterials;
-  brand: string;
-  rating: number;
-  size: MenGeneralSize | WomenGeneralSize | ShoeSize | FormalSize;
-
-  // Optional fields.
-  purchaseLocation?: string;
-  purchaseDate?: Date;
-  cost?: number;
-
-  washType?: string;
-  condition?: ItemCondition;
-}
-```
 
 <a name="timeline"/>
 
@@ -212,6 +130,10 @@ interface Item {
 - Info collection
   - definitions of default field parameters
   - definition for tooltips and info modals
+  - https://www.insider.com/popular-fashion-trends-history-us-2019-2
+  - https://fashionhistory.fitnyc.edu/
+  - https://www.crfashionbook.com/fashion/g27033975/fashion-staples-throughout-decade/
+  - https://www.whowhatwear.com/fashion-by-the-decade
 - User Account Customization
   - profile pic
   - gender: "which picture better represents you?"
@@ -291,6 +213,9 @@ interface Item {
 - Testing users
 - Testing mobile
 - Final Demo Video -> Upload
+- subcategory and type datalist dynamnic fileds based on fashion dictionary schematics/blueprints/guides
+- item field categoris dynamically added to `add-item` page based on specific item details (reference description of items in spreadsheet)
+- placeholder image is the patterns/gradient of colors/prints
 
 ---
 

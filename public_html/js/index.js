@@ -248,7 +248,6 @@ class Refresh {
       this.containers = containers;
     }
     this.exclude = exclude;
-    console.log(this.containers);
   }
 
   scrollToTop = () => {
@@ -259,7 +258,6 @@ class Refresh {
 
   reset = () => {
     for (const container of this.containers) {
-      console.log(container.children);
       while (container.children.length > 0) {
         container.children[0].remove();
       }
@@ -600,6 +598,25 @@ class SketchColors {
     const solver = new Solver(color);
     const result = solver.solve();
     return result.filter;
+  };
+}
+
+class Directory {
+  constructor(options) {
+    let config = {
+      URL: BASE_URL,
+    };
+    Object.assign(config, options);
+    Object.assign(this, config);
+  }
+
+  fileNames = async (dirName) => {
+    return $.get(
+      `${this.URL}/filenames/${encodeURIComponent(dirName)}`,
+      (fileNames) => {
+        return fileNames;
+      }
+    );
   };
 }
 
@@ -1234,24 +1251,54 @@ class Templates {
 }
 
 class Mannequin {
-  constructor(containerSelector) {
-    this.container = document.querySelector(containerSelector);
+  constructor(containerSelector, gender) {
     this.containerSelector = containerSelector;
-    this.firstLayer = document.querySelector(`${containerSelector} > img:nth-of-type(1)`)
+    this.container = document.querySelector(containerSelector);
+    this.referenceLayer = document.querySelector(
+      `${containerSelector} > img:nth-of-type(1)`
+    );
+    this.files = new Directory();
+    this.colors = new SketchColors();
+    this.match = new ClosestMatch();
+    this.gender = gender;
+    this.clothes;
+    this.propOptions().then((items) => {
+      this.clothes = items;
+    });
+
     this.maskLayers = () => {
-      return document.querySelectorAll(`${containerSelector} > img:nth-of-type(n + 2)`);
-    }
+      return document.querySelectorAll(
+        `${containerSelector} > img:nth-of-type(n + 2)`
+      );
+    };
+    window.addEventListener("resize", () => {
+      setTimeout(() => {
+        this.resize();
+      }, 10);
+    });
+
+    /**
+     *
+     * @returns {[width: string, height: string]}
+     */
     this.computedSize = () => {
-      const reference = window.getComputedStyle(this.firstLayer);
+      let reference = window.getComputedStyle(this.referenceLayer);
       return [reference.width, reference.height];
     };
-    this.resize();
-    this.colors = new SketchColors();
   }
 
   get dimensions() {
     return this.computedSize();
   }
+
+  propOptions = async () => {
+    return this.files.fileNames(`img/${this.gender}`).then((names) => {
+      const ret = [];
+      names.forEach((file) => ret.push(file.split(".")[0]));
+      this.clothingOptions = ret;
+      return ret;
+    });
+  };
 
   resize = () => {
     const [newWidth, newHeight] = this.computedSize();
@@ -1265,12 +1312,51 @@ class Mannequin {
     }
   };
 
-  colorize = (itemName, color) => {
+  // TODO can implement pattern or print layer on top using mask image
+
+  dress = (item) => {
+    this.propOptions().then((images) => {
+      const match = new ClosestMatch(images);
+      let layer;
+      // Try an image layer for type then subcategory then category. Else, do nothing..
+      for (const characteristic of [
+        item.type,
+        item.subCategory,
+        item.category,
+      ]) {
+        layer = match.closestInArray(characteristic, images);
+        if (layer) {
+          break;
+        }
+      }
+
+      if (layer) {
+        this.addProp(layer, item.color.colors[0]);
+      }
+    });
+  };
+
+  positionNode = (node) => {
+    const dimensions = this.computedSize();
+    [node.style.width, node.style.height] = dimensions;
+    node.style.marginTop = `${parseInt(dimensions[1]) * -1}px`;
+  };
+
+  addProp = (itemName, color) => {
+    const imgLayer = document.createElement("img");
+    imgLayer.src = `/img/${this.gender}/${itemName}.png`;
+    imgLayer.loading = "eager";
+    imgLayer.alt = `${color} ${itemName} layer on mannequin.`;
+    imgLayer.id = `#mask-${itemName}`;
+
     const filters = this.colors.filterConvert(color);
-    // TODO closest match and subcategory / subtype selection.
-    const target = document.querySelector(`#mask-${itemName}`);
-    target.style.setProperty("filter", filters);
-    target.style.opacity = "1.0";
+    imgLayer.style.filter = filters;
+    imgLayer.style.opacity = "1.0";
+
+    setTimeout(() => {
+      this.positionNode(imgLayer);
+      this.container.appendChild(imgLayer);
+    }, 20);
   };
 }
 
@@ -1280,7 +1366,7 @@ class Mannequin {
 
 class PageAddOutfit {
   constructor(itemQueueNode, searchOutputNode) {
-    this.mannequin = new Mannequin(".mask-outlines")
+    this.mannequin = new Mannequin(".mask-outlines", "male");
     this.queue = itemQueueNode || document.querySelector("#items-queue");
     this.searchResults =
       searchOutputNode || document.querySelector("#searchResultsMain");
@@ -1289,13 +1375,6 @@ class PageAddOutfit {
     this.templates = new Templates();
     this.refresh = new Refresh(this.queue);
     this.notification = new Notifications();
-
-    setTimeout(() => {
-      this.mannequin.colorize("pants", "#1560bd")
-      this.mannequin.colorize("shoes", "#ffffff")
-      this.mannequin.colorize("shirt", "#808080")
-      this.mannequin.colorize("hat", "#ff7f7f")
-    }, 100)
 
     document.documentElement.addEventListener("click", (event) => {
       const caller = event.target;
@@ -1321,6 +1400,7 @@ class PageAddOutfit {
         let id = caller.getAttribute("data");
         this.search.itemById(id).then((item) => {
           this.templates.listItem(item);
+          this.mannequin.dress(item);
         });
       } else if (caller.id === "clear-items-queue") {
         while (this.queue.children.length > 0) {

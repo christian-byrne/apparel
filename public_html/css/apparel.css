@@ -126,14 +126,12 @@
  * ─── MASK IMAGES ────────────────────────────────────────────────────────────────
  */
 
-  
-
-.mask-outlines {
+.mask-outlines img {
+  background: transparent;
 }
 
 .mask-outlines img:nth-of-type(n + 2) {
-    background: transparent;
-    opacity: 0;
+  opacity: 0;
   position: absolute;
   /* display: block !important; */
   width: 500px;
@@ -144,7 +142,7 @@
 }
 
 .mask-outlines img:last-of-type {
-    opacity: 1;
+  opacity: 1;
 }
 
 @media (min-width: 992px) {
