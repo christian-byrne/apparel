@@ -94,7 +94,7 @@
 
     <!-- ──────────────────────────────────────────────────────────────────────────────── -->
 
-    <div class="container col-xxl-8 px-1 py-2">
+    <div id="main" class="container col-xxl-8 px-1 py-2">
       <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
         <div class="col-10 col-sm-8 col-lg-6">
           <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -149,14 +149,19 @@
               </div>
             </div>
           </nav>
-          <img
-            src="/img/male/male-blank.png"
-            class="d-block mx-lg-auto img-fluid"
-            alt="Bootstrap Themes"
-            width="700"
-            height="500"
-            loading="lazy"
-          />
+
+          <!--
+            -- MANNEQUIN IMG LAYERS
+            -->
+
+          <div class="mask-outlines mt-0">
+            <img
+              class="d-block mx-lg-auto img-fluid"
+              id="mask-blank"
+              src="/img/male/male-blank.png"
+              alt="Sketch template showing the color of the item selected on a body."
+            />
+          </div>
         </div>
 
         <!--

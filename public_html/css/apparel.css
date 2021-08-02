@@ -161,3 +161,13 @@
   aspect-ratio: 700 / 500;
   height: auto;
 }
+
+/*
+ * ─── TOAST NOTIFICATIONS ────────────────────────────────────────────────────────
+ */
+
+.toast-icon {
+  width: 1ch;
+  height: 1ch;
+  aspect-ratio: 1 / 1;
+}

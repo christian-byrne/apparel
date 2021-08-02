@@ -266,13 +266,27 @@ class FormParse {
 }
 
 class Refresh {
-  constructor(containers, exclude) {
+  constructor(containers, options) {
+    let config = {
+      defaultValues: {
+        text: "",
+        number: "",
+        date: "",
+        file: "",
+        color: "#000000",
+        search: "",
+      },
+      exclude: [],
+    };
+    Object.assign(config, options);
+    Object.assign(this, config);
+
+    this.containers = containers || [];
     if (!Array.isArray(containers)) {
       this.containers = [containers];
     } else {
       this.containers = containers;
     }
-    this.exclude = exclude;
   }
 
   scrollToTop = () => {
@@ -289,12 +303,23 @@ class Refresh {
     }
   };
 
+  defaultTab = () => {
+    let firstTab = document.querySelector("ul.nav-tabs > li:nth-of-type(1)");
+    if (firstTab) {
+      firstTab.click();
+      if (firstTab.firstElementChild) {
+        firstTab.firstElementChild.click();
+      }
+    }
+  };
+
   clearInputs() {
     let inputs = document.querySelectorAll("input");
     for (let input of inputs) {
-      if (!input.type === "search") {
-        let placeholder = input.getAttribute("placeholder");
-        input.setAttribute("value", `${placeholder ? placeholder : ""}`);
+      if (Object.keys(this.defaultValues).includes(input.type)) {
+        input.value = this.defaultValues[input.type];
+      } else {
+        input.value = "";
       }
     }
   }
@@ -302,6 +327,7 @@ class Refresh {
   fullReset = async () => {
     this.clearInputs();
     this.reset();
+    this.defaultTab();
     this.scrollToTop();
     return;
   };
@@ -657,12 +683,7 @@ class Notifications {
   }
 
   minimialToast = (container, message) => {
-    container = container || document.querySelector("#main");
-    let toastEl = document.createElement("div");
-    toastEl.classList.add("toast");
-    toastEl.setAttribute("role", "alert");
-    toastEl.setAttribute("aria-live", "assertive");
-    toastEl.setAttribute("aria-atomic", "true");
+    const toastEl = this.constructToast();
     toastEl.innerHTML = `
       <div class="d-flex">
         <div class="toast-body">
@@ -671,16 +692,58 @@ class Notifications {
         <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
       </div>`;
     container.prepend(toastEl);
+    this.initializeToast(toastEl);
+  };
+
+  initializeToast = (toastEl) => {
     setTimeout(() => {
       const toast = new bootstrap.Toast(toastEl, {
         delay: 2000,
         autohide: false,
       });
-      console.log(toast);
       setTimeout(() => {
         toast.show();
       }, 10);
-    }, 20);
+    }, 200);
+  };
+
+  constructToast = () => {
+    const toastEl = document.createElement("div");
+    toastEl.classList.add("toast");
+    toastEl.setAttribute("role", "alert");
+    toastEl.setAttribute("aria-live", "assertive");
+    toastEl.setAttribute("aria-atomic", "true");
+    return toastEl;
+  };
+
+  centeredToast = (container, title, message, color) => {
+    const div = document.createElement("div");
+    div.classList.add(
+      "pb-5",
+      "d-flex",
+      "justify-content-center",
+      "align-items-center",
+      "w-100"
+    );
+    div.setAttribute("aria-live", "polite");
+    div.setAttribute("aria-atomic", "true");
+    container.prepend(div);
+    this.toast(div, title, message, color);
+  };
+
+  toast = (container, title, message, color) => {
+    const toastEl = this.constructToast();
+    toastEl.innerHTML = `<div class="toast-header">
+          <div class="rounded me-2 toast-icon" style="background: ${color};"></div>
+          <strong class="me-auto">${title}</strong>
+          <small>1 min ago</small>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          ${message}
+        </div>`;
+    container.prepend(toastEl);
+    this.initializeToast(toastEl);
   };
 
   popoverTooltip = async (location, config) => {
@@ -1228,7 +1291,9 @@ class Templates {
       if (item.image) {
         image = `<img src="${this.image}" loading="lazy" class="img-fluid rounded-start" alt="Picture of ${item.description}"></img>`;
       } else {
-        image = `<div class="rounded-start item-card-color" style="${this.paletteToGradient(item.color)};"></div>`;
+        image = `<div class="rounded-start item-card-color" style="${this.paletteToGradient(
+          item.color
+        )};"></div>`;
       }
 
       card.classList.add(this.config.cardClass);
@@ -1340,6 +1405,13 @@ class Mannequin {
       });
   };
 
+  undressAll = async () => {
+    while (this.maskLayers().length > 0) {
+      this.maskLayers()[0].remove();
+    }
+    return;
+  };
+
   resize = () => {
     const [newWidth, newHeight] = this.computedSize();
     for (const stackedImg of this.maskLayers()) {
@@ -1407,6 +1479,9 @@ class Mannequin {
   };
 
   addProp = (itemName, color) => {
+    if (!this.clothes.includes(itemName)) {
+      return;
+    }
     const imgLayer = document.createElement("img");
     imgLayer.src = `/img/${this.gender}/${itemName}.png`;
     imgLayer.loading = "eager";
@@ -1447,6 +1522,7 @@ class PageAddOutfit {
         this.outfit.postOutfit().then(() => {
           this.search.clearResults();
           this.refresh.fullReset();
+          this.mannequin.undressAll();
           this.notification.minimialToast(
             document.querySelector("#main"),
             "Outfit added to your collection."
@@ -1535,12 +1611,44 @@ class PageAddOutfit {
 class PageAddItem {
   constructor() {
     this.item = new AddItem();
+    this.mannequin = new Mannequin(".mask-outlines", "male");
+    this.refresh = new Refresh([]);
+    this.notification = new Notifications();
+
+    document.documentElement.addEventListener("change", (event) => {
+      const caller = event.target;
+      if (
+        ["categoryInput", "typeInput", "subCategoryInput"].includes(
+          caller.id
+        ) ||
+        caller.id.includes("color")
+      ) {
+        // Parse form to get current item object.
+        let currItem = this.item.serialize();
+        // If atleast 1 color field filled out, undress then update mannequin.
+        if (currItem.color.weights.length > 0) {
+          this.mannequin.undressAll().then(() => {
+            this.mannequin.dress(currItem);
+          });
+        }
+      }
+    });
 
     document.documentElement.addEventListener("click", (event) => {
       const caller = event.target;
       if (caller.id === "submitAddItem") {
         event.preventDefault();
         this.item.post();
+        this.notification.centeredToast(
+          document.querySelector("div.col-lg-6:nth-of-type(2)"),
+          "Item Added!",
+          "Item added to your collection.",
+          document.querySelector("input[type=color]").value
+        );
+        setTimeout(() => {
+          this.mannequin.undressAll();
+          this.refresh.fullReset();
+        }, 30);
       }
     });
   }

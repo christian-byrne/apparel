@@ -113,7 +113,8 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
   - ✅ Global page layout
 - Static Resources
   - sketch images
-    - photoshop fill
+    - photoshop fill other elements
+    - female outline
 - ✅ Login / Register
   - ✅ HTML
   - ✅ Ajax
@@ -128,9 +129,9 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
   - ✅ HTML forms
   - ✅ Ajax
 - mannequin gender loading func using dynamic FS functinos
-- Add refresh functions to form submit on add item
-- add mannequin feature to add item page
-- login client event handlers
+- ✅ Add refresh functions to form submit on add item
+- ✅ add mannequin feature to add item page
+- login (not register) client event handlers
 - Info collection
   - definitions of default field parameters
   - definition for tooltips and info modals
@@ -153,7 +154,7 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
   - in a datalist
   - any new fields that user creates sohuld be added to datalist
   - ? user created fields should be placed above defaults in datalist or it should be alphabetical?
-- Input correction/closest match util object
+- ✅Input correction/closest match util object
 
 #### Day 4-7
 
@@ -181,6 +182,7 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 #### Day 8-11
 
 - color nearest neighbor
+- color suggest = opening coolor.co with GET request of hex codes
 - Browse wardrobe
   - ✅ DOM constructor functions
   - ✅ Browse wardrobe
@@ -189,19 +191,17 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
   - HTML & Ajax
 - Browse items sidebar features
 - browse wardrobe sidebar features
-- Generate page features
-  - Collapsible sections
-  - Navbar collapse feature
+- ✅ Generate page features
+  - ✅ Collapsible sections
+  - ✅ Navbar collapse feature
 - Dark mode
 - Tooltips
   - Using popover system
-- push notifications with toasts
-- badges
+- ✅ push notifications with toasts
+- ✅ badges
 - Search feature
 - ✅ Navbar and button hrefs
 - ? make mannequin clickable
-- badges
-  - [docs](https://getbootstrap.com/docs/5.0/components/badge/)
 
 #### Day 12-14
 
