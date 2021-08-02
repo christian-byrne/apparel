@@ -132,6 +132,7 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 - ✅ Add refresh functions to form submit on add item
 - ✅ add mannequin feature to add item page
 - login (not register) client event handlers
+- import/export from spreadsheet
 - Info collection
   - definitions of default field parameters
   - definition for tooltips and info modals
