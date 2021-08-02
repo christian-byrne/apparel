@@ -151,3 +151,13 @@
     margin-left: auto !important;
   }
 }
+
+/*
+ * ─── ITEM CARDS ─────────────────────────────────────────────────────────────────
+ */
+
+.item-card-color {
+  width: 100%;
+  aspect-ratio: 700 / 500;
+  height: auto;
+}

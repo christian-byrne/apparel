@@ -160,10 +160,13 @@ class ClosestMatch {
 class FormParse {
   constructor() {
     this.v = (selector) => {
-      const node = document.querySelector(selector);
+      const node = document.querySelector(`#${selector}Input`);
       return node ? node.value : false;
     };
-
+    this.siblingQuery = (selector) => {
+      return document.querySelector(`#${selector}Input`).nextElementSibling
+        .value;
+    };
     this.format = (inputVal) => {
       return inputVal.trim().toLowerCase();
     };
@@ -196,7 +199,7 @@ class FormParse {
   inputsToArray = (fields, queryHandler = this.v) => {
     const ret = [];
     for (const input of fields) {
-      let value = queryHandler(`#${input}Input`);
+      let value = queryHandler(input);
       if (value) {
         ret.push(value);
       }
@@ -219,7 +222,7 @@ class FormParse {
   read = (fields, queryHandler = this.v) => {
     const serialized = {};
     for (const field of fields) {
-      serialized[field] = queryHandler(`#${field}Input`);
+      serialized[field] = queryHandler(field);
     }
     return serialized;
   };
@@ -236,6 +239,28 @@ class FormParse {
       });
       ret[field] = formatted;
     }
+    return ret;
+  };
+
+  readWeighted = (fieldObj) => {
+    const ret = {};
+    const unsorted = {};
+    const properties = Object.keys(fieldObj);
+    let unsortedValues = this.inputsToArray(fieldObj[properties[0]]);
+    let unsortedWeights = this.inputsToArray(fieldObj[properties[1]]);
+
+    for (let i = 0; i < unsortedValues.length; i++) {
+      if (unsortedWeights[i] && unsortedWeights[i] != 0) {
+        unsorted[unsortedValues[i]] = unsortedWeights[i];
+      }
+    }
+    const sorted = Object.fromEntries(
+      Object.entries(unsorted)
+        .sort(([, a], [, b]) => a - b)
+        .reverse()
+    );
+    ret[properties[0]] = Object.keys(sorted);
+    ret[properties[1]] = Object.values(sorted);
     return ret;
   };
 }
@@ -769,7 +794,7 @@ class AddItem {
     this.form = new FormParse();
     this.genIterableIds = (range, suffix) => {
       const ret = [];
-      for (let i = range; i > 0; i--) {
+      for (let i = 1; i <= range; i++) {
         ret.push(`${suffix}${i}`);
       }
       return ret;
@@ -792,8 +817,8 @@ class AddItem {
           number: this.form.inputsToArray(["numberSizing1", "numberSizing2"]),
           letter: document.querySelector("#letterSizingInput").value,
         },
-        material: this.form.readArrayFields(this.mats),
-        color: this.form.readArrayFields(this.col),
+        material: this.form.readWeighted(this.mats),
+        color: this.form.readWeighted(this.col),
       };
       return ret;
     };
@@ -1181,6 +1206,15 @@ class Templates {
     container.appendChild(itemNode);
   };
 
+  paletteToGradient = (itemColors) => {
+    const [colors, percents] = [itemColors.colors, itemColors.weights];
+    let template = `background: ${colors[0]}; background: radial-gradient(circle`;
+    for (let i = 0; i < itemColors.colors.length; i++) {
+      template += `, ${colors[i]} ${percents[i]}%`;
+    }
+    return template + ");";
+  };
+
   itemCards = async (items, container, classlist = ["col-sm-6"]) => {
     if (!Array.isArray(items)) {
       items = [items];
@@ -1189,17 +1223,21 @@ class Templates {
     for (const item of items) {
       let card = document.createElement("div");
       card.classList.add(...classlist);
+
+      let image;
+      if (item.image) {
+        image = `<img src="${this.image}" loading="lazy" class="img-fluid rounded-start" alt="Picture of ${item.description}"></img>`;
+      } else {
+        image = `<div class="rounded-start item-card-color" style="${this.paletteToGradient(item.color)};"></div>`;
+      }
+
       card.classList.add(this.config.cardClass);
       card.innerHTML = `  <div class="card mb-3" data="${
         item._id
       }" style="max-width: 540px;">
           <div class="row g-0">
           <div class="col-md-4">
-          <img src="${
-            this.config.placeholder
-          }" class="img-fluid rounded-start" alt="Picture of ${
-        item.description
-      }">
+          ${image}
           <div class="container-fluid p-2">
           <div class="row d-flex justify-content-center">
           <p class="card-text"><small class="text-muted">${
@@ -1291,13 +1329,15 @@ class Mannequin {
     return this.computedSize();
   }
 
-  propOptions = async () => {
-    return this.files.fileNames(`img/${this.gender}`).then((names) => {
-      const ret = [];
-      names.forEach((file) => ret.push(file.split(".")[0]));
-      this.clothingOptions = ret;
-      return ret;
-    });
+  propOptions = async (accents = false) => {
+    return this.files
+      .fileNames(`img/${this.gender}/${accents ? "accent" : ""}`)
+      .then((names) => {
+        const ret = [];
+        names.forEach((file) => ret.push(file.split(".")[0]));
+        this.clothingOptions = ret;
+        return ret;
+      });
   };
 
   resize = () => {
@@ -1329,9 +1369,33 @@ class Mannequin {
           break;
         }
       }
-
       if (layer) {
         this.addProp(layer, item.color.colors[0]);
+        // Get accent props for colors after main color.
+        this.propOptions(true).then((accentImgs) => {
+          let accentWeights = [];
+          accentImgs.forEach((accent) =>
+            accentWeights.push(accent.replace(/[^0-9]+/g, ""))
+          );
+          const getClosest = (weight) => {
+            return accentWeights.reduce(function (pre, cur) {
+              return Math.abs(cur - weight) < Math.abs(pre - weight)
+                ? cur
+                : pre;
+            });
+          };
+          for (let i = 1; i < item.color.colors.length; i++) {
+            let closest = getClosest(item.color.weights[i]);
+            let accentFile = `accent/${layer}-${closest}`;
+            this.addProp(accentFile, item.color.colors[i]);
+            // Remove from options so not choosing same layer for multiple colors.
+            accentWeights = accentWeights.filter((value) => value != closest);
+            // Return when no accent image layers left.
+            if (accentWeights.length == 0) {
+              return;
+            }
+          }
+        });
       }
     });
   };
@@ -1347,7 +1411,7 @@ class Mannequin {
     imgLayer.src = `/img/${this.gender}/${itemName}.png`;
     imgLayer.loading = "eager";
     imgLayer.alt = `${color} ${itemName} layer on mannequin.`;
-    imgLayer.id = `#mask-${itemName}`;
+    // imgLayer.id = `#mask-${itemName}`;
 
     const filters = this.colors.filterConvert(color);
     imgLayer.style.filter = filters;

@@ -127,6 +127,10 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
   - ✅ Routers
   - ✅ HTML forms
   - ✅ Ajax
+- mannequin gender loading func using dynamic FS functinos
+- Add refresh functions to form submit on add item
+- add mannequin feature to add item page
+- login client event handlers
 - Info collection
   - definitions of default field parameters
   - definition for tooltips and info modals

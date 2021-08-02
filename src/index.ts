@@ -33,7 +33,6 @@ type FormalSize = [number, number];
 interface ItemColors {
   colors: string[];
   weights: number[];
-  ordered?: string[];
 }
 
 interface ItemMaterials {
