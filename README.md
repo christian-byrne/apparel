@@ -1,15 +1,16 @@
 # Final Project | CSC337
+**_Author_**: Christian P. Byrne
 
 - [Overview](#overview)
 - [Frontend](#frontend)
 - [Backend](#backend)
 - [Timeline](#timeline)
 
-**_Author_**: Christian P. Byrne
 
 <a name="overview"/>
 
-## Overview
+# Overview
+
 
 This webapp will server as a wardrobe manager app. It will work similarly to how a kitchen manager app would work -- by saving recipes (outfits) and suggesting recipes based on avaialble foods (clothes) and defined rulesets/dictionaries (publicly available cookbooks).
 
@@ -19,7 +20,15 @@ The suggestion algorithms will be used to generate new outfits for the sake of c
 
 But perhaps most helpful, the app will simply serve as a log of outfits. In theory it will be beneifical to have a list of outfits (characterized by each constituent item) and a rating system attached to those oufits -- as well as other sorting parameters like temperature, formality, and so on. If someone spends a portion of their day trying to find the correct clothing items -- constantly forgetting the full extent of their wardrobe and the previous combinations -- this app can help them.
 
+
+
 <a name="frontend"/>
+
+# Frontend
+
+<details>
+<summary> details </summary>
+
 
 ## Frontend
 
@@ -64,9 +73,20 @@ Browse user's outfits.
 
 If time permits and it's realistic to implement, some analytics based on the data the user passes. For example, where the user spends most money in terms of clothing type.
 
-<a name="backend"/>
+</details>
 
-## Backend
+
+
+# Backend
+
+- Auth
+- Image Upload
+- Routers
+- Schemas
+
+<details>
+<summary> details </summary>
+
 
 #### Authentification
 
@@ -80,7 +100,9 @@ Use the `setInterval` sessionkeys method outlined in the lecture for security.
 
 I will use `Multer` from PA10 for image uploads. Maybe I should learn how to set permissions on images, because I have just been storing them in the public directory so far.
 
-#### Schemas
+
+#### Schemas 
+
 
 - User
 - Item
@@ -92,6 +114,7 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 
 **User** document will have `items` attribute of the shape`_id[]`.
 
+
 #### Routers
 
 - POST Login
@@ -102,9 +125,18 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 - GET Outfits
 - GET suggestion
 
-<a name="timeline"/>
+</details>
 
-## Timeline
+# Timeline
+
+- day 1-3
+- day 4-7
+- day 8-11
+- day 12-14
+
+
+<details>
+<summary></summary>
 
 #### Day 1-3
 
@@ -213,6 +245,8 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 - Debugging
 - Bundling
 - Documenting
+- tucks
+- undertones
 - Pruning
 - Testing deployment
 - Testing users
@@ -222,10 +256,12 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 - item field categoris dynamically added to `add-item` page based on specific item details (reference description of items in spreadsheet)
 - placeholder image is the patterns/gradient of colors/prints
 
----
+---------
+
 
 #### Brainstorm Features
 
 - Similar: [Dress me app](https://www.dress-meapp.com/)
-- Use [Mannequin.js](https://boytchev.github.io/mannequin.js/) to model mockups
 - Color selection from picture such as feature on [coolors.co](https://coolors.co/)
+
+</details>
