@@ -15,6 +15,7 @@ import { readdir } from "fs/promises";
 import "./style-dict";
 import { spreadsheetColors } from "./../public_html/csv-port/json_colors";
 import { readFile, utils, WorkBook, WorkbookProperties, WorkSheet } from "xlsx";
+import { userInfo } from "os";
 
 type ItemFit = "Oversized" | "Loose" | "Casual" | "Fitted" | "Tight";
 type BroadCategory = "shirt" | "tshirt" | "sweater";
@@ -104,6 +105,18 @@ interface User {
   password: string;
   outfits: string[];
   items: string[];
+  gender: "female" | "male";
+  age: number;
+  bio: string;
+  height: string;
+  weight: string;
+  favColor1: string;
+  favColor2: string;
+  favColor3: string;
+  favStyle: string;
+  favClothingItem: string;
+  shoeSize: string;
+  pantSize: number[];
 }
 
 //
@@ -184,6 +197,18 @@ class Database {
       password: String,
       outfits: [String],
       items: [String],
+      gender: String,
+      age: Number,
+      bio: String,
+      height: String,
+      weight: String,
+      favColor1: String,
+      favColor2: String,
+      favColor3: String,
+      favStyle: String,
+      favClothingItem: String,
+      shoeSize: String,
+      pantSize: [Number],
     });
 
     this.itemModel = model<Item>("item", this.itemSchema);
@@ -496,6 +521,7 @@ class App {
     this.http.server.get("/search/all/:user/:keyword", this.searchItems);
     this.http.server.get("/filenames/:dir", this.getFileNames);
     this.http.server.post("/search/field", this.filterItems);
+    this.http.server.post("/user/gender", this.updateGender);
     this.http.catch();
 
     // 8. Construct HTTP server.
@@ -505,6 +531,19 @@ class App {
       }
     });
   }
+
+  updateGender = (req: Request, res: Response) => {
+    this.db.userModel
+      .findOne(
+        { username: req.body.username },
+        )
+        .then((user) => {
+          user.gender = req.body.gender;
+          user.save().then(() => {
+            res.end();
+          })
+      });
+  };
 
   importItemCSV = async (username: string) => {
     return this.csvImporter.parseExcel().then(async () => {

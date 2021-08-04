@@ -24,6 +24,14 @@
  * 
  */
 
+:root {
+  --color1: #dee2ff;
+  --color2: #8e9aaf;
+  --color3: #feeafa;
+  --color4: #efd3d7;
+  --color5: #985277;
+}
+
 /*
  * ─── DIVIDERS AND HORIZONTAL SPACERS ────────────────────────────────────────────
  */
@@ -170,4 +178,18 @@
   width: 1ch;
   height: 1ch;
   aspect-ratio: 1 / 1;
+}
+
+/*
+ * ─── REGISTRATION ANIMATIONS ────────────────────────────────────────────────────
+ */
+
+.landing-mannequin > img {
+  transition: filter 5.295s ease-in;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
+  background: transparent;
 }

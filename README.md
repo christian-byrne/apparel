@@ -140,13 +140,15 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 
 #### Day 1-3
 
+⏩ = low priority
+
 - ✅ App theme
   - ✅ Global CSS variables
   - ✅ Global page layout
-- Static Resources
-  - sketch images
-    - photoshop fill other elements
-    - female outline
+- ✅ Static Resources
+  - ✅ sketch images
+    - ✅ photoshop fill other elements
+    - ✅ female outline
 - ✅ Login / Register
   - ✅ HTML
   - ✅ Ajax
@@ -160,97 +162,101 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
   - ✅ Routers
   - ✅ HTML forms
   - ✅ Ajax
-- mannequin gender loading func using dynamic FS functinos
+- ✅ mannequin gender loading func using dynamic FS functinos
 - ✅ Add refresh functions to form submit on add item
 - ✅ add mannequin feature to add item page
-- login (not register) client event handlers
-- import/export from spreadsheet
-- Info collection
-  - definitions of default field parameters
-  - definition for tooltips and info modals
+- ✅ login (not register) client event handlers
+- password hasing
+- ✅ new user validation (no repeat)
+- ⏩ import/export from spreadsheet
+- ⏩ Info collection
+  - ✅ definitions of default field parameters
+  - ⏩ definition for tooltips and info modals
   - https://www.insider.com/popular-fashion-trends-history-us-2019-2
   - https://fashionhistory.fitnyc.edu/
   - https://www.crfashionbook.com/fashion/g27033975/fashion-staples-throughout-decade/
   - https://www.whowhatwear.com/fashion-by-the-decade
+- ⏩ nav bar over mannequin
+- style tags/badges/chips on item queue
 - User Account Customization
   - profile pic
-  - gender: "which picture better represents you?"
-    - determines mannequin type.
-  - account initialization phase
-  - ? some info can be translated into default form fields?
-  - ? nickname
-  - ? preferred algorithms
-  - style tag adding options in forms
-  - sub-category and sub-type dynamic `<select>` options loading
-- subcategory and type
-  - defined heirarchy of suggested
-  - in a datalist
-  - any new fields that user creates sohuld be added to datalist
-  - ? user created fields should be placed above defaults in datalist or it should be alphabetical?
+  - ✅ gender
+    - ✅ determines mannequin type.
+  - ✅ account initialization phase
+  - ✅ some info can be translated into default form fields?
+  - ✅ nickname
+  - ✅ preferred algorithms
+  - ✅ style tag adding options in forms
+  - ✅ sub-category and sub-type dynamic `<select>` options loading
+- ⏩ subcategory and type
+  - ⏩ defined heirarchy of suggested
+  - ⏩ in a datalist
+  - ⏩ any new fields that user creates sohuld be added to datalist
+  - ⏩ ? user created fields should be placed above defaults in datalist or it should be alphabetical?
 - ✅Input correction/closest match util object
 
 #### Day 4-7
 
-- Refactor routers
+- ⏩ Refactor routers
 - Determine best layout of item card
   - variability -- most items are optional, determine loading algorithm that makes sense and looks good regardless of fileds that are filled out
-- Browse style dict on styles tab
+- ⏩ Browse style dict on styles tab
 - Handle errors from server on client side by displaying to user
 - ✅ Client color selection inputs
-- Color parsing module?
+- ⏩ Color parsing module?
 - Image upload?
   - add field to schemas
 - Color algorithm
-- Define ruleset
-  - Info tooltips/modals
-- Define algorithmic suggestion
-- form fields update based on previous selection
-- Interactive features on generate page
+- ⏩ Define ruleset
+  - ⏩ Info tooltips/modals
+- ⏩ Define algorithmic suggestion
+- ⏩ form fields update based on previous selection
+- ⏩ Interactive features on generate page
 - ✅ side bar with user content on view outfits page: https://getbootstrap.com/docs/5.0/examples/sidebars/
-- ? Edit global stylesheets
-  - ? global divider styling
-- ? outfit details also a nav tab system like add-item fields
+- ✅ Edit global stylesheets
+  - ✅ global divider styling
+- ⏩ ? outfit details also a nav tab system like add-item fields
 - change text color of tab titles
 
 #### Day 8-11
 
-- color nearest neighbor
+- ⏩ color nearest neighbor
 - color suggest = opening coolor.co with GET request of hex codes
-- Browse wardrobe
+- ✅ Browse wardrobe
   - ✅ DOM constructor functions
   - ✅ Browse wardrobe
     - ✅ HTML & Ajax
-- Browse Items
+- Browse outfits
   - HTML & Ajax
-- Browse items sidebar features
-- browse wardrobe sidebar features
+- Browse outfits sidebar features
+- ✅ browse wardrobe sidebar features
 - ✅ Generate page features
   - ✅ Collapsible sections
   - ✅ Navbar collapse feature
-- Dark mode
+- ⏩ Dark mode
 - Tooltips
   - Using popover system
 - ✅ push notifications with toasts
 - ✅ badges
 - Search feature
 - ✅ Navbar and button hrefs
-- ? make mannequin clickable
+- ⏩ ? make mannequin clickable
 
 #### Day 12-14
 
-- ? global search feature
+- ⏩ ? global search feature
 - add "required" attribute to correct fields of forms (do last because so annoying in development)
-- carousel on view collection pages.
-- Refactoring
+- ⏩ carousel on view collection pages.
+- ⏩ Refactoring
 - Debugging
-- Bundling
+- ⏩ Bundling
 - Documenting
 - tucks
 - undertones
 - Pruning
 - Testing deployment
 - Testing users
-- Testing mobile
+- ⏩ Testing mobile
 - Final Demo Video -> Upload
 - subcategory and type datalist dynamnic fileds based on fashion dictionary schematics/blueprints/guides
 - item field categoris dynamically added to `add-item` page based on specific item details (reference description of items in spreadsheet)

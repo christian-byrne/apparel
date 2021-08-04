@@ -22,6 +22,10 @@ function appendUser(data) {
   }
 }
 
+const gender = () => {
+  return sessionStorage.getItem("gender");
+};
+
 const curUser = () => {
   // return encodeURIComponent(sessionStorage.getItem("username"));
   return sessionStorage.getItem("username");
@@ -671,6 +675,46 @@ class Directory {
   };
 }
 
+class ColorRotator {
+  constructor(targets) {
+    this.appTheme = ["#dee2ff", "#8e9aaf", "#feeafa", "#efd3d7", "#985277"];
+    this.palette = [
+      "#BDBDBD",
+      "#000000",
+      "#A17859",
+      "#C9B0A5",
+      "#966D45",
+      "#A17859",
+      "#37281A",
+      "#726C48",
+      "#354550",
+      "#000066",
+      "#CDEBF9",
+      "#FFFFFF",
+    ];
+    this.target = targets;
+    this.paletteCopy = [...this.palette];
+    this.infinitePal = this.palette.concat(this.paletteCopy);
+    this.filter = new SketchColors();
+
+    this.iterColor = () => {
+      for (let i = 0; i < targets.length; i++) {
+        let nxtColor = this.infinitePal[i];
+        let filterProp = this.filter.filterConvert(nxtColor);
+        targets[i].style.setProperty("filter", filterProp);
+        this.infinitePal.push(this.infinitePal.shift());
+      }
+    };
+
+    this.init = () => {
+      let interval = setInterval(this.iterColor, 6500);
+      setTimeout(() => {
+        clearInterval(interval);
+      }, 20000);
+    };
+  }
+}
+
 //
 // ─── FEATURES ───────────────────────────────────────────────────────────────────
 //
@@ -731,7 +775,7 @@ class Notifications {
     this.toast(div, title, message, color);
   };
 
-  toast = (container, title, message, color) => {
+  toast = (container, title, message, color, prepend = true) => {
     const toastEl = this.constructToast();
     toastEl.innerHTML = `<div class="toast-header">
           <div class="rounded me-2 toast-icon" style="background: ${color};"></div>
@@ -742,7 +786,11 @@ class Notifications {
         <div class="toast-body">
           ${message}
         </div>`;
-    container.prepend(toastEl);
+    if (prepend) {
+      container.prepend(toastEl);
+    } else {
+      container.appendChild(toastEl);
+    }
     this.initializeToast(toastEl);
   };
 
@@ -1051,8 +1099,8 @@ class User {
   constructor(options) {
     let config = {
       URL: "http://127.0.0.1:5000",
-      registerRedirect: "/add/item",
-      loginRedirect: "/home",
+      registerRedirect: "/register",
+      loginRedirect: "/wardrobe",
       loginNodes: {
         username: "loginEmail",
         password: "loginPassword",
@@ -1063,7 +1111,7 @@ class User {
       },
     };
     Object.assign(config, options);
-    this.URL = config.URL;
+    Object.assign(this, config);
     this.config = config;
     this.redirect = pushPage; // TODO
 
@@ -1082,6 +1130,24 @@ class User {
     };
   }
 
+  updateGender = (gender) => {
+    let ajaxOptions = {
+      url: `${this.URL}/user/gender/`,
+      type: "POST",
+      data: {
+        username: sessionStorage.getItem("username"),
+        gender: gender,
+      },
+      success: () => {
+        sessionStorage.setItem("gender", gender);
+      },
+      error: (reason) => {
+        console.error(reason);
+      },
+    };
+    $.ajax(ajaxOptions);
+  };
+
   request = {
     login: () => {
       const ajaxOptions = {
@@ -1090,11 +1156,22 @@ class User {
           username: this.v(this.config.loginNodes.username),
           password: this.v(this.config.loginNodes.password),
         },
-        success: () => {
-          this.successHandler(
-            this.config.loginNodes.username,
-            this.config.loginRedirect
-          );
+        success: (response) => {
+          if (response === true) {
+            this.successHandler(
+              this.config.loginNodes.username,
+              this.config.loginRedirect
+            );
+          } else {
+            let notify = new Notifications();
+            notify.toast(
+              document.querySelector("div.row"),
+              "Oops",
+              "Incorrect username/password combination.",
+              "#800f2f",
+              false
+            );
+          }
         },
       };
       Object.assign(ajaxOptions, this.ajaxConfig);
@@ -1478,7 +1555,7 @@ class Mannequin {
     node.style.marginTop = `${parseInt(dimensions[1]) * -1}px`;
   };
 
-  addProp = (itemName, color) => {
+  addProp = async (itemName, color) => {
     if (!this.clothes.includes(itemName)) {
       return;
     }
@@ -1496,6 +1573,7 @@ class Mannequin {
       this.positionNode(imgLayer);
       this.container.appendChild(imgLayer);
     }, 20);
+    return;
   };
 }
 
@@ -1503,9 +1581,55 @@ class Mannequin {
 // ─── PAGES ──────────────────────────────────────────────────────────────────────
 //
 
+class PageRegistration {
+  constructor() {
+    this.male = new Mannequin("div.mask-outlines:nth-of-type(1)", "male");
+    this.female = new Mannequin("div.female", "female");
+    this.user = new User();
+
+    this.notify = new Notifications();
+
+    document.documentElement.addEventListener("click", (event) => {
+      const caller = event.target;
+      const callerCss = Array.from(caller.classList);
+      const id = caller.id;
+
+      if (id === "femaleInput" || id === "maleInput") {
+        this.notify.toast(
+          document.querySelector("div.row:nth-of-type(2)"),
+          "Preferences Updated",
+          "The other fields are optional. Click the submit button whenver you want to proceed.",
+          "#dee2ff",
+          false
+        );
+        this.user.updateGender(`${id == "femaleInput" ? "female" : "male"}`);
+      } else if (id === "submitFinal") {
+        event.preventDefault();
+        // TODO: Post user details
+        window.location = "/add/item";
+      }
+    });
+
+    setTimeout(() => {
+      this.male.addProp("pants", "#121212");
+      this.male.addProp("shirt", "#b3b3b3");
+      this.male.addProp("shoes", "#000000");
+      this.female.addProp("jumpsuit", "#5673B7");
+      this.female.addProp("shoes", "#96736A");
+      setTimeout(() => {
+        let propList = this.male.maskLayers();
+        this.maleRotator = new ColorRotator(propList);
+        propList = this.female.maskLayers();
+        this.femaleRotator = new ColorRotator(propList);
+        this.maleRotator.init();
+      }, 15);
+    }, 375);
+  }
+}
+
 class PageAddOutfit {
   constructor(itemQueueNode, searchOutputNode) {
-    this.mannequin = new Mannequin(".mask-outlines", "male");
+    this.mannequin = new Mannequin(".mask-outlines", gender());
     this.queue = itemQueueNode || document.querySelector("#items-queue");
     this.searchResults =
       searchOutputNode || document.querySelector("#searchResultsMain");
@@ -1707,6 +1831,18 @@ const globalAppListeners = () => {
       clearAllInputs();
     }
   });
+
+  // Update manequin gender.
+  if (gender() && gender() === "female") {
+    let images = document.querySelectorAll(".mask-outlines > img");
+    for (const img of images) {
+      let curSrc = img.src;
+      console.log(curSrc);
+      curSrc = curSrc.replace(/male/g, "female");
+      console.log(curSrc);
+      img.src = curSrc;
+    }
+  }
 };
 
 window.onload = () => {
@@ -1717,9 +1853,16 @@ window.onload = () => {
     new PageAddItem();
   } else if (window.location.pathname.includes("/wardrobe")) {
     new PageWardrobe();
+  } else if (window.location.pathname.includes("/register")) {
+    new PageRegistration();
   } else {
     // ROOT PATH.
-    new PageEntry();
+    if (sessionStorage.getItem("username")) {
+      new PageEntry();
+      // window.location = "/wardrobe";
+    } else {
+      new PageEntry();
+    }
   }
 };
 
