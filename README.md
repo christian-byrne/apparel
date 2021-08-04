@@ -166,7 +166,7 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 - ✅ Add refresh functions to form submit on add item
 - ✅ add mannequin feature to add item page
 - ✅ login (not register) client event handlers
-- password hasing
+- 🔴 password hashing
 - ✅ new user validation (no repeat)
 - ⏩ import/export from spreadsheet
 - ⏩ Info collection
@@ -177,9 +177,9 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
   - https://www.crfashionbook.com/fashion/g27033975/fashion-staples-throughout-decade/
   - https://www.whowhatwear.com/fashion-by-the-decade
 - ⏩ nav bar over mannequin
-- style tags/badges/chips on item queue
-- User Account Customization
-  - profile pic
+- ✅ style tags/badges/chips on item queue
+- ✅ User Account Customization
+  - ✅ profile pic
   - ✅ gender
     - ✅ determines mannequin type.
   - ✅ account initialization phase
@@ -198,15 +198,14 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 #### Day 4-7
 
 - ⏩ Refactor routers
-- Determine best layout of item card
-  - variability -- most items are optional, determine loading algorithm that makes sense and looks good regardless of fileds that are filled out
+- 🔴 Determine best layout of item card
+  - 🔴 variability -- most items are optional, determine loading algorithm that makes sense and looks good regardless of fileds that are filled out
 - ⏩ Browse style dict on styles tab
-- Handle errors from server on client side by displaying to user
 - ✅ Client color selection inputs
 - ⏩ Color parsing module?
-- Image upload?
-  - add field to schemas
-- Color algorithm
+- ✅ Image upload?
+  - ✅ add field to schemas
+- 🔴 Color algorithm
 - ⏩ Define ruleset
   - ⏩ Info tooltips/modals
 - ⏩ Define algorithmic suggestion
@@ -216,51 +215,51 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 - ✅ Edit global stylesheets
   - ✅ global divider styling
 - ⏩ ? outfit details also a nav tab system like add-item fields
-- change text color of tab titles
+- 🔴 change text color of tab titles
 
 #### Day 8-11
 
 - ⏩ color nearest neighbor
-- color suggest = opening coolor.co with GET request of hex codes
+- 🔴 color suggest = opening coolor.co with GET request of hex codes
 - ✅ Browse wardrobe
   - ✅ DOM constructor functions
   - ✅ Browse wardrobe
     - ✅ HTML & Ajax
-- Browse outfits
-  - HTML & Ajax
-- Browse outfits sidebar features
+- 🔴 Browse outfits
+  - 🔴 HTML & Ajax
+- 🔴 Browse outfits sidebar features
 - ✅ browse wardrobe sidebar features
 - ✅ Generate page features
   - ✅ Collapsible sections
   - ✅ Navbar collapse feature
 - ⏩ Dark mode
-- Tooltips
-  - Using popover system
+- 🔴 Tooltips
+  - 🔴 Using popover system
 - ✅ push notifications with toasts
 - ✅ badges
-- Search feature
+- 🔴 Search feature -> navigation of site with closest match class
 - ✅ Navbar and button hrefs
 - ⏩ ? make mannequin clickable
 
 #### Day 12-14
 
 - ⏩ ? global search feature
-- add "required" attribute to correct fields of forms (do last because so annoying in development)
+- 🔴 add "required" attribute to correct fields of forms (do last because so annoying in development)
 - ⏩ carousel on view collection pages.
 - ⏩ Refactoring
-- Debugging
+- 🔴 Debugging
 - ⏩ Bundling
-- Documenting
-- tucks
-- undertones
-- Pruning
-- Testing deployment
-- Testing users
+- 🔴 Documenting
+- ⏩ tucks
+- ⏩ undertones
+- ⏩ Pruning
+- ✅ Testing deployment
+- ✅ Testing users
 - ⏩ Testing mobile
-- Final Demo Video -> Upload
-- subcategory and type datalist dynamnic fileds based on fashion dictionary schematics/blueprints/guides
-- item field categoris dynamically added to `add-item` page based on specific item details (reference description of items in spreadsheet)
-- placeholder image is the patterns/gradient of colors/prints
+- 🔴 Final Demo Video -> Upload
+- ⏩ subcategory and type datalist dynamnic fileds based on fashion dictionary schematics/blueprints/guides
+- ⏩ item field categoris dynamically added to `add-item` page based on specific item details (reference description of items in spreadsheet)
+- ✅ placeholder image is the patterns/gradient of colors/prints
 
 ---------
 

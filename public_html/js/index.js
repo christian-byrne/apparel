@@ -3,8 +3,6 @@
  *
  * @author Christian P. Byrne
  *
- * @todo add defined styles select array and tooltip from website.
- *
  *
  */
 
@@ -29,10 +27,6 @@ const gender = () => {
 const curUser = () => {
   // return encodeURIComponent(sessionStorage.getItem("username"));
   return sessionStorage.getItem("username");
-};
-
-const pushPage = (url = "/home.html") => {
-  window.location = url;
 };
 
 //
@@ -931,7 +925,12 @@ class AddItem {
         material: this.form.readWeighted(this.mats),
         color: this.form.readWeighted(this.col),
       };
-      return ret;
+      const multipartData = new FormData();
+      multipartData.append("image", document.querySelector("#imageInput").files[0] )
+      for ( const [key, value] of Object.entries(ret)) {
+        multipartData.append(key, value)
+      }
+      return multipartData;
     };
   }
 
@@ -939,6 +938,12 @@ class AddItem {
     const ajaxOptions = {
       url: `${this.config.URL}/post/item/${this.curUser()}`,
       type: "POST",
+
+      enctype: "multipart/form-data",
+      processData: false,
+      contentType: false,
+      cache: false,
+
       data: this.serialize(),
       success: () => {},
       error: () => {},
@@ -1109,12 +1114,38 @@ class User {
         username: "registerEmail",
         password: "registerPassword",
       },
+      curUser: curUser
     };
     Object.assign(config, options);
     Object.assign(this, config);
     this.config = config;
-    this.redirect = pushPage; // TODO
-
+    this.redirect = (url = "/wardrobe") => {
+      window.location = url;
+    };
+    this.genIterableIds = (range, suffix) => {
+      const ret = [];
+      for (let i = 1; i <= range; i++) {
+        ret.push(`${suffix}${i}`);
+      }
+      return ret;
+    };
+    this.col = {
+      colors: this.genIterableIds(6, "color"),
+      weights: this.genIterableIds(6, "colorWeight"),
+    };
+    this.fields = [
+      "bio",
+      "favCategory",
+      "favType",
+      "favBrand",
+      "age",
+      "weight",
+      "height",
+      "pantSize",
+      "shoeSize",
+      "favStyles"
+    ];
+    this.form = new FormParse();
     this.v = (selector) => {
       return document.querySelector(`#${selector}`).value;
     };
@@ -1129,6 +1160,38 @@ class User {
       this.redirect(redirectURL);
     };
   }
+
+  serialize = () => {
+      const ret = {
+        ...this.form.read(this.fields),
+        size: {
+          number: this.form.inputsToArray(["numberSizing1", "numberSizing2"]),
+          letter: document.querySelector("#letterSizingInput").value,
+        },
+        favColors: this.form.readWeighted(this.col),
+      };
+      const multipartData = new FormData();
+      multipartData.append("image", document.querySelector("#imageInput").files[0] )
+      for ( const [key, value] of Object.entries(ret)) {
+        multipartData.append(key, value)
+      }
+      return multipartData;
+  }
+
+  profilePost = () => {
+    const ajaxOptions = {
+      url: `${this.URL}/user/details/${this.curUser()}`,
+      type: "POST",
+      enctype: "multipart/form-data",
+      processData: false,
+      contentType: false,
+      cache: false,
+      data: this.serialize(),
+      success: () => {},
+      error: () => {},
+    };
+    $.ajax(ajaxOptions);
+  };
 
   updateGender = (gender) => {
     let ajaxOptions = {
@@ -1272,11 +1335,37 @@ class Templates {
     }, 10);
   };
 
+  smartTags = (item) => {
+    let ret = "";
+    let mainTagOptions = [
+      ...item.styles,
+      ...item.material.materials,
+      item.brand,
+    ];
+    let secondaryTags = [item.fit, item.length];
+    if (mainTagOptions.length > 0) {
+      ret += `<span class="badge bg-secondary">${mainTagOptions[0]}</span>`;
+    }
+    if (mainTagOptions.length > 1) {
+      ret += `<span class="badge bg-secondary">${mainTagOptions[1]}</span>`;
+    }
+    if (secondaryTags.length > 0) {
+      ret += `<span class="badge bg-primary text-dark">${secondaryTags[0]}</span>`;
+    } else if (mainTagOptions.length > 2) {
+      ret += `<span class="badge bg-primary text-dark">${mainTagOptions[2]}</span>`;
+    }
+    if (secondaryTags.length > 1) {
+      ret += `<span class="badge bg-info text-dark">${secondaryTags[1]}</span>`;
+    }
+    return ret;
+  };
+
   listItem = (
     item,
     container,
     classlist = ["list-group-item", "list-group-item-action"]
   ) => {
+    this.convertDate(item);
     let itemNode = document.createElement("div");
     itemNode.classList.add(...classlist);
     itemNode.setAttribute("data", item._id);
@@ -1295,10 +1384,7 @@ class Templates {
         <div class="d-flex">
         <div class="flex-fill">
         <h5 class="mb-1">${item.description}
-        <span class="badge bg-secondary">Style 1</span>
-        <span class="badge bg-secondary">Style 2</span>
-        <span class="badge bg-primary text-dark">Fit</span>
-        <span class="badge bg-info text-dark" >Fit</span>
+          ${this.smartTags(item)}
         </h5>
         <p class="text-dark">${item.category}</p>
         </div>
@@ -1337,9 +1423,9 @@ class Templates {
             ? "Purchased "
             : ""
         }
-        ${
-          item.purchaseDate ? item.purchaseDate.toString() + " days ago" : ""
-        } ${item.cost ? " for $" + item.cost : ""}
+        ${item.purchaseDate ? "on " + item.purchaseDate : ""} ${
+      item.cost ? " for $" + item.cost : ""
+    }
         </small></p>
         </div>
         </a>`;
@@ -1355,12 +1441,20 @@ class Templates {
     return template + ");";
   };
 
+  convertDate = (item) => {
+    if (item.purchaseDate) {
+      let d = new Date(item.purchaseDate);
+      item.purchaseDate = d.toLocaleDateString();
+    }
+  };
+
   itemCards = async (items, container, classlist = ["col-sm-6"]) => {
     if (!Array.isArray(items)) {
       items = [items];
     }
 
     for (const item of items) {
+      this.convertDate(item);
       let card = document.createElement("div");
       card.classList.add(...classlist);
 
@@ -1391,9 +1485,9 @@ class Templates {
               ? "Purchased "
               : ""
           }
-           ${
-             item.purchaseDate ? item.purchaseDate.toString() + " days ago" : ""
-           } ${item.cost ? " for $" + item.cost : ""}</small></p>
+           ${item.purchaseDate ? "on " + item.purchaseDate : ""} ${
+        item.cost ? " for $" + item.cost : ""
+      }</small></p>
           </div>
           </div>
           </div>
@@ -1605,7 +1699,7 @@ class PageRegistration {
         this.user.updateGender(`${id == "femaleInput" ? "female" : "male"}`);
       } else if (id === "submitFinal") {
         event.preventDefault();
-        // TODO: Post user details
+        
         window.location = "/add/item";
       }
     });
@@ -1865,5 +1959,3 @@ window.onload = () => {
     }
   }
 };
-
-export { appendUser, BASE_URL, pushPage };

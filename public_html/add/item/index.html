@@ -53,8 +53,8 @@
           </li>
         </ul>
         <ul class="nav">
-          <li class="/stats">
-            <a href="#" class="nav-link link-dark px-2">Stats</a>
+          <li class="/import">
+            <a href="#" class="nav-link link-dark px-2">Import/Export</a>
           </li>
           <li class="/analyze">
             <a href="#" class="nav-link link-dark px-2">Analyze</a>
@@ -373,10 +373,12 @@
               aria-labelledby="profile-tab"
             >
               <div class="mb-3 mt-3">
-                <label for="imageInput" class="form-label"
+                <form enctype="multipart/form-data" id="image-form">
+                  <label for="imageInput" class="form-label"
                   >Upload Photo and Parse Colors Automatically</label
-                >
-                <input type="file" id="imageInput" class="form-control" />
+                  >
+                  <input type="file" accept="image/*" id="imageInput" class="form-control" />
+                </form>
               </div>
 
               <label for="imageInput" class="form-label"

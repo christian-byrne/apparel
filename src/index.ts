@@ -14,8 +14,7 @@ import cookieParser from "cookie-parser";
 import { readdir } from "fs/promises";
 import "./style-dict";
 import { spreadsheetColors } from "./../public_html/csv-port/json_colors";
-import { readFile, utils, WorkBook, WorkbookProperties, WorkSheet } from "xlsx";
-import { userInfo } from "os";
+import { readFile, utils, WorkBook, WorkSheet } from "xlsx";
 
 type ItemFit = "Oversized" | "Loose" | "Casual" | "Fitted" | "Tight";
 type BroadCategory = "shirt" | "tshirt" | "sweater";
@@ -56,6 +55,7 @@ interface Item {
   subCategory: string;
   type: string;
   fit: ItemFit;
+  image: string;
   length: string;
   size: {
     letter: MenGeneralSize | WomenGeneralSize | ShoeSize;
@@ -89,6 +89,7 @@ interface Outfit {
   type: string;
   formality: string[];
   setting: string[];
+  image: string;
   event: string[];
   lastWorn: Date;
   temperautre: number;
@@ -110,13 +111,18 @@ interface User {
   bio: string;
   height: string;
   weight: string;
-  favColor1: string;
-  favColor2: string;
-  favColor3: string;
-  favStyle: string;
-  favClothingItem: string;
-  shoeSize: string;
-  pantSize: number[];
+  favColors: string[];
+  favStyles: string;
+  favType: string;
+  favCategory: string;
+  shoeSize: number;
+  pantSize: string;
+  image: string;
+  size: {
+    letter: MenGeneralSize | WomenGeneralSize | ShoeSize;
+    number: FormalSize;
+    dimensions?: string;
+  };
 }
 
 //
@@ -147,6 +153,7 @@ class Database {
       secondary: String,
       tertiary: String,
       quaternary: String,
+      image: String,
       color: {
         colors: [String],
         weights: [Number],
@@ -179,6 +186,7 @@ class Database {
       description: String,
       rating: Number,
       category: String,
+      image: String,
       subCategory: String,
       type: String,
       formality: [String],
@@ -194,21 +202,29 @@ class Database {
 
     this.userSchema = new Schema<User>({
       username: String,
+      size: {
+        letter: String,
+        number: [
+          { type: Number, required: false },
+          { type: Number, required: false },
+        ],
+        dimensions: { type: String, required: false },
+      },
       password: String,
       outfits: [String],
       items: [String],
       gender: String,
       age: Number,
       bio: String,
+      image: String,
       height: String,
       weight: String,
-      favColor1: String,
-      favColor2: String,
-      favColor3: String,
-      favStyle: String,
-      favClothingItem: String,
-      shoeSize: String,
-      pantSize: [Number],
+      favColors: [String],
+      favStyles: String,
+      favType: String,
+      favCategory: String,
+      shoeSize: Number,
+      pantSize: String,
     });
 
     this.itemModel = model<Item>("item", this.itemSchema);
@@ -439,7 +455,7 @@ class App {
     const config = {
       port: __prod__ ? 80 : 5000,
       ip: __prod__ ? "143.198.57.139" : "127.0.0.1",
-      mediaDir: `${__dirname}/../public_html/img`,
+      mediaDir: `${__dirname}/../public_html/img/user-data`,
       middleware: [],
     };
     const verboseDefault = {
@@ -510,11 +526,29 @@ class App {
       "Wardrobe"
     );
 
+    // Image upload.
+    this.upload = multer({
+      dest: `${this.mediaDir}`,
+    });
+
     // 7. Bind routers.
     this.http.server.post("/login", this.login);
     this.http.server.post("/register", this.register);
-    this.http.server.post("/post/item/:user", this.createItem);
-    this.http.server.post("/post/outfit/:user", this.createOutfit);
+    this.http.server.post(
+      "/post/item/:user",
+      this.upload.single("image"),
+      this.createItem
+    );
+    this.http.server.post(
+      "/post/outfit/:user",
+      this.upload.single("image"),
+      this.createOutfit
+    );
+    this.http.server.post(
+      "/user/details/:user",
+      this.upload.single("image"),
+      this.userDetails
+    );
     this.http.server.get("/get/items/:user", this.getItems);
     this.http.server.get("/get/outfits/:user", this.getOutfits);
     this.http.server.get("/get/oneitem/:id", this.getOneFromId);
@@ -532,17 +566,19 @@ class App {
     });
   }
 
+  userDetails = (req: Request, res: Response) => {
+    if (req.file) {
+      Object.assign(req.body, { picture: req.file.filename });
+    }
+  };
+
   updateGender = (req: Request, res: Response) => {
-    this.db.userModel
-      .findOne(
-        { username: req.body.username },
-        )
-        .then((user) => {
-          user.gender = req.body.gender;
-          user.save().then(() => {
-            res.end();
-          })
+    this.db.userModel.findOne({ username: req.body.username }).then((user) => {
+      user.gender = req.body.gender;
+      user.save().then(() => {
+        res.end();
       });
+    });
   };
 
   importItemCSV = async (username: string) => {
@@ -778,9 +814,14 @@ class App {
   };
 
   createItem = (req: Request, res: Response) => {
+    if (req.file) {
+      Object.assign(req.body, { picture: req.file.filename });
+    }
+
     let mutation = new this.db.itemModel(req.body);
     if (!__prod__ && this.verbose.log) {
       this.verbose.alert("Item Object posted:");
+      console.log("Picture filename:", req.file);
       console.dir(mutation);
     }
     mutation.save().then((savedItem) => {
@@ -792,6 +833,9 @@ class App {
   };
 
   createOutfit = (req: Request, res: Response) => {
+    if (req.file) {
+      Object.assign(req.body, { picture: req.file.filename });
+    }
     let mutation = new this.db.outfitModel(req.body);
     if (!__prod__ && this.verbose.log) {
       this.verbose.alert("Outfit Object posted:");
