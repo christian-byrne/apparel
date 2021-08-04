@@ -143,19 +143,22 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 ⏩ = low priority
 
 - ✅ App theme
-  - ✅ Global CSS variables
+  - ✅ Global SCSS variables
   - ✅ Global page layout
 - ✅ Static Resources
   - ✅ sketch images
     - ✅ photoshop fill other elements
     - ✅ female outline
+  - ⏩ dictionary infographics
 - ✅ Login / Register
   - ✅ HTML
   - ✅ Ajax
   - ✅ Routers
   - ✅ User schema
   - ✅ Authentifcation middleware
+  - ✅ cookie middleware
   - ✅ session storage
+  - 🔴 password hashing
 - ✅ Add Outfit & Add Item
   - ✅ connect to user
   - ✅ Interfaces and schemas
@@ -166,9 +169,10 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 - ✅ Add refresh functions to form submit on add item
 - ✅ add mannequin feature to add item page
 - ✅ login (not register) client event handlers
-- 🔴 password hashing
 - ✅ new user validation (no repeat)
 - ⏩ import/export from spreadsheet
+  - ✅ backend
+  - ⏩ frontend
 - ⏩ Info collection
   - ✅ definitions of default field parameters
   - ⏩ definition for tooltips and info modals
@@ -177,6 +181,7 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
   - https://www.crfashionbook.com/fashion/g27033975/fashion-staples-throughout-decade/
   - https://www.whowhatwear.com/fashion-by-the-decade
 - ⏩ nav bar over mannequin
+- ⏩ navbar features cross-app
 - ✅ style tags/badges/chips on item queue
 - ✅ User Account Customization
   - ✅ profile pic
@@ -239,7 +244,7 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 - ✅ badges
 - 🔴 Search feature -> navigation of site with closest match class
 - ✅ Navbar and button hrefs
-- ⏩ ? make mannequin clickable
+- ⏩ ? make mannequin clickable/hoverable -> show active item
 
 #### Day 12-14
 
