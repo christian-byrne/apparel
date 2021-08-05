@@ -203,6 +203,7 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 #### Day 4-7
 
 - ⏩ Refactor routers
+- add global favicon loader
 - 🔴 Determine best layout of item card
   - 🔴 variability -- most items are optional, determine loading algorithm that makes sense and looks good regardless of fileds that are filled out
 - ⏩ Browse style dict on styles tab
@@ -253,6 +254,8 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 - ⏩ carousel on view collection pages.
 - ⏩ Refactoring
 - 🔴 Debugging
+- 🔴 Spec Requirements
+- 🔴 About/Help Tutorial
 - ⏩ Bundling
 - 🔴 Documenting
 - ⏩ tucks
@@ -265,7 +268,7 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 - ⏩ subcategory and type datalist dynamnic fileds based on fashion dictionary schematics/blueprints/guides
 - ⏩ item field categoris dynamically added to `add-item` page based on specific item details (reference description of items in spreadsheet)
 - ✅ placeholder image is the patterns/gradient of colors/prints
-
+- ⏩ feature to `setInterval` update toast time element
 ---------
 
 

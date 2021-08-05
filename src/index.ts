@@ -15,6 +15,7 @@ import { readdir } from "fs/promises";
 import "./style-dict";
 import { spreadsheetColors } from "./../public_html/csv-port/json_colors";
 import { readFile, utils, WorkBook, WorkSheet } from "xlsx";
+import favicon from "express-favicon";
 
 type ItemFit = "Oversized" | "Loose" | "Casual" | "Fitted" | "Tight";
 type BroadCategory = "shirt" | "tshirt" | "sweater";
@@ -97,10 +98,9 @@ interface Outfit {
   weather: string[];
   notes?: string;
   items: string[];
-
-  // See styles list.
   styles: string[];
 }
+
 interface User {
   username: string;
   password: string;
@@ -954,7 +954,13 @@ class App {
 //
 
 const config = {
-  middleware: [cors(), json(), urlencoded({ extended: true }), cookieParser()],
+  middleware: [
+    // favicon(`${__dirname}/public_html/img/icons/favicon.png`),
+    cors(),
+    json(),
+    urlencoded({ extended: true }),
+    cookieParser(),
+  ],
   dbConfig: {
     name: "apparel",
     port: 27017,

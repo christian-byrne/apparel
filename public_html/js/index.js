@@ -21,7 +21,16 @@ function appendUser(data) {
 }
 
 const gender = () => {
-  return sessionStorage.getItem("gender");
+  let seshGender = sessionStorage.getItem("gender");
+  if (seshGender) {
+    return seshGender;
+  }
+  for (const img of document.querySelectorAll(".mask-outlines > img")) {
+    if (img.src && img.src.includes("female")) {
+      return "female";
+    }
+  }
+  return "male";
 };
 
 const curUser = () => {
@@ -926,9 +935,12 @@ class AddItem {
         color: this.form.readWeighted(this.col),
       };
       const multipartData = new FormData();
-      multipartData.append("image", document.querySelector("#imageInput").files[0] )
-      for ( const [key, value] of Object.entries(ret)) {
-        multipartData.append(key, value)
+      multipartData.append(
+        "image",
+        document.querySelector("#imageInput").files[0]
+      );
+      for (const [key, value] of Object.entries(ret)) {
+        multipartData.append(key, value);
       }
       return multipartData;
     };
@@ -1114,7 +1126,7 @@ class User {
         username: "registerEmail",
         password: "registerPassword",
       },
-      curUser: curUser
+      curUser: curUser,
     };
     Object.assign(config, options);
     Object.assign(this, config);
@@ -1143,7 +1155,7 @@ class User {
       "height",
       "pantSize",
       "shoeSize",
-      "favStyles"
+      "favStyles",
     ];
     this.form = new FormParse();
     this.v = (selector) => {
@@ -1162,21 +1174,24 @@ class User {
   }
 
   serialize = () => {
-      const ret = {
-        ...this.form.read(this.fields),
-        size: {
-          number: this.form.inputsToArray(["numberSizing1", "numberSizing2"]),
-          letter: document.querySelector("#letterSizingInput").value,
-        },
-        favColors: this.form.readWeighted(this.col),
-      };
-      const multipartData = new FormData();
-      multipartData.append("image", document.querySelector("#imageInput").files[0] )
-      for ( const [key, value] of Object.entries(ret)) {
-        multipartData.append(key, value)
-      }
-      return multipartData;
-  }
+    const ret = {
+      ...this.form.read(this.fields),
+      size: {
+        number: this.form.inputsToArray(["numberSizing1", "numberSizing2"]),
+        letter: document.querySelector("#letterSizingInput").value,
+      },
+      favColors: this.form.readWeighted(this.col),
+    };
+    const multipartData = new FormData();
+    multipartData.append(
+      "image",
+      document.querySelector("#imageInput").files[0]
+    );
+    for (const [key, value] of Object.entries(ret)) {
+      multipartData.append(key, value);
+    }
+    return multipartData;
+  };
 
   profilePost = () => {
     const ajaxOptions = {
@@ -1306,14 +1321,19 @@ class Templates {
     return ret;
   };
 
-  categoryTabs = (items) => {
+  categoryTabs = (items, buttonText) => {
     let containers = this.tabContainers();
     for (const item of items) {
-      let belongsToId = this.matcher.closestApropos(
-        item.category.toLowerCase()
-      );
-      let belongsToNode = containers[belongsToId] || this.config.fallbackNode;
-      this.itemCards([item], belongsToNode).then(() => {});
+      let belongsToNode;
+      if (item.category) {
+        let belongsToId = this.matcher.closestApropos(
+          item.category.toLowerCase()
+        );
+        belongsToNode = containers[belongsToId] || this.config.fallbackNode;
+      } else {
+        belongsToNode = this.config.fallbackNode;
+      }
+      this.itemCards([item], belongsToNode, buttonText).then(() => {});
     }
     this.activateMostPopulated(Object.values(containers));
   };
@@ -1360,6 +1380,20 @@ class Templates {
     return ret;
   };
 
+  coalesceItemTitle = (item) => {
+    return item.category
+      ? item.category
+      : item.subCategory
+      ? item.subCategory
+      : item.type
+      ? item.type
+      : item.brand
+      ? item.brand
+      : item.color.colors[0]
+      ? item.color.colors[0] + "Item"
+      : "Item";
+  };
+
   listItem = (
     item,
     container,
@@ -1383,7 +1417,7 @@ class Templates {
         >
         <div class="d-flex">
         <div class="flex-fill">
-        <h5 class="mb-1">${item.description}
+        <h5 class="mb-1">${this.coalesceItemTitle(item)}
           ${this.smartTags(item)}
         </h5>
         <p class="text-dark">${item.category}</p>
@@ -1448,7 +1482,62 @@ class Templates {
     }
   };
 
-  itemCards = async (items, container, classlist = ["col-sm-6"]) => {
+  graphItemAttrs = (item) => {
+    let ret = `<ul class="list-group list-group-horizontal">`;
+    let columns = 0;
+
+    const attrs = ["type", "subCategory", "brand", "fit", "length", "styles"];
+    const sizeAttrs = ["letter", "number", "dimensions"];
+    for (const property of attrs) {
+      if (item[property]) {
+        ret += `<li class="list-group-item text-muted">${property}</li>
+            <li class="list-group-item">${item[property]}</li>`;
+        columns++;
+      }
+      if (columns % 2 === 0 || item[property].length + property.length > 14) {
+        ret += `</ul><ul class="list-group list-group-horizontal">`;
+      }
+    }
+    if (item.size) {
+      for (const sizeProperty of sizeAttrs) {
+        if (item.size[sizeProperty] && item.size[sizeProperty].length > 0) {
+          ret += `<li class="list-group-item text-muted">${sizeProperty} Size</li>
+            <li class="list-group-item">${item.size[sizeProperty]}</li>`;
+          columns++;
+          if (
+            columns % 2 === 0 ||
+            item.size[sizeProperty].length + sizeProperty.length > 14
+          ) {
+            ret += `</ul><ul class="list-group list-group-horizontal">`;
+          }
+        }
+      }
+    }
+    return ret + "</ul>";
+  };
+
+  purchaseDetails = (item) => {
+    let ret = "";
+    if (item.purchaseLocation) {
+      ret += `Purchased at ${item.purchaseLocation}`;
+    } else if (item.cost || item.purchaseDate) {
+      ret += "Purchased ";
+    }
+    if (item.purchaseDate) {
+      ret += `on ${item.purchaseDate}`;
+    }
+    if (item.cost) {
+      ret += ` for $${item.cost}`;
+    }
+    return ret;
+  };
+
+  itemCards = async (
+    items,
+    container,
+    buttonTxt,
+    classlist = ["col-sm-auto", "align-self-stretch", "d-flex"]
+  ) => {
     if (!Array.isArray(items)) {
       items = [items];
     }
@@ -1460,9 +1549,9 @@ class Templates {
 
       let image;
       if (item.image) {
-        image = `<img src="${this.image}" loading="lazy" class="img-fluid rounded-start" alt="Picture of ${item.description}"></img>`;
+        image = `<img src="${this.image}" loading="lazy" class="img-fluid rounded-start m-2" alt="Picture of ${item.description}"></img>`;
       } else {
-        image = `<div class="rounded-start item-card-color" style="${this.paletteToGradient(
+        image = `<div class="rounded-start item-card-color m-2" style="${this.paletteToGradient(
           item.color
         )};"></div>`;
       }
@@ -1470,48 +1559,32 @@ class Templates {
       card.classList.add(this.config.cardClass);
       card.innerHTML = `  <div class="card mb-3" data="${
         item._id
-      }" style="max-width: 540px;">
-          <div class="row g-0">
+      }" style="max-width: 550px;">
+          <div class="row g-4">
           <div class="col-md-4">
           ${image}
           <div class="container-fluid p-2">
           <div class="row d-flex justify-content-center">
-          <p class="card-text"><small class="text-muted">${
-            item.purchaseLocation ? "Purchased at " + item.purchaseLocation : ""
-          }
-          ${
-            (item.purchaseDate && !item.purchaseLocation) ||
-            (item.cost && !item.purchaseLocation)
-              ? "Purchased "
-              : ""
-          }
-           ${item.purchaseDate ? "on " + item.purchaseDate : ""} ${
-        item.cost ? " for $" + item.cost : ""
-      }</small></p>
+          <p class="card-text"><small class="text-muted">
+          ${this.purchaseDetails(item)}
+          </small></p>
           </div>
           </div>
           </div>
           <div class="col-md-8">
           <div class="card-body">
-          <h5 class="card-title">${item.description}</h5>
+          <h5 class="card-title">${this.coalesceItemTitle(
+            item
+          ).toUpperCase()}</h5>
           <p class="card-text">
-          ${item.category} | ${item.subCategory} | ${item.type}
+          ${item.description}
           </p>
           </div>
-          <ul class="list-group list-group-flush">
-          <li class="list-group-item">${item.brand}</li>
-          <li class="list-group-item">${item.fit}</li>
-          <li class="list-group-item">${
-            item.size.letter ? "Size " + item.size.letter + " | " : ""
-          }  ${
-        item.size.number.length > 1
-          ? item.size.number[0].toString() + "x" + item.size.number[1]
-          : ""
-      }</li>
-          </ul>
+          ${this.graphItemAttrs(item)}
           <div class="card-body">
-          <p class="card-text">${item.length}</p>
-          <a data="${item._id}" class="btn btn-primary add-to-queue">Add</a>
+          <a data="${item._id}" class="btn btn-primary add-to-queue">${
+        buttonTxt ? buttonTxt : "Add"
+      }</a>
           <a data="${
             item._id
           }" class="card-link dismiss-search-item">Dismiss</a>
@@ -1598,16 +1671,17 @@ class Mannequin {
   // TODO can implement pattern or print layer on top using mask image
 
   dress = (item) => {
+    console.log(item);
     this.propOptions().then((images) => {
+      console.log(images);
       const match = new ClosestMatch(images);
       let layer;
       // Try an image layer for type then subcategory then category. Else, do nothing..
-      for (const characteristic of [
-        item.type,
-        item.subCategory,
-        item.category,
-      ]) {
-        layer = match.closestInArray(characteristic, images);
+      for (const characteristic of ["type", "subCategory", "category"]) {
+        if (item[characteristic]) {
+          layer = match.closestInArray(item[characteristic], images);
+          console.log(layer);
+        }
         if (layer) {
           break;
         }
@@ -1699,7 +1773,7 @@ class PageRegistration {
         this.user.updateGender(`${id == "femaleInput" ? "female" : "male"}`);
       } else if (id === "submitFinal") {
         event.preventDefault();
-        
+
         window.location = "/add/item";
       }
     });
@@ -1761,6 +1835,7 @@ class PageAddOutfit {
           this.mannequin.dress(item);
         });
       } else if (caller.id === "clear-items-queue") {
+        event.preventDefault();
         while (this.queue.children.length > 0) {
           this.queue.firstElementChild.remove();
         }
@@ -1878,10 +1953,8 @@ class PageWardrobe {
     this.templates = new Templates();
 
     this.displaySearchRes = (json) => {
-      const container = document.querySelector("#searchResultsMain");
-
       this.search.clearResults().then(() => {
-        this.templates.categoryTabs(json, container);
+        this.templates.categoryTabs(json, "Edit");
       });
     };
 
@@ -1890,6 +1963,25 @@ class PageWardrobe {
         this.displaySearchRes(items);
       });
     }, 20);
+
+    document.documentElement.addEventListener("click", (event) => {
+      const caller = event.target;
+      const callerCss = Array.from(caller.classList);
+
+      if (callerCss.includes("add-to-queue")) {
+        // TODO: Edit item modal
+        event.preventDefault();
+        window.location = "/add/item";
+      } else if (callerCss.includes("dismiss-search-item")) {
+        let data = caller.getAttribute("data");
+        for (const card of document.querySelectorAll("div.card")) {
+          if (card.getAttribute("data") === data) {
+            card.parentElement.remove();
+            break;
+          }
+        }
+      }
+    });
   }
 }
 
@@ -1941,13 +2033,20 @@ const globalAppListeners = () => {
 
 window.onload = () => {
   globalAppListeners();
-  if (window.location.pathname.includes("/add/outfit")) {
+  let route = window.location.pathname;
+  const checkRoute = (path) => {
+    return route.includes(path);
+  };
+  if (checkRoute("/add/outfit")) {
     new PageAddOutfit();
-  } else if (window.location.pathname.includes("/add/item")) {
+  } else if (checkRoute("/add/item")) {
     new PageAddItem();
-  } else if (window.location.pathname.includes("/wardrobe")) {
+  } else if (checkRoute("/wardrobe")) {
     new PageWardrobe();
-  } else if (window.location.pathname.includes("/register")) {
+  } else if (checkRoute("/outfits")) {
+    // TODO: outfits page
+    new PageWardrobe();
+  } else if (checkRoute("/register")) {
     new PageRegistration();
   } else {
     // ROOT PATH.

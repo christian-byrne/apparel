@@ -93,7 +93,7 @@
 
     <div class="b-divider"></div>
 
-    <div id="main" class="container col-xxl-8 px-2 py-4">
+    <div id="main" class="container col-xxl-10 px-1 py-4">
       <!-- ──────────────────────────────────────────────────────────────────────────────── -->
 
       <div class="row g-5 py-5">
@@ -176,8 +176,9 @@
                       </li>
                     </ul>
                   </li>
-                  <li class="nav-item" id="clear-items-queue">
+                  <li class="nav-item">
                     <a
+                      id="clear-items-queue"
                       class="nav-link"
                       href="#"
                       tabindex="-1"
@@ -335,13 +336,13 @@
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                       <li><a class="dropdown-item" href="#">Shoe</a></li>
                       <li>
-                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#"
+                          >View Style Dictionary</a
+                        >
                       </li>
                       <li><hr class="dropdown-divider" /></li>
                       <li>
-                        <a class="dropdown-item" href="#"
-                          >Something else here</a
-                        >
+                        <a class="dropdown-item" href="#">Suggest</a>
                       </li>
                     </ul>
                   </li>
@@ -410,20 +411,13 @@
             <label for="subCategoryInput" class="input-group-text"
               >Sub-Category</label
             >
-            <select
-              class="form-select"
+            <input
+              class="form-control"
               id="subCategoryInput"
               name="subCategoryInput"
-            >
-              <option disabled value="" selected>. . .</option>
-              <option value=""></option>
-            </select>
-
+            />
             <label for="typeInput" class="input-group-text">Sub-Type</label>
-            <select class="form-select" id="typeInput" name="typeInput">
-              <option disabled value="" selected>. . .</option>
-              <option value=""></option>
-            </select>
+            <input class="form-control" id="typeInput" name="typeInput" />
           </div>
 
           <div class="input-group mb-3">
@@ -442,11 +436,13 @@
               <span class="visually-hidden">Toggle Dropdown</span>
             </button>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li>
+              <li><a class="dropdown-item" href="#">Add</a></li>
+              <li>
+                <a class="dropdown-item" href="#">View Style Dictionary</a>
+              </li>
+              <li><a class="dropdown-item" href="#">Suggest</a></li>
               <li><hr class="dropdown-divider" /></li>
-              <li><a class="dropdown-item" href="#">Separated link</a></li>
+              <li><a class="dropdown-item" href="#">Auto Generate</a></li>
             </ul>
             <input
               type="text"
