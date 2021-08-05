@@ -186,7 +186,7 @@
  */
 
 .landing-mannequin > img {
-  transition: filter 5.295s ease-in;
+  transition: filter 5.58s ease-in-out;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;

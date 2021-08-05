@@ -693,7 +693,6 @@ class ColorRotator {
       "#354550",
       "#000066",
       "#CDEBF9",
-      "#FFFFFF",
     ];
     this.target = targets;
     this.paletteCopy = [...this.palette];
@@ -710,10 +709,10 @@ class ColorRotator {
     };
 
     this.init = () => {
-      let interval = setInterval(this.iterColor, 6500);
+      let interval = setInterval(this.iterColor, 6000);
       setTimeout(() => {
         clearInterval(interval);
-      }, 20000);
+      }, 100000);
     };
   }
 }
@@ -1808,8 +1807,8 @@ class PageRegistration {
         propList = this.female.maskLayers();
         this.femaleRotator = new ColorRotator(propList);
         this.maleRotator.init();
-      }, 15);
-    }, 375);
+      }, 100);
+    }, 575);
   }
 }
 
@@ -2039,15 +2038,24 @@ class PageEntry {
 
 const globalAppListeners = () => {
   // Apply these handlers to every page of app:
-  document.documentElement.addEventListener("click", (event) => {
+  document.documentElement.addEventListener("submit", (event) => {
     const caller = event.target;
-    if (caller.id === "clearForm") {
-      clearAllInputs();
+    const globalSearch = document.querySelector("header input[type='search']")
+    event.preventDefault()
+    if (caller == globalSearch || globalSearch.parentElement && caller == globalSearch.parentElement) {
+      event.preventDefault();
+      for ( const page of ["/add/outfit", "/add/item", "/wardrobe", "/outfits", "/register"]) {
+        if ( page.includes(globalSearch.value) || globalSearch.value.includes(page) ) {
+          window.location = page;
+        }
+      }
+      // TODO: search feature defaults to searching wardrobe or. . .?
+      window.location = "/wardrobe"
     }
   });
 
   // Update manequin gender.
-  if (gender() && gender() === "female") {
+  if (gender() && gender() === "female" && !window.location.pathname.includes("/register")) {
     let images = document.querySelectorAll(".mask-outlines > img");
     for (const img of images) {
       let curSrc = img.src;
