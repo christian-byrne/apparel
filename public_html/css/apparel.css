@@ -30,6 +30,7 @@
   --color3: #feeafa;
   --color4: #efd3d7;
   --color5: #985277;
+  --color6: #838fa3;
 }
 
 /*
@@ -193,3 +194,11 @@
   -webkit-background-clip: text !important;
   background: transparent;
 }
+
+/*
+ * ─── NAV TABS ───────────────────────────────────────────────────────────────────
+ */
+
+  #myTab .nav-link {
+    color: var(--color6) !important;
+  }

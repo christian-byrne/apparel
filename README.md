@@ -198,7 +198,8 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
   - ⏩ in a datalist
   - ⏩ any new fields that user creates sohuld be added to datalist
   - ⏩ ? user created fields should be placed above defaults in datalist or it should be alphabetical?
-- ✅Input correction/closest match util object
+- ✅ Input correction/closest match util object
+- ⏩ accent colors on add item page
 
 #### Day 4-7
 
@@ -221,7 +222,7 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 - ✅ Edit global stylesheets
   - ✅ global divider styling
 - ⏩ ? outfit details also a nav tab system like add-item fields
-- 🔴 change text color of tab titles
+- ✅ change text color of tab titles
 
 #### Day 8-11
 
@@ -231,16 +232,16 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
   - ✅ DOM constructor functions
   - ✅ Browse wardrobe
     - ✅ HTML & Ajax
-- 🔴 Browse outfits
-  - 🔴 HTML & Ajax
-- 🔴 Browse outfits sidebar features
+- ⏩ Browse outfits
+  -  ⏩ HTML & Ajax
+- ⏩ Browse outfits sidebar features
 - ✅ browse wardrobe sidebar features
 - ✅ Generate page features
   - ✅ Collapsible sections
   - ✅ Navbar collapse feature
 - ⏩ Dark mode
-- 🔴 Tooltips
-  - 🔴 Using popover system
+- ⏩ Tooltips
+  - ⏩ Using popover system
 - ✅ push notifications with toasts
 - ✅ badges
 - 🔴 Search feature -> navigation of site with closest match class

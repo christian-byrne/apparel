@@ -923,7 +923,7 @@ class AddItem {
     };
 
     /** Read and construct into Item shape. */
-    this.serialize = () => {
+    this.serialize = (bare=false) => {
       const ret = {
         ...this.form.read(this.fields),
         ...this.form.readCSV(this.CSVfields),
@@ -934,6 +934,9 @@ class AddItem {
         material: this.form.readWeighted(this.mats),
         color: this.form.readWeighted(this.col),
       };
+      if (bare) {
+        return ret
+      }
       const multipartData = new FormData();
       multipartData.append(
         "image",
@@ -1938,14 +1941,17 @@ class PageAddItem {
         ) ||
         caller.id.includes("color")
       ) {
-        // Parse form to get current item object.
-        let currItem = this.item.serialize();
-        // If atleast 1 color field filled out, undress then update mannequin.
-        if (currItem.color.weights.length > 0) {
-          this.mannequin.undressAll().then(() => {
-            this.mannequin.dress(currItem);
-          });
-        }
+        setTimeout(() => {
+          // Parse form to get current item object.
+          let currItem = this.item.serialize("bare");
+          console.log(currItem)
+          // If atleast 1 color field filled out, undress then update mannequin.
+          if (currItem.color && currItem.color.weights.length > 0) {
+            this.mannequin.undressAll().then(() => {
+              this.mannequin.dress(currItem);
+            });
+          }
+        }, 100);
       }
     });
 
