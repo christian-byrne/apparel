@@ -1427,7 +1427,7 @@ class Templates {
           item.color.colors[0]
         }; border-radius: 3px; color: ${
       item.color.colors[0]
-    }" class="ml-2 py-2 my-2">${item.color.colors[0]}</div>
+    }" class="ml-2 py-2 my-2 item-color">${item.color.colors[0]}</div>
         </div>
         </div>
         <div class="collapse" id="item${index}">
@@ -1745,6 +1745,21 @@ class Mannequin {
   };
 }
 
+class Suggest {
+  constructor() {
+    this.coolors = (hexList) => {
+      let hexCodes = hexList.join("-").replace(/#/g, "");
+      let url = `https://coolors.co/${hexCodes}`;
+      let hyper = document.createElement("a");
+      hyper.href = url;
+      hyper.target = "_blank";
+      setTimeout(() => {
+        hyper.click();
+      }, 10);
+    };
+  }
+}
+
 //
 // ─── PAGES ──────────────────────────────────────────────────────────────────────
 //
@@ -1826,6 +1841,13 @@ class PageAddOutfit {
       ) {
         event.preventDefault();
         this.handleFilterTypeChange(caller);
+      } else if (callerClasses.includes("suggest-next")) {
+        const suggest = new Suggest();
+        const colors = [];
+        for (const color of document.querySelectorAll("div.item-color")) {
+          colors.push(color.innerHTML);
+        }
+        suggest.coolors(colors);
       } else if (caller.id === "clearResultsInput") {
         this.search.clearResults();
       } else if (callerClasses.includes("add-to-queue")) {

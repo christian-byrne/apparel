@@ -204,14 +204,14 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 
 - ⏩ Refactor routers
 - add global favicon loader
-- 🔴 Determine best layout of item card
-  - 🔴 variability -- most items are optional, determine loading algorithm that makes sense and looks good regardless of fileds that are filled out
+- ✅ Determine best layout of item card
+  -  ✅variability -- most items are optional, determine loading algorithm that makes sense and looks good regardless of fileds that are filled out
 - ⏩ Browse style dict on styles tab
 - ✅ Client color selection inputs
 - ⏩ Color parsing module?
 - ✅ Image upload?
   - ✅ add field to schemas
-- 🔴 Color algorithm
+- ⏩ Color algorithm
 - ⏩ Define ruleset
   - ⏩ Info tooltips/modals
 - ⏩ Define algorithmic suggestion
@@ -225,8 +225,8 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 
 #### Day 8-11
 
-- ⏩ color nearest neighbor
-- 🔴 color suggest = opening coolor.co with GET request of hex codes
+- ✅ color nearest neighbor
+- ✅ color suggest = opening coolor.co with GET request of hex codes
 - ✅ Browse wardrobe
   - ✅ DOM constructor functions
   - ✅ Browse wardrobe
