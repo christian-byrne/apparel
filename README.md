@@ -158,7 +158,7 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
   - ✅ Authentifcation middleware
   - ✅ cookie middleware
   - ✅ session storage
-  - 🔴 password hashing
+  - ✅ password hashing
 - ✅ Add Outfit & Add Item
   - ✅ connect to user
   - ✅ Interfaces and schemas
@@ -263,7 +263,7 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
   - 🔴 Your web application should include an in-app help page, which explains to the user (or the grader!) how to use the application. You must have an obviously-located button that a user can click on to get the the help page.
     - 🔴 HELP button that is pointed at by popover on page load
     - 🔴 help page is a carousel of videos with captions
-  - 🔴 The application must have a user account creation and login feature, with proper password salting/hashing, and login sessions.
+  - ✅ The application must have a user account creation and login feature, with proper password salting/hashing, and login sessions.
   - 🔴 Your web application must be made LIVE on the web for at least 5 days after the due date. The URL should be in a file named live.txt in the zip file you submit. It is VERY important for you to have it running live. You may lose a significant amount of points if you don’t have this for the 5 days.
 - ✅ Bundling
 - 🔴 Documenting/Commenting
@@ -282,6 +282,7 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
   - 🔴 include a link to this in a file called video.txt in your zipped submission.
   - 🔴 You should submit your entire project in a zip file via gradescope (including live.txt and video.txt) by August 6th at 11:59pm. It is critical for you to have your application live on the web, and your video presentation created when you submit. If you don’t, you may be subject to lose a significant amount of points. On grdescope, you’ll be able to submit this as a team.
 - ⏩ subcategory and type datalist dynamnic fileds based on fashion dictionary schematics/blueprints/guides
+- 🔴 un-comment main frontend script for correct routes
 - ⏩ item field categoris dynamically added to `add-item` page based on specific item details (reference description of items in spreadsheet)
 - ✅ placeholder image is the patterns/gradient of colors/prints
 - ⏩ feature to `setInterval` update toast time element

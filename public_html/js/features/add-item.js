@@ -80,7 +80,7 @@ class AddItem {
         return ret;
       }
       const multipartData = this.form.jsonToFormData(ret);
-      console.log(ret)
+      console.log(ret);
       multipartData.append(
         "image",
         document.querySelector("#imageInput").files[0]
@@ -99,7 +99,9 @@ class AddItem {
     const ajaxOptions = {
       url: `${this.config.URL}/post/item/${this.curUser()}`,
       type: "POST",
-
+      xhrFields: {
+        withCredentials: true,
+      },
       enctype: "multipart/form-data",
       processData: false,
       contentType: false,

@@ -115,6 +115,9 @@ class User {
     const ajaxOptions = {
       url: `${this.URL}/user/details/${this.curUser()}`,
       type: "POST",
+      xhrFields: {
+        withCredentials: true,
+      },
       enctype: "multipart/form-data",
       processData: false,
       contentType: false,
@@ -133,6 +136,9 @@ class User {
   updateGender = (gender) => {
     let ajaxOptions = {
       url: `${this.URL}/user/gender/`,
+      xhrFields: {
+        withCredentials: true,
+      },
       type: "POST",
       data: {
         username: sessionStorage.getItem("username"),
@@ -155,6 +161,9 @@ class User {
     login: () => {
       const ajaxOptions = {
         url: `${this.URL}/login`,
+        xhrFields: {
+          withCredentials: true,
+        },
         data: {
           username: this.v(this.loginNodes.username),
           password: this.v(this.loginNodes.password),
@@ -184,15 +193,29 @@ class User {
     register: () => {
       const ajaxOptions = {
         url: `${this.URL}/register`,
+        xhrFields: {
+          withCredentials: true,
+        },
         data: {
           username: this.v(this.registerNodes.username),
           password: this.v(this.registerNodes.password),
         },
-        success: () => {
-          this.successHandler(
-            this.registerNodes.username,
-            this.registerRedirect
-          );
+        success: (response) => {
+          if (!response || response == false) {
+            let notify = new Notifications();
+            notify.toast(
+              document.querySelector("div.row"),
+              "Sorry",
+              "Username Not Available.",
+              "#800f2f",
+              false
+            );
+          } else {
+            this.successHandler(
+              this.registerNodes.username,
+              this.registerRedirect
+            );
+          }
         },
       };
       Object.assign(ajaxOptions, this.ajaxConfig);

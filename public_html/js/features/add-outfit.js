@@ -90,6 +90,9 @@ class AddOutfit {
     console.log(this.serialize());
     const ajaxOptions = {
       url: `${this.URL}/post/outfit/${this.curUser()}`,
+      xhrFields: {
+        withCredentials: true,
+      },
       type: "POST",
       data: this.serialize(),
       success: () => {

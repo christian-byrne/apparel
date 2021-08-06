@@ -10,7 +10,6 @@ import { __prod__ } from "./constants";
 import { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import multer from "multer";
-import "cookie-parser";
 import cookieParser from "cookie-parser";
 import { readdir } from "fs/promises";
 import "./style-dict";
@@ -19,9 +18,10 @@ import ExpressServer from "./server";
 import { App, FilterQuery1D } from "options";
 import ExcelParser from "./excel-parser";
 import { Item, Outfit, User } from "./types/schemas";
+import { randomBytes, pbkdf2 } from "crypto";
 
 const config = {
-  middleware: [cookieParser(), cors(), json(), urlencoded({ extended: true })],
+  middleware: [cors(), cookieParser(), json(), urlencoded({ extended: true })],
   DBname: "apparel",
 };
 
@@ -87,41 +87,56 @@ class Apparel {
         }
       }
     }, 2000);
-    this.http.bindMiddleware([this.authenticate]);
-    this.http.bindStatic();
+
     this.http.bindMiddleware(this.middleware);
+    this.http.bindMiddleware([this.cookieHeaders]);
+    this.http.bindStatic();
 
     // 4. Routes.
     this.http.server.post("/login", this.login);
     this.http.server.post("/register", this.register);
     this.http.server.post(
       "/post/item/:user",
+      this.authenticate,
       this.upload.single("image"),
       this.createItem
     );
     this.http.server.post(
       "/post/outfit/:user",
+      this.authenticate,
       this.upload.single("image"),
       this.createOutfit
     );
     this.http.server.post(
       "/user/details/:user",
+      this.authenticate,
       this.upload.single("image"),
       this.userDetails
     );
+    this.http.server.post("/search/field", this.authenticate, this.filterItems);
+    this.http.server.post("/user/gender", this.authenticate, this.updateGender);
+
     this.http.server.get("/get/items/:user", this.getItems);
     this.http.server.get("/get/outfits/:user", this.getOutfits);
     this.http.server.get("/get/oneitem/:id", this.getOneFromId);
     this.http.server.get("/search/all/:user/:keyword", this.searchItems);
     this.http.server.get("/filenames/:dir", this.getFileNames);
-    this.http.server.post("/search/field", this.filterItems);
-    this.http.server.post("/user/gender", this.updateGender);
     this.http.catch();
 
     this.http.server.listen(this.port, () => {
       this.alert(`listening on ${this.port} at ${this.ip}`);
     });
   }
+
+  cookieHeaders = (req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "http://localhost:5000");
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "application/x-www-form-urlencoded; charset=UTF-8"
+    );
+    next();
+  };
 
   // Routers.
   userDetails = (req: Request, res: Response) => {
@@ -144,17 +159,22 @@ class Apparel {
       let csv = this.csvImporter.csvJson;
       let itemCt = 1;
       for (const record of csv) {
-        if (typeof record.condition !== "number" || typeof record.condition == "string" ) {
+        if (
+          typeof record.condition !== "number" ||
+          typeof record.condition == "string"
+        ) {
           record.condition = 10;
         }
         let mutation = new this.db.itemModel(record);
         await mutation.save().then(async (savedItem) => {
           const newId = savedItem._id;
-          await this.pushID(newId, username, "items").catch((reason) => {
-            this.alert(reason);
-          }).then(() => console.log(itemCt));
+          await this.pushID(newId, username, "items")
+            .catch((reason) => {
+              this.alert(reason);
+            })
+            .then(() => console.log(itemCt));
         });
-        itemCt++
+        itemCt++;
       }
     });
   };
@@ -404,41 +424,40 @@ class Apparel {
   createSessionCookie = async (username: string, res: Response) => {
     let sessionKey = Math.floor(Math.random() * 10000);
     this.sessionKeys[username] = [sessionKey, Date.now()];
+    this.alert("Session Keys:", [this.sessionKeys]);
     res.cookie(
       "login",
-      { username: username, key: sessionKey },
-      { maxAge: 20000 }
+      { username: username, key: sessionKey.toString() },
+      { maxAge: 200000, domain: "", secure: true, sameSite: "none" }
     );
+    return;
   };
 
   /**
-   * Authentication middleware.
+   * Session authentication middleware.
    * @param req
    * @param res
    * @param next
    */
   authenticate = (req: Request, res: Response, next: NextFunction) => {
-    if (
-      req.url.includes("/login") ||
-      req.url.includes("/register") ||
-      req.url == "/" ||
-      true
-    ) {
-      next();
-    } else {
-      this.alert("Session Cookie", req.cookies);
-      if (Object.keys(req.cookies).length > 0) {
+    console.log(this.sessionKeys);
+    if (req.cookies && Object.keys(req.cookies).length > 0) {
+      try {
         if (
           this.sessionKeys[req.cookies.login.username][0] ==
           req.cookies.login.key
         ) {
+          this.alert("Cookies Validated");
           next();
         } else {
+          this.alert("Cookies invalid", [req.cookies, this.sessionKeys]);
           res.send(false);
         }
-      } else {
-        res.send(false);
+      } catch (err) {
+        next();
       }
+    } else {
+      res.send(false);
     }
   };
 
@@ -451,12 +470,29 @@ class Apparel {
     this.db.userModel
       .find({
         username: req.body.username,
-        password: req.body.password,
       })
       .then((user: User[]) => {
         if (user.length === 1) {
           this.createSessionCookie(req.body.username, res).then(() => {
-            res.send(true);
+            pbkdf2(
+              req.body.password,
+              user[0].salt,
+              1000,
+              64,
+              "sha512",
+              (err, hash) => {
+                if (err) {
+                  console.error(err);
+                }
+                if (hash.toString("base64") === user[0].hash) {
+                  console.log(hash.toString("base64"));
+                  console.log(user[0].hash);
+                  res.send(true);
+                } else {
+                  res.send(false);
+                }
+              }
+            );
           });
         } else {
           res.send(false);
@@ -473,27 +509,42 @@ class Apparel {
     this.db.userModel
       .find({
         username: req.body.username,
-        password: req.body.password,
       })
       .then((user: User[]) => {
         if (user.length > 0) {
           res.send(false);
         } else {
-          let newUser = new this.db.userModel({
-            username: req.body.username,
-            password: req.body.password,
-          });
-          newUser.save().then(() => {
-            this.createSessionCookie(req.body.username, res).then(() => {
-              res.end();
-            });
-          });
+          const salt = randomBytes(64).toString("base64");
+          const iterations = 1000;
+          pbkdf2(
+            req.body.password,
+            salt,
+            iterations,
+            64,
+            "sha512",
+            (err, hash) => {
+              if (err) {
+                console.error(err);
+              }
+              let newUser = new this.db.userModel({
+                username: req.body.username,
+                salt: salt,
+                hash: hash.toString("base64"),
+                // iterations: iterations,
+              });
+              newUser.save().then(() => {
+                this.createSessionCookie(req.body.username, res).then(() => {
+                  res.send(true);
+                });
+              });
+            }
+          );
         }
       });
   };
 }
 
 const x = new Apparel(config);
-x.importItemCSV("hepburn@gmail.com").then(() => {
-  console.log("\n\nFinished")
-})
+// x.importItemCSV("hepburn@gmail.com").then(() => {
+//   console.log("\n\nFinished")
+// })

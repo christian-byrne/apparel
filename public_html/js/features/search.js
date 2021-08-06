@@ -158,6 +158,9 @@ class Search {
         const ajaxOptions = {
           url: `${this.URL}/search/field`,
           type: "POST",
+        xhrFields: {
+          withCredentials: true
+        },
           data: {
             username: this.curUser(),
             keyword: this.filterTxtSelector().value,
