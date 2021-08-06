@@ -16,6 +16,7 @@ import PageAddItem from "./pages/post-item.js";
 import PageWardrobe from "./pages/wardrobe.js";
 import PageRegistration from "./pages/register.js";
 import PageEntry from "./pages/entry.js";
+import PageOutfits from "./pages/outfits.js"
 
 //
 // ─── ROUTES ─────────────────────────────────────────────────────────────────────
@@ -34,8 +35,7 @@ window.onload = () => {
   } else if (checkRoute("/wardrobe")) {
     new PageWardrobe();
   } else if (checkRoute("/outfits")) {
-    // TODO: outfits page
-    new PageWardrobe();
+    new PageOutfits();
   } else if (checkRoute("/register")) {
     new PageRegistration();
   } else {

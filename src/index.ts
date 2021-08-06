@@ -19,6 +19,7 @@ import { App, FilterQuery1D } from "options";
 import ExcelParser from "./excel-parser";
 import { Item, Outfit, User } from "./types/schemas";
 import { randomBytes, pbkdf2 } from "crypto";
+import { markAsUntransferable } from "worker_threads";
 
 const config = {
   middleware: [cors(), cookieParser(), json(), urlencoded({ extended: true })],
@@ -31,6 +32,10 @@ interface Apparel extends App {
   };
 }
 
+/**
+ * @type {App}
+ * Main App.
+ */
 class Apparel {
   constructor(options: App | any) {
     const config = {
@@ -139,12 +144,23 @@ class Apparel {
   };
 
   // Routers.
+
+  /**
+   * Update user account details.
+   * @param req
+   * @param res
+   */
   userDetails = (req: Request, res: Response) => {
     if (req.file) {
       Object.assign(req.body, { picture: req.file.filename });
     }
   };
 
+  /**
+   * Update user gender.
+   * @param req
+   * @param res
+   */
   updateGender = (req: Request, res: Response) => {
     this.db.userModel.findOne({ username: req.body.username }).then((user) => {
       user.gender = req.body.gender;
@@ -154,6 +170,11 @@ class Apparel {
     });
   };
 
+  /**
+   * Import items from a spreadsheet into database.
+   * @param username
+   * @returns
+   */
   importItemCSV = async (username: string) => {
     return await this.csvImporter.parseExcel().then(async () => {
       let csv = this.csvImporter.csvJson;
@@ -179,10 +200,20 @@ class Apparel {
     });
   };
 
+  /**
+   * Get file names from directory in app public folder.
+   * @param dir
+   * @returns
+   */
   fileNames = async (dir: string): Promise<object> => {
     return await readdir(dir);
   };
 
+  /**
+   * Get files names router.
+   * @param req
+   * @param res
+   */
   getFileNames = (req: Request, res: Response) => {
     this.fileNames(`public_html/${decodeURIComponent(req.params.dir)}`)
       .then((files) => {
@@ -193,6 +224,11 @@ class Apparel {
       });
   };
 
+  /**
+   * Convert css/html casing to CamelCase.
+   * @param fieldName
+   * @returns
+   */
   toCamelCase = (fieldName) => {
     if (fieldName.trim().split(" ").length > 1) {
       return (
@@ -203,6 +239,13 @@ class Apparel {
     return fieldName.trim().toLowerCase();
   };
 
+  /**
+   * Filter-field search with number params.
+   * @param items
+   * @param field
+   * @param keyword
+   * @returns
+   */
   filterNumberField = async (items, field, keyword) => {
     return items.filter((item: Item) => {
       if (item[field]) {
@@ -213,6 +256,14 @@ class Apparel {
     });
   };
 
+  /**
+   *
+   * Filter-field search with string params.
+   * @param items
+   * @param field
+   * @param keyword
+   * @returns
+   */
   filterStringField = async (items, field, keyword) => {
     return items.filter((item: Item) => {
       if (item[field].toLowerCase().includes(keyword.toLowerCase())) {
@@ -221,6 +272,14 @@ class Apparel {
     });
   };
 
+  /**
+   *
+   * Filter-field search with object param.
+   * @param items
+   * @param field
+   * @param keyword
+   * @returns
+   */
   filterObjField = async (items, field, keyword) => {
     return items.filter((item: Item) => {
       for (const arrayVal of Object.values(item[field])) {
@@ -246,6 +305,11 @@ class Apparel {
     });
   };
 
+  /**
+   * Filter search based on keyword of category.
+   * @param query
+   * @returns
+   */
   filter1DField = async (query: FilterQuery1D): Promise<Item[]> => {
     return this.usersItems(query.username).then((items: Item[]) => {
       const fieldFormatted = this.toCamelCase(query.field);
@@ -269,6 +333,11 @@ class Apparel {
     });
   };
 
+  /**
+   * Filter serach.
+   * @param req
+   * @param res
+   */
   filterItems = (req: Request, res: Response) => {
     this.filter1DField(req.body)
       .then((items: Item[]) => {
@@ -314,6 +383,11 @@ class Apparel {
     });
   };
 
+  /**
+   * Search items router.
+   * @param req
+   * @param res
+   */
   searchItems = (req: Request, res: Response) => {
     this.filterItemsBroad(req.params.user, req.params.keyword).then(
       (item: Item[]) => {
@@ -322,12 +396,23 @@ class Apparel {
     );
   };
 
+  /**
+   * Get one item by id router.
+   * @param req
+   * @param res
+   */
   getOneFromId = (req: Request, res: Response) => {
     this.db.itemModel.findById(req.params.id).then((item: Item) => {
       res.json(item);
     });
   };
 
+  /**
+   * Retrieve array of items from id array.
+   * @param idArray
+   * @param collection
+   * @returns
+   */
   findAllFromId = async (idArray: string[], collection: Model<any, {}, {}>) => {
     const ret = [];
     for (const id of idArray) {
@@ -340,6 +425,12 @@ class Apparel {
     return ret;
   };
 
+  /**
+   * Push an id into user's items or outfits field.
+   * @param id
+   * @param username
+   * @param type
+   */
   pushID = async (id: string, username: string, type: "items" | "outfits") => {
     this.db.userModel.findOne({ username: username }).then((user) => {
       user[type].push(id);
@@ -350,11 +441,17 @@ class Apparel {
     });
   };
 
+  /**
+   * Get user's outfits.
+   * @param username
+   * @returns
+   */
   usersOutfits = async (username: string): Promise<Outfit[]> => {
     return this.db.userModel
       .findOne({ username: username })
       .then((user: User) => {
-        const itemIds = user.items;
+        console.log(user)
+        const itemIds = user.outfits;
         return this.findAllFromId(itemIds, this.db.outfitModel).then(
           (outfits: Outfit[]) => {
             return outfits;
@@ -363,6 +460,11 @@ class Apparel {
       });
   };
 
+  /**
+   * Get user's items.
+   * @param username
+   * @returns
+   */
   usersItems = async (username: string): Promise<Item[]> => {
     return this.db.userModel
       .findOne({ username: username })
@@ -376,18 +478,33 @@ class Apparel {
       });
   };
 
+  /**
+   * Get outfits router.
+   * @param req
+   * @param res
+   */
   getOutfits = (req: Request, res: Response): void => {
     this.usersOutfits(req.params.user).then((outfits: Outfit[]) => {
       res.json(outfits);
     });
   };
 
+  /**
+   * Get items router.
+   * @param req
+   * @param res
+   */
   getItems = (req: Request, res: Response): void => {
     this.usersItems(req.params.user).then((items: Item[]) => {
       res.json(items);
     });
   };
 
+  /**
+   * Post item router.
+   * @param req
+   * @param res
+   */
   createItem = (req: Request, res: Response) => {
     if (req.file) {
       Object.assign(req.body, { picture: req.file.filename });
@@ -402,6 +519,11 @@ class Apparel {
     });
   };
 
+  /**
+   * Post outfit router.
+   * @param req
+   * @param res
+   */
   createOutfit = (req: Request, res: Response) => {
     if (req.file) {
       Object.assign(req.body, { picture: req.file.filename });
@@ -440,7 +562,6 @@ class Apparel {
    * @param next
    */
   authenticate = (req: Request, res: Response, next: NextFunction) => {
-    console.log(this.sessionKeys);
     if (req.cookies && Object.keys(req.cookies).length > 0) {
       try {
         if (
@@ -485,8 +606,9 @@ class Apparel {
                   console.error(err);
                 }
                 if (hash.toString("base64") === user[0].hash) {
-                  console.log(hash.toString("base64"));
-                  console.log(user[0].hash);
+                  this.alert("Hashed Password Validated.", [
+                    hash.toString("base64"),
+                  ]);
                   res.send(true);
                 } else {
                   res.send(false);
@@ -532,6 +654,7 @@ class Apparel {
                 hash: hash.toString("base64"),
                 // iterations: iterations,
               });
+              this.alert("New User.", [newUser]);
               newUser.save().then(() => {
                 this.createSessionCookie(req.body.username, res).then(() => {
                   res.send(true);
@@ -544,7 +667,13 @@ class Apparel {
   };
 }
 
-const x = new Apparel(config);
-// x.importItemCSV("hepburn@gmail.com").then(() => {
-//   console.log("\n\nFinished")
-// })
+const appSession = new Apparel(config);
+
+// For tests: import from Spreadsheet
+//
+const DEVIMPORT = false;
+if ( DEVIMPORT ) {
+  appSession.importItemCSV("hepburn@bymyself.life").then(() => {
+    console.log("\n\nFinished")
+  })
+}

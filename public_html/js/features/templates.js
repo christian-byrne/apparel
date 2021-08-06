@@ -10,6 +10,7 @@
  */
 
 import ClosestMatch from "./../utils/closest-match.js";
+import Search from "./search.js";
 
 /**
  * @class
@@ -46,6 +47,7 @@ class Templates {
     Object.assign(config, options);
     Object.assign(this, config);
 
+    this.search = new Search();
     for (const category of this.tabCategories) {
       if (!Object.keys(this.tabApropos).includes(category)) {
         this.tabApropos[category] = category.toString();
@@ -98,10 +100,7 @@ class Templates {
     // TODO - inconsistent.
     const pageNode = containers[retI].parentElement.parentElement;
     const tabNode = document.querySelector(
-      `#${pageNode.id.replace(
-        this.containerSuffix,
-        this.tabSuffix
-      )}`
+      `#${pageNode.id.replace(this.containerSuffix, this.tabSuffix)}`
     );
     // Activate by clicking.
     setTimeout(() => {
@@ -321,6 +320,103 @@ class Templates {
     return ret;
   };
 
+  leftColumn = (outfit) => {
+    let ret = `<ul class="list-group list-group-horizontal">`;
+    let columns = 0;
+
+    const attrs = [
+      "category",
+      "subCategory",
+      "type",
+      "formality",
+      "setting",
+      "event",
+      "temperature",
+      "weather",
+      "wearCount",
+      "notes",
+    ];
+    for (const property of attrs) {
+      if (outfit[property]) {
+        ret += `<li class="list-group-item text-muted">${property}</li>
+            <li class="list-group-item">${outfit[property]}</li>`;
+        columns++;
+      }
+      if (columns % 2 === 0 || ["weather", "notes", "event", "setting"].includes(property)) {
+        ret += `</ul><ul class="list-group list-group-horizontal">`;
+      }
+    }
+    return ret + "</ul>";
+  };
+
+  coalesceOutfitTitle = (outfit) => {
+    return outfit.category
+      ? outfit.category
+      : outfit.subCategory
+      ? outfit.subCategory
+      : outfit.type
+      ? outfit.type
+      : outfit.formality && outfit.formality[0]
+      ? outfit.formality[0]
+      : outfit.setting && outfit.setting[0]
+      ? outfit.setting[0]
+      : outfit.event && outfit.event[0]
+      ? outfit.event[0]
+      : "";
+  };
+
+  coalesceOutfitBadge = (outfit) => {
+    return outfit.rating
+      ? outfit.rating
+      : outfit.weather && outfit.weather[0]
+      ? outfit.weather[0]
+      : outfit.type
+      ? outfit.type
+      : "";
+  };
+
+  outfitRow = async (outfits) => {
+    const containers = [];
+    console.log(outfits);
+    let i = 1;
+    for (const outfit of outfits) {
+      if (outfit) {
+        let container = document.createElement("div");
+        container.classList.add("container-fluid");
+        let row = document.createElement("div");
+        row.classList.add("row", "mt-3");
+
+        let leftCol = document.createElement("div");
+        leftCol.classList.add("col");
+        leftCol.innerHTML = `
+        <h3>${this.coalesceOutfitTitle(outfit)} Outfit
+        <span class="badge bg-primary">${this.coalesceOutfitBadge(
+          outfit
+        )}</span>
+          </h3>
+          <p class="lead">
+          ${outfit.category}
+          </p>
+          ${outfit.notes ? "<p>" + outfit.notes + "</p>" : ""}
+          ${this.leftColumn(outfit)}
+          `;
+        row.appendChild(leftCol);
+
+        let rightCol = document.createElement("div");
+        rightCol.classList.add("col", "col-auto");
+        for (const id of outfit.items) {
+          await this.search.itemById(id).then((item) => {
+            this.listItem(item, rightCol);
+          });
+        }
+        row.appendChild(rightCol);
+        container.append(row);
+        containers.push(container);
+      }
+    }
+    return containers;
+  };
+
   /**
    *
    * @param {Item[]} items
@@ -340,7 +436,7 @@ class Templates {
     }
 
     for (const item of items) {
-      console.log(item.image)
+      console.log(item.image);
       this.convertDate(item);
       let card = document.createElement("div");
       card.classList.add(...classlist);

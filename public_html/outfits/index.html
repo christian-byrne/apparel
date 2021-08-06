@@ -229,308 +229,87 @@
 
         <!-- ──────────────────────────────────────────────────────────────────────────────── -->
 
-        <div class="col">
-          <!--
-          -- TAB NAV
-          -->
+      <div class="col" id="right-content">
 
-          <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation">
+          <!-- • • • • • -->
+          <!--
+              -- ITEM QUEUE NAVBAR
+              -->
+
+          <nav class="navbar navbar-expand-lg navbar-light bg-light px-0">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="#">Items</a>
               <button
-                class="nav-link"
-                id="shirtTab"
-                data-bs-toggle="tab"
-                data-bs-target="#shirtPage"
+                class="navbar-toggler"
                 type="button"
-                role="tab"
-                aria-controls="shirtPage"
-                aria-selected="true"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
               >
-                Shirts
+                <span class="navbar-toggler-icon"></span>
               </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button
-                class="nav-link"
-                id="tshirtTab"
-                data-bs-toggle="tab"
-                data-bs-target="#tshirtPage"
-                type="button"
-                role="tab"
-                aria-controls="tshirtPage"
-                aria-selected="false"
-              >
-                T-Shirts
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button
-                class="nav-link"
-                id="pantsTab"
-                data-bs-toggle="tab"
-                data-bs-target="#pantsPage"
-                type="button"
-                role="tab"
-                aria-controls="pantsPage"
-                aria-selected="false"
-              >
-                Pants
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button
-                class="nav-link"
-                id="shortsTab"
-                data-bs-toggle="tab"
-                data-bs-target="#shortsPage"
-                type="button"
-                role="tab"
-                aria-controls="shortsPage"
-                aria-selected="false"
-              >
-                Shorts
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button
-                class="nav-link"
-                id="innwearTab"
-                data-bs-toggle="tab"
-                data-bs-target="#innerwearPage"
-                type="button"
-                role="tab"
-                aria-controls="innerwearPage"
-                aria-selected="false"
-              >
-                Innerwear
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button
-                class="nav-link"
-                id="sweaterTab"
-                data-bs-toggle="tab"
-                data-bs-target="#sweaterPage"
-                type="button"
-                role="tab"
-                aria-controls="sweaterPage"
-                aria-selected="false"
-              >
-                Sweaters/Sweatshirts
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button
-                class="nav-link"
-                id="outerwearTab"
-                data-bs-toggle="tab"
-                data-bs-target="#outerwearPage"
-                type="button"
-                role="tab"
-                aria-controls="outerwearPage"
-                aria-selected="false"
-              >
-                Outerwear
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button
-                class="nav-link"
-                id="formalTab"
-                data-bs-toggle="tab"
-                data-bs-target="#formalPage"
-                type="button"
-                role="tab"
-                aria-controls="formalPage"
-                aria-selected="false"
-              >
-                Formalwear/Dresses
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button
-                class="nav-link"
-                id="shoesTab"
-                data-bs-toggle="tab"
-                data-bs-target="#shoesPage"
-                type="button"
-                role="tab"
-                aria-controls="shoesPage"
-                aria-selected="false"
-              >
-                Shoes
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button
-                class="nav-link"
-                id="accessoriesTab"
-                data-bs-toggle="tab"
-                data-bs-target="#accessoriesPage"
-                type="button"
-                role="tab"
-                aria-controls="accessoriesPage"
-                aria-selected="false"
-              >
-                Accessories
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button
-                class="nav-link"
-                id="otherTab"
-                data-bs-toggle="tab"
-                data-bs-target="#otherPage"
-                type="button"
-                role="tab"
-                aria-controls="otherPage"
-                aria-selected="false"
-              >
-                Other
-              </button>
-            </li>
-          </ul>
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item dropdown">
+                    <a
+                      class="nav-link dropdown-toggle"
+                      href="#"
+                      id="navbarDropdown"
+                      role="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      Options
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <li>
+                        <a class="dropdown-item" href="#">Make Template</a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="#">Export</a>
+                      </li>
+                      <li><hr class="dropdown-divider" /></li>
+                      <li>
+                        <a class="dropdown-item suggest-next" href="#">Suggest Items</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      id="clear-items-queue"
+                      class="nav-link"
+                      href="#"
+                      tabindex="-1"
+                      aria-disabled="true"
+                      >Clear</a
+                    >
+                  </li>
+                </ul>
+                <form class="d-flex">
+                  <input
+                    class="form-control me-2"
+                    type="search"
+                    placeholder="Search"
+                    aria-label="Search"
+                  />
+                  <button class="btn btn-outline-dark" type="submit">
+                    Search
+                  </button>
+                </form>
+              </div>
+            </div>
+          </nav>
+
+          <!--
+            -- OUTFITS CONTAINER
+            -->
 
           <!-- • • • • • -->
 
-          <div class="tab-content" id="myTabContent">
-            <!-- ──────────────────────────────────────────────────────────────────────────────── -->
-
-            <div
-              class="tab-pane fade"
-              id="shirtPage"
-              role="tabpanel"
-              aria-labelledby="shirtTab"
-            >
-              <div class="container-fluid mt-4 px-0">
-                <div class="row g-2" id="shirtSearchResults"></div>
-              </div>
-            </div>
-
-            <!-- ──────────────────────────────────────────────────────────────────────────────── -->
-
-            <div
-              class="tab-pane fade"
-              id="tshirtPage"
-              role="tabpanel"
-              aria-labelledby="tshirtTab"
-            >
-              <div class="container-fluid mt-4 px-0">
-                <div class="row g-2" id="tshirtSearchResults"></div>
-              </div>
-            </div>
-
-            <!-- ──────────────────────────────────────────────────────────────────────────────── -->
-            <div
-              class="tab-pane fade"
-              id="pantsPage"
-              role="tabpanel"
-              aria-labelledby="pantsTab"
-            >
-              <div class="container-fluid mt-4 px-0">
-                <div class="row g-2" id="pantsSearchResults"></div>
-              </div>
-            </div>
-
-            <!-- ──────────────────────────────────────────────────────────────────────────────── -->
-            <div
-              class="tab-pane fade"
-              id="shortsPage"
-              role="tabpanel"
-              aria-labelledby="shortsTab"
-            >
-              <div class="container-fluid mt-4 px-0">
-                <div class="row g-2" id="shortsSearchResults"></div>
-              </div>
-            </div>
-
-            <!-- ──────────────────────────────────────────────────────────────────────────────── -->
-            <div
-              class="tab-pane fade"
-              id="innerwearPage"
-              role="tabpanel"
-              aria-labelledby="innerwearTab"
-            >
-              <div class="container-fluid mt-4 px-0">
-                <div class="row g-2" id="innerwearSearchResults"></div>
-              </div>
-            </div>
-
-            <!-- ──────────────────────────────────────────────────────────────────────────────── -->
-            <div
-              class="tab-pane fade"
-              id="sweaterPage"
-              role="tabpanel"
-              aria-labelledby="sweaterTab"
-            >
-              <div class="container-fluid mt-4 px-0">
-                <div class="row g-2" id="sweaterSearchResults"></div>
-              </div>
-            </div>
-
-            <!-- ──────────────────────────────────────────────────────────────────────────────── -->
-            <div
-              class="tab-pane fade"
-              id="outerwearPage"
-              role="tabpanel"
-              aria-labelledby="outerwearTab"
-            >
-              <div class="container-fluid mt-4 px-0">
-                <div class="row g-2" id="outerwearSearchResults"></div>
-              </div>
-            </div>
-
-            <!-- ──────────────────────────────────────────────────────────────────────────────── -->
-            <div
-              class="tab-pane fade"
-              id="formalPage"
-              role="tabpanel"
-              aria-labelledby="formalTab"
-            >
-              <div class="container-fluid mt-4 px-0">
-                <div class="row g-2" id="formalSearchResults"></div>
-              </div>
-            </div>
-
-            <!-- ──────────────────────────────────────────────────────────────────────────────── -->
-            <div
-              class="tab-pane fade"
-              id="shoesPage"
-              role="tabpanel"
-              aria-labelledby="shoesTab"
-            >
-              <div class="container-fluid mt-4 px-0">
-                <div class="row g-2" id="shoesSearchResults"></div>
-              </div>
-            </div>
-
-            <!-- ──────────────────────────────────────────────────────────────────────────────── -->
-            <div
-              class="tab-pane fade"
-              id="accessoriesPage"
-              role="tabpanel"
-              aria-labelledby="accessoriesTab"
-            >
-              <div class="container-fluid mt-4 px-0">
-                <div class="row g-2" id="accessoriesSearchResults"></div>
-              </div>
-            </div>
-
-            <!-- ──────────────────────────────────────────────────────────────────────────────── -->
-            <div
-              class="tab-pane fade"
-              id="otherPage"
-              role="tabpanel"
-              aria-labelledby="otherTab"
-            >
-              <div class="container-fluid mt-4 px-0">
-                <div class="row g-2" id="otherSearchResults"></div>
-              </div>
-            </div>
-
-            <!-- ──────────────────────────────────────────────────────────────────────────────── -->
-          </div>
-        </div>
+      </div>
+      
       </div>
     </div>
 

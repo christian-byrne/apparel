@@ -1,10 +1,10 @@
 /**
- * Wardrobe Page Listeners
+ * Outfit Collection Page Listeners
  *
  * From: Aug 2021
  * Project: Apparel
  *
- * @exports PageWardrobe
+ * @exports PageOutfits
  * @author Christian P. Byrne
  *
  */
@@ -27,8 +27,9 @@ import Templates from "./../features/templates.js";
  * @listens document#submit
  *
  */
-class PageWardrobe {
-  constructor() {
+class PageOutfits {
+  constructor(itemQueueNode) {
+    this.queue = itemQueueNode || document.querySelector("#items-queue");
     this.search = new Search();
     this.templates = new Templates();
 
@@ -43,8 +44,15 @@ class PageWardrobe {
     };
 
     setTimeout(() => {
-      this.search.allItems().then((items) => {
-        this.displaySearchRes(items);
+      this.search.allOutfits().then((outfits) => {
+        // this.displaySearchRes(items);
+        let container = document.querySelector("#right-content");
+        this.templates.outfitRow(outfits).then((divs) => {
+            console.log(divs)
+            for ( const div of divs ) {
+                container.appendChild(div)
+            }
+        })
       });
     }, 20);
 
@@ -69,4 +77,4 @@ class PageWardrobe {
   }
 }
 
-export default PageWardrobe;
+export default PageOutfits;

@@ -232,8 +232,8 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
   - ✅ DOM constructor functions
   - ✅ Browse wardrobe
     - ✅ HTML & Ajax
-- ⏩ Browse outfits
-  -  ⏩ HTML & Ajax
+- ✅ Browse outfits
+  -  ✅ HTML & Ajax
 - ⏩ Browse outfits sidebar features
 - ✅ browse wardrobe sidebar features
 - ✅ Generate page features
@@ -268,7 +268,8 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 - ✅ Bundling
 - 🔴 Documenting/Commenting
   - ✅ frontend
-  - ⏩ backend
+  - ✅ backend
+  - 🔴 backend imports
 - ⏩ tucks
 - ⏩ undertones
 - ⏩ Pruning
