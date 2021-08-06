@@ -5,7 +5,7 @@
 // Author: Christian P. Byrne
 //
 
-import { Item, Outfit, User } from "apparelDB";
+import { Item, Outfit, User } from "./types/schemas";
 import { model, Model, Schema } from "mongoose";
 
 interface Database {
@@ -89,7 +89,8 @@ class Database {
         ],
         dimensions: { type: String, required: false },
       },
-      password: String,
+      hash: String,
+      salt: String,
       outfits: [String],
       items: [String],
       gender: String,

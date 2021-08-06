@@ -6,7 +6,7 @@
 //
 
 import { spreadsheetColors } from "./../public_html/csv-port/json_colors";
-import { readFile, utils, WorkBook, WorkSheet } from "xlsx/types";
+import { readFile, utils, WorkBook, WorkSheet } from "xlsx";
 
 interface ExcelParser {
   workbook: WorkBook;

@@ -253,15 +253,22 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 
 - ✅  ? global search feature
 - ⏩ add "required" attribute to inputs maybe.
-- ⏩ carousel on view collection pages.
-- ✅ Refactoring
+- ✅ Refactoring/Documenting
+  - ✅ frontend ts
+  - ✅ backend ts
+  - 🔴 css
+  - 🔴 html
 - 🔴 Debugging
 - 🔴 Spec Requirements
-  - Your web application should include an in-app help page, which explains to the user (or the grader!) how to use the application. You must have an obviously-located button that a user can click on to get the the help page.
-  - The application must have a user account creation and login feature, with proper password salting/hashing, and login sessions.
-  - Your web application must be made LIVE on the web for at least 5 days after the due date. The URL should be in a file named live.txt in the zip file you submit. It is VERY important for you to have it running live. You may lose a significant amount of points if you don’t have this for the 5 days.
-- ⏩ Bundling
+  - 🔴 Your web application should include an in-app help page, which explains to the user (or the grader!) how to use the application. You must have an obviously-located button that a user can click on to get the the help page.
+    - 🔴 HELP button that is pointed at by popover on page load
+    - 🔴 help page is a carousel of videos with captions
+  - 🔴 The application must have a user account creation and login feature, with proper password salting/hashing, and login sessions.
+  - 🔴 Your web application must be made LIVE on the web for at least 5 days after the due date. The URL should be in a file named live.txt in the zip file you submit. It is VERY important for you to have it running live. You may lose a significant amount of points if you don’t have this for the 5 days.
+- ✅ Bundling
 - 🔴 Documenting/Commenting
+  - ✅ frontend
+  - ⏩ backend
 - ⏩ tucks
 - ⏩ undertones
 - ⏩ Pruning
@@ -269,16 +276,16 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 - ✅ Testing users
 - ⏩ Testing mobile
 - 🔴 Final Demo Video -> Upload
-  - 5-8 minute screen-capture recording, showing off the final project.
-  - demonstrate as many of the site features as possible. 
-  - You should upload this video to a site such as Youtube or Vimeo. 
-  - include a link to this in a file called video.txt in your zipped submission.
-  - You should submit your entire project in a zip file via gradescope (including live.txt and video.txt) by August 6th at 11:59pm. It is critical for you to have your application live on the web, and your video presentation created when you submit. If you don’t, you may be subject to lose a significant amount of points. On grdescope, you’ll be able to submit this as a team.
+  - 🔴 5-8 minute screen-capture recording, showing off the final project.
+  - 🔴 demonstrate as many of the site features as possible. 
+  - 🔴 You should upload this video to a site such as Youtube or Vimeo. 
+  - 🔴 include a link to this in a file called video.txt in your zipped submission.
+  - 🔴 You should submit your entire project in a zip file via gradescope (including live.txt and video.txt) by August 6th at 11:59pm. It is critical for you to have your application live on the web, and your video presentation created when you submit. If you don’t, you may be subject to lose a significant amount of points. On grdescope, you’ll be able to submit this as a team.
 - ⏩ subcategory and type datalist dynamnic fileds based on fashion dictionary schematics/blueprints/guides
 - ⏩ item field categoris dynamically added to `add-item` page based on specific item details (reference description of items in spreadsheet)
 - ✅ placeholder image is the patterns/gradient of colors/prints
 - ⏩ feature to `setInterval` update toast time element
-
+- ⏩ sort feature on wardrobe and items page sidebars
 
 ---------
 

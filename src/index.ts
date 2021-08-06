@@ -18,10 +18,10 @@ import Database from "./database";
 import ExpressServer from "./server";
 import { App, FilterQuery1D } from "options";
 import ExcelParser from "./excel-parser";
-import { Item, Outfit, User } from "apparelDB";
+import { Item, Outfit, User } from "./types/schemas";
 
 const config = {
-  middleware: [cors(), json(), urlencoded({ extended: true }), cookieParser()],
+  middleware: [cookieParser(), cors(), json(), urlencoded({ extended: true })],
   DBname: "apparel",
 };
 
@@ -82,7 +82,7 @@ class Apparel {
     setInterval(() => {
       let now = Date.now();
       for (const key in this.sessionKeys) {
-        if (this.sessionKeys[key][1] < now - 10000) {
+        if (this.sessionKeys[key][1] < now - 20000) {
           delete this.sessionKeys[key];
         }
       }
