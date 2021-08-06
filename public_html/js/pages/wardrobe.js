@@ -53,7 +53,7 @@ class PageWardrobe {
       const callerCss = Array.from(caller.classList);
 
       if (callerCss.includes("add-to-queue")) {
-        // TODO: Edit item modal
+        // TODO: Edit item modal.
         event.preventDefault();
         window.location = "/add/item";
       } else if (callerCss.includes("dismiss-search-item")) {

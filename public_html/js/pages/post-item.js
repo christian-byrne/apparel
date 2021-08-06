@@ -13,6 +13,7 @@ import Mannequin from "./../features/mannequin.js";
 import Notifications from "./../features/notifications.js";
 import AddItem from "./../features/add-item.js";
 import Refresh from "./../utils/refresh.js";
+import { gender } from "./../global-handlers.js";
 
 /**
  * @class
@@ -33,7 +34,7 @@ import Refresh from "./../utils/refresh.js";
 class PageAddItem {
   constructor() {
     this.item = new AddItem();
-    this.mannequin = new Mannequin(".mask-outlines", "male");
+    this.mannequin = new Mannequin(".mask-outlines", gender());
     this.refresh = new Refresh([]);
     this.notification = new Notifications();
 

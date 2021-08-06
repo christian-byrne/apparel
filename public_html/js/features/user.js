@@ -10,6 +10,7 @@
  */
 
 import FormParse from "./../utils/form-parse.js";
+import Notifications from "./../features/notifications.js";
 import { BASE_URL } from "./../constants.js";
 import { curUser } from "./../global-handlers.js";
 

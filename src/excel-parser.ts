@@ -47,20 +47,22 @@ class ExcelParser {
       Heavy: 2.5,
     };
 
+    
     this.parseExcel = async () => {
       for (const record of this.csvJson) {
         // Condition.
-        try {
-          let conditionAvg = Math.floor(
-            (this.conditionMap[record.condition] +
-              this.conditionMap[record.colorCondition]) /
-              2
-          );
-          record.condition =
-            typeof conditionAvg === "number" ? conditionAvg : 10;
-        } catch (err) {
-          record.condition = 10;
-        }
+        // try {
+        //   let conditionAvg = Math.floor(
+        //     (this.conditionMap[record.condition] +
+        //       this.conditionMap[record.colorCondition]) /
+        //       2
+        //   );
+        //   record.condition =
+        //     typeof conditionAvg === "number" ? conditionAvg : 10;
+        // } catch (err) {
+        //   record.condition = 10;
+        // }
+        record.condition = 10;
 
         // Mats.
         let materialObj = {
@@ -124,6 +126,9 @@ class ExcelParser {
           }
         }
 
+          if ( record.cost == "-" ) {
+            record.cost = 0
+          }
         delete record.style;
         delete record.sizeLength;
         delete record.colorCondition;

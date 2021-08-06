@@ -140,10 +140,11 @@ class Apparel {
   };
 
   importItemCSV = async (username: string) => {
-    return this.csvImporter.parseExcel().then(async () => {
+    return await this.csvImporter.parseExcel().then(async () => {
       let csv = this.csvImporter.csvJson;
+      let itemCt = 1;
       for (const record of csv) {
-        if (typeof record.condition !== "number") {
+        if (typeof record.condition !== "number" || typeof record.condition == "string" ) {
           record.condition = 10;
         }
         let mutation = new this.db.itemModel(record);
@@ -151,8 +152,9 @@ class Apparel {
           const newId = savedItem._id;
           await this.pushID(newId, username, "items").catch((reason) => {
             this.alert(reason);
-          });
+          }).then(() => console.log(itemCt));
         });
+        itemCt++
       }
     });
   };
@@ -491,4 +493,7 @@ class Apparel {
   };
 }
 
-new Apparel(config);
+const x = new Apparel(config);
+x.importItemCSV("hepburn@gmail.com").then(() => {
+  console.log("\n\nFinished")
+})

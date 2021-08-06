@@ -340,12 +340,13 @@ class Templates {
     }
 
     for (const item of items) {
+      console.log(item.image)
       this.convertDate(item);
       let card = document.createElement("div");
       card.classList.add(...classlist);
 
       let image;
-      if (item.image) {
+      if (item.image && item.image != undefined && item.image != "undefined") {
         image = `<img src="${this.image}" loading="lazy" class="img-fluid rounded-start m-2" alt="Picture of ${item.description}"></img>`;
       } else {
         image = `<div class="rounded-start item-card-color m-2" style="${this.paletteToGradient(

@@ -9,6 +9,8 @@
  *
  */
 
+import SketchColors from "./filter.js";
+
 /**
  * @class
  * @param {HTMLElement[]} targets

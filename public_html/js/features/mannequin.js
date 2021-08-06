@@ -122,16 +122,13 @@ class Mannequin {
    * @param {Item} item
    */
   dress = (item) => {
-    console.log(item);
     this.propOptions().then((images) => {
-      console.log(images);
       const match = new ClosestMatch(images);
       let layer;
       // Try an image layer for type then subcategory then category. Else, do nothing..
       for (const characteristic of ["type", "subCategory", "category"]) {
         if (item[characteristic]) {
           layer = match.closestInArray(item[characteristic], images);
-          console.log(layer);
         }
         if (layer) {
           break;
@@ -146,14 +143,17 @@ class Mannequin {
             accentWeights.push(accent.replace(/[^0-9]+/g, ""))
           );
           const getClosest = (weight) => {
-            return accentWeights.reduce(function (pre, cur) {
+            return accentWeights.length > 0 ? accentWeights.reduce(function (pre, cur) {
               return Math.abs(cur - weight) < Math.abs(pre - weight)
                 ? cur
                 : pre;
-            });
+            }) : false
           };
           for (let i = 1; i < item.color.colors.length; i++) {
             let closest = getClosest(item.color.weights[i]);
+            if ( !closest ) {
+              continue
+            }
             let accentFile = `accent/${layer}-${closest}`;
             this.addProp(accentFile, item.color.colors[i]);
             // Remove from options so not choosing same layer for multiple colors.

@@ -79,14 +79,15 @@ class AddItem {
       if (bare) {
         return ret;
       }
-      const multipartData = new FormData();
+      const multipartData = this.form.jsonToFormData(ret);
+      console.log(ret)
       multipartData.append(
         "image",
         document.querySelector("#imageInput").files[0]
       );
-      for (const [key, value] of Object.entries(ret)) {
-        multipartData.append(key, value);
-      }
+      // for (const [key, value] of Object.entries(ret)) {
+      //   multipartData.append(key, JSON.stringify(value));
+      // }
       return multipartData;
     };
   }

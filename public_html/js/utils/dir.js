@@ -9,6 +9,8 @@
  *
  */
 
+import { BASE_URL } from "./../constants.js";
+
 /**
  * @class
  * @param {object} options
