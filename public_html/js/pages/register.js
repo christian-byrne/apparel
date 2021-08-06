@@ -36,6 +36,11 @@ class PageRegistration {
     this.user = new User();
     this.notify = new Notifications();
 
+    this.notify.popoverTooltip(document.querySelector("#help-portal"), {
+      title: "CLICK HERE",
+      content: "...to see an explanation of the app's features.",
+    });
+
     document.documentElement.addEventListener("click", (event) => {
       const caller = event.target;
       const callerCss = Array.from(caller.classList);

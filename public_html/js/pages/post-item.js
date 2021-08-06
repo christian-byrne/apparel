@@ -38,6 +38,11 @@ class PageAddItem {
     this.refresh = new Refresh([]);
     this.notification = new Notifications();
 
+    this.notification.popoverTooltip(document.querySelector("#help-portal"), {
+      title: "CLICK HERE",
+      content: "...to see an explanation of the app's features."
+    })
+
     document.documentElement.addEventListener("change", (event) => {
       const caller = event.target;
       if (

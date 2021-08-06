@@ -20,7 +20,7 @@ const globalAppListeners = () => {
     event.preventDefault()
     if (caller == globalSearch || globalSearch.parentElement && caller == globalSearch.parentElement) {
       event.preventDefault();
-      for ( const page of ["/add/outfit", "/add/item", "/wardrobe", "/outfits", "/register"]) {
+      for ( const page of ["/add/outfit", "/help", "/import", "/add/item", "/wardrobe", "/outfits", "/register"]) {
         if ( page.includes(globalSearch.value) || globalSearch.value.includes(page) ) {
           window.location = page;
         }

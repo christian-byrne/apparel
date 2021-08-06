@@ -41,8 +41,7 @@ window.onload = () => {
   } else {
     // ROOT PATH.
     if (sessionStorage.getItem("username")) {
-      new PageEntry();
-      // window.location = "/wardrobe";
+      new PageWardrobe();
     } else {
       new PageEntry();
     }
