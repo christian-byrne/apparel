@@ -254,7 +254,7 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 - ✅  ? global search feature
 - ⏩ add "required" attribute to inputs maybe.
 - ⏩ carousel on view collection pages.
-- ⏩ Refactoring
+- ✅ Refactoring
 - 🔴 Debugging
 - 🔴 Spec Requirements
   - Your web application should include an in-app help page, which explains to the user (or the grader!) how to use the application. You must have an obviously-located button that a user can click on to get the the help page.
