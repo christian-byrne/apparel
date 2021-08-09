@@ -30,6 +30,19 @@ const globalAppListeners = () => {
     }
   });
 
+
+	document.documentElement.addEventListener("click", (event) => {
+		if ( event.target.id === "logout-button") {
+			if ( sessionStorage.getItem("username") ) {
+			sessionStorage.removeItem("username");
+			}
+		setTimeout(() => {
+		window.location = "/";
+		}, 20)
+			}
+
+	});
+
   // Update manequin gender.
   if (gender() && gender() === "female" && !window.location.pathname.includes("/register")) {
     let images = document.querySelectorAll(".mask-outlines > img");

@@ -38,10 +38,10 @@ window.onload = () => {
     new PageOutfits();
   } else if (checkRoute("/register")) {
     new PageRegistration();
-  } else {
+  } else if (!checkRoute("/help") && !checkRoute("/import")) {
     // ROOT PATH.
     if (sessionStorage.getItem("username")) {
-      new PageWardrobe();
+      window.location = "/wardrobe";
     } else {
       new PageEntry();
     }

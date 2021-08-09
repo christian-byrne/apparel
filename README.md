@@ -1,4 +1,8 @@
 # Final Project | CSC337
+
+[Live 🔴](http://143.198.57.139/) | [Demo Video ▶️](https://bymyself.life/)
+
+
 **_Author_**: Christian P. Byrne
 
 - [Overview](#overview)
@@ -212,7 +216,7 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 - ⏩ Color parsing module?
 - ✅ Image upload?
   - ✅ add field to schemas
-- ⏩ Color algorithm
+- ✅ Color algorithm
 - ⏩ Define ruleset
   - ⏩ Info tooltips/modals
 - ⏩ Define algorithmic suggestion
@@ -259,12 +263,12 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
   - ✅ css
   - ✅ html
 - ✅ Debugging
-- 🔴 Spec Requirements
+- ✅ Spec Requirements
   - ✅ Your web application should include an in-app help page, which explains to the user (or the grader!) how to use the application. You must have an obviously-located button that a user can click on to get the the help page.
     - ✅ HELP button that is pointed at by popover on page load
     - ✅ help page is a carousel of videos with captions
   - ✅ The application must have a user account creation and login feature, with proper password salting/hashing, and login sessions.
-  - 🔴 Your web application must be made LIVE on the web for at least 5 days after the due date. The URL should be in a file named live.txt in the zip file you submit. It is VERY important for you to have it running live. You may lose a significant amount of points if you don’t have this for the 5 days.
+  - ✅ Your web application must be made LIVE on the web for at least 5 days after the due date. The URL should be in a file named live.txt in the zip file you submit. It is VERY important for you to have it running live. You may lose a significant amount of points if you don’t have this for the 5 days.
 - ✅ Bundling
 - ✅ Documenting/Commenting
   - ✅ frontend
@@ -275,21 +279,57 @@ Create relationships between **Outfit**, **Item**, and **User** documents using 
 - ⏩ Pruning
 - ✅ Testing deployment
 - ✅ Testing users
-- ⏩ Testing mobile
-- 🔴 Final Demo Video -> Upload
-  - 🔴 5-8 minute screen-capture recording, showing off the final project.
-  - 🔴 demonstrate as many of the site features as possible. 
-  - 🔴 You should upload this video to a site such as Youtube or Vimeo. 
-  - 🔴 include a link to this in a file called video.txt in your zipped submission.
-  - 🔴 You should submit your entire project in a zip file via gradescope (including live.txt and video.txt) by August 6th at 11:59pm. It is critical for you to have your application live on the web, and your video presentation created when you submit. If you don’t, you may be subject to lose a significant amount of points. On grdescope, you’ll be able to submit this as a team.
-- ⏩ subcategory and type datalist dynamnic fileds based on fashion dictionary schematics/blueprints/guides
+- ✅ Testing mobile
+- ✅ Final Demo Video -> Upload
+  - ✅ 5-8 minute screen-capture recording, showing off the final project.
+  - ✅ demonstrate as many of the site features as possible. 
+  - ✅ You should upload this video to a site such as Youtube or Vimeo. 
+  - ✅ include a link to this in a file called video.txt in your zipped submission.
+  - ✅ You should submit your entire project in a zip file via gradescope (including live.txt and video.txt) by August 6th at 11:59pm. It is critical for you to have your application live on the web, and your video presentation created when you submit. If you don’t, you may be subject to lose a significant amount of points. On grdescope, you’ll be able to submit this as a team.
+- ✅ subcategory and type datalist dynamnic fileds based on fashion dictionary schematics/blueprints/guides
 - ✅ un-comment main frontend script for correct routes
 - ⏩ item field categoris dynamically added to `add-item` page based on specific item details (reference description of items in spreadsheet)
 - ✅ placeholder image is the patterns/gradient of colors/prints
 - ⏩ feature to `setInterval` update toast time element
 - ⏩ sort feature on wardrobe and items page sidebars
-
+- ✅ Validate HTML
 ---------
+
+#### Week 3 - Post-Production
+
+Week 3:
+-	inspo page with carousal
+-	nav on outfits page
+-	list groups break points
+-	use coolors.co to parse colors
+-	? different navbar on mobile 
+-	suggest features
+  -	infographics
+  -	dictionary
+  -	✅ color suggest palette api
+  -	color suggest algorithm » find closest match in wardrobe
+  -	ruleset
+-	✅ merge server folder to main repo 
+-	filter should add cumulatively (front and backedn)
+-	more accents
+-	validate html
+-	domain name
+  -	namecheap free domain
+  -	name.com free domain
+-	cookie validator headers should be string literal for URLs
+  -	and domain on cookies creator method
+-	fix registration user account details page
+  -	then add user account view/edit page
+-	edit item modal
+-	analytics page
+-	item card listgroup boxes should have a media query CSS declaration 
+-	screen padding of main container should have media query
+-	outfits page should have less padding on desktop view
+-	fix ids of outfits tabs and other tabs (html validator will find broken links)
+-	wornontv integration
+-	✅ demo page link on README
+-	add skirt and accents for women
+-	favicon feature
 
 
 #### Brainstorm Features

@@ -18,8 +18,6 @@
     <link rel="stylesheet" href="/css/custom.css" />
     <script
       src="https://code.jquery.com/jquery-3.6.0.min.js"
-      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-      crossorigin="anonymous"
     ></script>
     <script src="/js/index.js" type="module"></script>
   </head>
@@ -62,7 +60,11 @@
           <li class="nav-item">
             <a href="/analyze" class="nav-link link-dark px-2">Analyze</a>
           </li>
-        </ul>
+          <li class="nav-item">
+            <a id="logout-button" class="nav-link link-dark px-2" style="cursor: pointer">Logout</a>
+          </li>
+
+	</ul>
       </div>
     </nav>
 
@@ -135,9 +137,12 @@
                 </button>
                 <div class="collapse show" id="home-collapse">
                   <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    <li><a href="#" class="link-dark rounded">Overview</a></li>
-                    <li><a href="#" class="link-dark rounded">Updates</a></li>
-                    <li><a href="#" class="link-dark rounded">Reports</a></li>
+                    <li><a href="#" class="link-dark rounded">Styles</a></li>
+                    <li><a href="#" class="link-dark rounded">Color</a></li>
+                    <li><a href="#" class="link-dark rounded">Types</a></li>
+                    <li><a href="#" class="link-dark rounded">Brand</a></li>
+                    <li><a href="#" class="link-dark rounded">Material</a></li>
+                    <li><a href="#" class="link-dark rounded">Fit</a></li>
                   </ul>
                 </div>
               </li>
@@ -172,10 +177,10 @@
                 </button>
                 <div class="collapse" id="orders-collapse">
                   <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    <li><a href="#" class="link-dark rounded">New</a></li>
-                    <li><a href="#" class="link-dark rounded">Processed</a></li>
-                    <li><a href="#" class="link-dark rounded">Shipped</a></li>
-                    <li><a href="#" class="link-dark rounded">Returned</a></li>
+                    <li><a href="#" class="link-dark rounded">Event</a></li>
+                    <li><a href="#" class="link-dark rounded">Season</a></li>
+                    <li><a href="#" class="link-dark rounded">Climate</a></li>
+                    <li><a href="#" class="link-dark rounded">Settings</a></li>
                   </ul>
                 </div>
               </li>
@@ -192,10 +197,10 @@
                 </button>
                 <div class="collapse" id="account-collapse">
                   <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    <li><a href="#" class="link-dark rounded">New...</a></li>
-                    <li><a href="#" class="link-dark rounded">Profile</a></li>
-                    <li><a href="#" class="link-dark rounded">Settings</a></li>
-                    <li><a href="#" class="link-dark rounded">Sign out</a></li>
+                    <li><a href="#" class="link-dark rounded">Suggestions</a></li>
+                    <li><a href="#" class="link-dark rounded">Bugdget Analysis</a></li>
+                    <li><a href="#" class="link-dark rounded">Account Details</a></li>
+                    <li><a href="#" class="link-dark rounded">History</a></li>
                   </ul>
                 </div>
               </li>
@@ -204,17 +209,17 @@
                 <button
                   class="btn btn-toggle align-items-center rounded collapsed"
                   data-bs-toggle="collapse"
-                  data-bs-target="#account-collapse"
+                  data-bs-target="#analytics-collapse"
                   aria-expanded="false"
                 >
                   Analytics
                 </button>
-                <div class="collapse" id="account-collapse">
+                <div class="collapse" id="analytics-collapse">
                   <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    <li><a href="#" class="link-dark rounded">New...</a></li>
-                    <li><a href="#" class="link-dark rounded">Profile</a></li>
-                    <li><a href="#" class="link-dark rounded">Settings</a></li>
-                    <li><a href="#" class="link-dark rounded">Sign out</a></li>
+                    <li><a href="#" class="link-dark rounded">Suggest Stores</a></li>
+                    <li><a href="#" class="link-dark rounded">Suggest Brands</a></li>
+                    <li><a href="#" class="link-dark rounded">Suggest Discounts</a></li>
+                    <li><a href="#" class="link-dark rounded">As Seen on TV</a></li>
                   </ul>
                 </div>
               </li>
@@ -532,8 +537,6 @@
     <div class="b-divider"></div>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-      crossorigin="anonymous"
     ></script>
   </body>
 </html>

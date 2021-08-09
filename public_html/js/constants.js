@@ -9,7 +9,7 @@
  *
  */
 
-const PORT = 5000;
-const IP = "127.0.0.1";
+const PORT = 80;
+const IP = "143.198.57.139";
 
 export const BASE_URL = `http://${IP}:${PORT}`;

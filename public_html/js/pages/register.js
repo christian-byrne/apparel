@@ -73,8 +73,8 @@ class PageRegistration {
         propList = this.female.maskLayers();
         this.femaleRotator = new ColorRotator(propList);
         this.maleRotator.init();
-      }, 100);
-    }, 575);
+      }, 1000);
+    }, 1675);
   }
 }
 

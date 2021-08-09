@@ -11,7 +11,7 @@ import { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import multer from "multer";
 import cookieParser from "cookie-parser";
-import { readdir } from "fs/promises";
+import { promises } from "fs";
 import "./style-dict";
 import Database from "./database";
 import ExpressServer from "./server";
@@ -102,24 +102,21 @@ class Apparel {
     this.http.server.post("/register", this.register);
     this.http.server.post(
       "/post/item/:user",
-      this.authenticate,
       this.upload.single("image"),
       this.createItem
     );
     this.http.server.post(
       "/post/outfit/:user",
-      this.authenticate,
       this.upload.single("image"),
       this.createOutfit
     );
     this.http.server.post(
       "/user/details/:user",
-      this.authenticate,
       this.upload.single("image"),
       this.userDetails
     );
-    this.http.server.post("/search/field", this.authenticate, this.filterItems);
-    this.http.server.post("/user/gender", this.authenticate, this.updateGender);
+    this.http.server.post("/search/field", this.filterItems);
+    this.http.server.post("/user/gender", this.updateGender);
 
     this.http.server.get("/get/items/:user", this.getItems);
     this.http.server.get("/get/outfits/:user", this.getOutfits);
@@ -206,7 +203,7 @@ class Apparel {
    * @returns
    */
   fileNames = async (dir: string): Promise<object> => {
-    return await readdir(dir);
+    return await promises.readdir(dir);
   };
 
   /**
