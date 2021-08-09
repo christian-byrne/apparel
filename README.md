@@ -330,6 +330,7 @@ Week 3:
 -	✅ demo page link on README
 -	add skirt and accents for women
 -	favicon feature
+- improve color gradient preview/item-avatar system
 
 
 #### Brainstorm Features
