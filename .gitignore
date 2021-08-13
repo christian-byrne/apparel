@@ -7,3 +7,7 @@ Fashion.xlsx
 delete*
 format.py
 **/**/Fashion.xlsx
+demo/**/*
+demo/*
+example-outfits/*
+example-outfits
